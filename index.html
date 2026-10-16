@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>多仔港式台牌 自動算番 2026</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", sans-serif; background:#1a1a2e; color:#eee; min-height:100vh; padding:8px; padding-bottom:190px; user-select:none; }
+.header { text-align:center; padding:10px 0 8px; }
+.header h1 { font-size:18px; font-weight:800; background:linear-gradient(135deg,#f7971e,#ffd200); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.header p { font-size:11px; color:#888; margin-top:3px; }
+.tabs { display:flex; gap:6px; margin-bottom:8px; }
+.tab { flex:1; padding:9px; text-align:center; border-radius:9px; background:#16213e; color:#888; font-size:12px; font-weight:700; cursor:pointer; border:1px solid #1a3a5a; }
+.tab.active { background:#0f3460; color:#ffd200; border-color:#f7971e; }
+.wall-section { display:none; }
+.wall-section.active { display:block; }
+.suit-row { margin-bottom:8px; }
+.suit-label { font-size:11px; color:#f7971e; font-weight:700; margin-bottom:4px; padding-left:2px; }
+.tiles-row { display:flex; flex-wrap:wrap; gap:4px; }
+.tile { width:38px; height:52px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:6px; border:1px solid #b8b0a0; box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 3px rgba(0,0,0,0.3); position:relative; cursor:pointer; transition:transform 0.1s; display:flex; align-items:center; justify-content:center; }
+.tile:active { transform:scale(0.9); }
+.tile.used { opacity:0.25; pointer-events:none; }
+.tile .num { font-size:20px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
+.tile .num.red { color:#cc2222; }
+.tile .num.green { color:#228822; }
+.tile .num.blue { color:#2222cc; }
+.tile .honor { font-size:18px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
+.tile .honor.red { color:#cc2222; }
+.tile .honor.green { color:#228822; }
+.tile .honor.blue { color:#2222cc; }
+.tile .honor.black { color:#333; }
+.tile .badge { position:absolute; top:-4px; right:-4px; background:#ffd200; color:#1a1a2e; font-size:9px; font-weight:800; width:16px; height:16px; line-height:16px; border-radius:50%; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+
+.hand-area { position:fixed; bottom:0; left:0; right:0; background:#16213e; border-top:2px solid #f7971e; padding:6px 8px 10px; z-index:9999; box-shadow:0 -4px 20px rgba(0,0,0,0.5); pointer-events:auto; max-height:215px; overflow-y:auto; }
+.mode-selector { display:flex; background:#0f3460; border-radius:6px; padding:3px; margin-bottom:6px; border:1px solid #1a4a7a; }
+.mode-btn { flex:1; text-align:center; padding:5px; font-size:11px; font-weight:700; color:#888; border-radius:4px; cursor:pointer; }
+.mode-btn.active { background:#f7971e; color:#1a1a2e; }
+
+.flower-control { background:#0f3460; border-radius:6px; padding:6px 10px; margin-bottom:6px; border:1px solid #1a4a7a; }
+.flower-header { font-size:11px; font-weight:700; color:#ffd200; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+.flower-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+.flower-row:last-child { margin-bottom:0; }
+.flower-label { font-size:11px; color:#ddd; }
+.flower-btns { display:flex; gap:3px; }
+.f-btn { width:22px; height:22px; border-radius:3px; border:none; background:#16213e; color:#fff; font-size:10px; font-weight:800; cursor:pointer; }
+.f-btn.active { background:#ffd200; color:#1a1a2e; }
+
+.hand-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-bottom:6px; }
+.section-box { background:#0f3460; border-radius:6px; padding:4px 6px; border:1px solid #1a4a7a; position:relative; }
+.section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; font-size:10px; font-weight:700; color:#ffd200; }
+.section-tiles { display:flex; flex-wrap:wrap; gap:2px; min-height:36px; align-content:center; }
+.section-tiles .empty-hint { font-size:9px; color:#556; width:100%; text-align:center; }
+
+.kong-type-switch { font-size:9px; background:#16213e; color:#ffd200; padding:1px 5px; border-radius:3px; cursor:pointer; border:1px solid #ffd20055; font-weight:700; }
+.kong-type-switch.open-mode { background:#e74c3c; color:#fff; border-color:#c0392b; }
+
+.hand-tile { width:26px; height:36px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:4px; border:1px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hand-tile:active { transform:scale(0.9); }
+.hand-tile .num { font-size:13px; font-weight:900; }
+.hand-tile .num.red { color:#cc2222; }
+.hand-tile .num.green { color:#228822; }
+.hand-tile .num.blue { color:#2222cc; }
+.hand-tile .honor { font-size:12px; font-weight:900; }
+.hand-tile .honor.red { color:#cc2222; }
+.hand-tile .honor.green { color:#228822; }
+.hand-tile .honor.blue { color:#2222cc; }
+.hand-tile .honor.black { color:#333; }
+
+.hand-actions { display:flex; gap:6px; position:relative; z-index:10000; }
+.hand-actions button { flex:1; padding:10px 6px; border-radius:8px; border:none; font-size:12px; font-weight:800; cursor:pointer; pointer-events:auto; transition:transform 0.1s; }
+.hand-actions button:active { transform:scale(0.95); }
+.btn-calc { background:linear-gradient(135deg,#f7971e,#ffd200); color:#1a1a2e; box-shadow:0 2px 8px rgba(247,151,30,0.4); }
+.btn-clear { background:#e74c3c; color:#fff; flex:0.6; }
+.btn-history2 { background:#16213e; color:#ffd200; border:1px solid #f7971e55 !important; flex:0.7; }
+
+.result-panel { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:20000; display:none; flex-direction:column; backdrop-filter:blur(8px); }
+.result-panel.show { display:flex; }
+.result-header { display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid #333; }
+.result-header h2 { font-size:18px; color:#ffd200; }
+.result-header button { background:#e74c3c; border:none; color:#fff; font-size:14px; padding:8px 16px; border-radius:8px; cursor:pointer; }
+.result-body { flex:1; overflow-y:auto; padding:14px; }
+.result-total { text-align:center; padding:16px; background:#16213e; border-radius:12px; margin-bottom:12px; border:1px solid #f7971e55; }
+.result-total .num { font-size:44px; font-weight:900; color:#ffd200; line-height:1; }
+.result-total .label { font-size:13px; color:#aaa; margin-top:4px; }
+.result-item { background:#0f3460; border-radius:9px; padding:10px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid #f7971e; }
+.result-item .r-name { font-size:13px; color:#ddd; }
+.result-item .r-fan { font-size:15px; font-weight:800; color:#ffd200; }
+.result-item.highlight { border-left-color:#ffd200; background:#1a2a5a; box-shadow:0 0 8px rgba(255,210,0,0.15); }
+.result-none { text-align:center; color:#666; padding:30px; font-size:14px; }
+.result-note { font-size:11px; color:#888; text-align:center; padding:10px; line-height:1.6; }
+.history-list { padding:12px; }
+.history-item { background:#16213e; border-radius:10px; padding:12px; margin-bottom:8px; border-left:3px solid #f7971e; }
+.history-item .h-total { font-size:18px; font-weight:800; color:#ffd200; }
+.history-item .h-detail { font-size:11px; color:#999; margin-top:4px; line-height:1.6; }
+.history-item .h-time { font-size:10px; color:#666; margin-top:4px; }
+.empty-state { text-align:center; color:#555; padding:40px 20px; font-size:14px; }
+.toast { position:fixed; bottom:215px; left:50%; transform:translateX(-50%) translateY(20px); background:#ffd200; color:#1a1a2e; font-size:13px; font-weight:800; padding:10px 24px; border-radius:20px; opacity:0; transition:all 0.3s; pointer-events:none; z-index:30000; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🀄 多仔港式台牌 自動算番</h1>
+  <p>上方選擇目標區域 · 點擊牌牆直接加入 · 2026</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('wall', this)">🀫 牌牆</div>
+  <div class="tab" onclick="switchTab('result', this)">📊 結果</div>
+</div>
+
+<div class="wall-section active" id="wallSection">
+  <div id="wallContainer"></div>
+</div>
+
+<div class="wall-section" id="resultSection">
+  <div id="resultContainer">
+    <div class="empty-state">請先配置牌組<br>然後按「計算番數」</div>
+  </div>
+</div>
+
+<div class="hand-area">
+  <div class="mode-selector">
+    <div class="mode-btn active" onclick="setTargetSection('closed', this)">🖐️ 暗手牌區</div>
+    <div class="mode-btn" onclick="setTargetSection('open', this)">👁️ 明手牌區</div>
+    <div class="mode-btn" onclick="setTargetSection('kong', this)">🔒 槓區</div>
+  </div>
+
+  <div class="flower-control">
+    <div class="flower-header">
+      <span>🌸 花牌配置（共 <span id="flowerTotalDisplay">0</span> 張，每花+2番）</span>
+    </div>
+    <div class="flower-row">
+      <span class="flower-label">🔴 紅花數量：</span>
+      <div class="flower-btns" id="redFlowerBtns">
+        <button class="f-btn active" onclick="setFlowerTypeCount('red', 0)">0</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('red', 1)">1</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('red', 2)">2</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('red', 3)">3</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('red', 4)">4</button>
+      </div>
+    </div>
+    <div class="flower-row">
+      <span class="flower-label">🔵 藍花數量：</span>
+      <div class="flower-btns" id="blueFlowerBtns">
+        <button class="f-btn active" onclick="setFlowerTypeCount('blue', 0)">0</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('blue', 1)">1</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('blue', 2)">2</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('blue', 3)">3</button>
+        <button class="f-btn" onclick="setFlowerTypeCount('blue', 4)">4</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hand-grid">
+    <div class="section-box">
+      <div class="section-header">🖐️ 暗手牌 (<span id="closedCount">0</span>)</div>
+      <div class="section-tiles" id="closedTiles"><div class="empty-hint">無</div></div>
+    </div>
+    <div class="section-box">
+      <div class="section-header">👁️ 明手牌 (<span id="openCount">0</span>)</div>
+      <div class="section-tiles" id="openTiles"><div class="empty-hint">無</div></div>
+    </div>
+    <div class="section-box">
+      <div class="section-header">
+        <span>🔒 槓區 (<span id="kongCount">0</span>組)</span>
+        <span class="kong-type-switch" id="kongTypeLabel" onclick="toggleKongType()">暗槓</span>
+      </div>
+      <div class="section-tiles" id="kongTiles"><div class="empty-hint">只需點1張</div></div>
+    </div>
+  </div>
+  
+  <div class="hand-actions">
+    <button class="btn-calc" onclick="calculateSafe()">🧮 計算番數</button>
+    <button class="btn-clear" onclick="clearHand()">🗑 清空</button>
+    <button class="btn-history2" onclick="toggleHistory()">📋 紀錄 (<span id="historyCount">0</span>)</button>
+  </div>
+</div>
+
+<div class="result-panel" id="resultPanel">
+  <div class="result-header">
+    <h2>📊 算番結果</h2>
+    <button onclick="closeResult()">✕ 關閉</button>
+  </div>
+  <div class="result-body" id="resultBody"></div>
+</div>
+
+<div class="result-panel" id="historyPanel">
+  <div class="result-header">
+    <h2>📋 牌局紀錄</h2>
+    <button onclick="toggleHistory()">✕ 關閉</button>
+  </div>
+  <div class="result-body">
+    <div class="history-list" id="historyList">
+      <div class="empty-state">暫無紀錄</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TILE_DEFS = [];
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'wan', num:i, id:`wan${i}`, label:i, type:'num', color:'red' });
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'tong', num:i, id:`tong${i}`, label:i, type:'num', color:'blue' });
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'so', num:i, id:`so${i}`, label:i, type:'num', color:'green' });
+TILE_DEFS.push({ suit:'wind', num:1, id:'east',  label:'東', type:'honor', color:'black' });
+TILE_DEFS.push({ suit:'wind', num:2, id:'south', label:'南', type:'honor', color:'black' });
+TILE_DEFS.push({ suit:'wind', num:3, id:'west',  label:'西', type:'honor', color:'black' });
+TILE_DEFS.push({ suit:'wind', num:4, id:'north', label:'北', type:'honor', color:'black' });
+TILE_DEFS.push({ suit:'dragon', num:1, id:'chung', label:'中', type:'honor', color:'red' });
+TILE_DEFS.push({ suit:'dragon', num:2, id:'fat',   label:'發', type:'honor', color:'green' });
+TILE_DEFS.push({ suit:'dragon', num:3, id:'bak',   label:'白', type:'honor', color:'blue' });
+
+const TILE_MAP = {};
+TILE_DEFS.forEach(t => TILE_MAP[t.id] = t);
+
+const FAN_TABLE = [
+  { id:'eachFlower', name:'花', fan:2, cat:'花摸' },
+  { id:'properFlower', name:'正/爛花', fan:2, cat:'花摸' },
+  { id:'noFlower', name:'無花', fan:2, cat:'花摸' },
+  { id:'wordTile', name:'字', fan:2, cat:'花摸' },
+  { id:'noWord', name:'無字', fan:2, cat:'花摸' },
+  { id:'noWordFlower', name:'無字花', fan:10, cat:'花摸' },
+  { id:'sevenRobOne', name:'七搶一/一搶七', fan:40, cat:'花摸' },
+  { id:'eightImmortal', name:'八仙過海', fan:88, cat:'花摸' },
+  { id:'openKong', name:'明槓', fan:1, cat:'槓摸' },
+  { id:'closedKong', name:'暗槓', fan:2, cat:'槓摸' },
+  { id:'twoKong', name:'兩槓', fan:20, cat:'槓摸' },
+  { id:'threeKong', name:'三槓', fan:40, cat:'槓摸' },
+  { id:'fourKong', name:'四槓', fan:80, cat:'槓摸' },
+  { id:'fiveKong', name:'五槓', fan:180, cat:'槓摸' },
+  { id:'selfDraw', name:'自摸', fan:1, cat:'基本' },
+  { id:'ding', name:'叮', fan:5, cat:'基本' },
+  { id:'closedHand', name:'門清', fan:5, cat:'基本' },
+  { id:'closedDing', name:'門清叮', fan:5, cat:'基本' },
+  { id:'dingJik', name:'叮即', fan:5, cat:'基本' },
+  { id:'closedSelfDraw', name:'門清自摸', fan:8, cat:'基本' },
+  { id:'robKong', name:'搶槓', fan:5, cat:'基本' },
+  { id:'doubleWin', name:'雙響', fan:5, cat:'基本' },
+  { id:'tripleWin', name:'三響', fan:10, cat:'基本' },
+  { id:'dealerStreak3', name:'莊家連拉3', fan:3, cat:'基本' },
+  { id:'dealerStreak5', name:'莊家連拉5', fan:5, cat:'基本' },
+  { id:'dealerStreak7', name:'莊家連拉7', fan:7, cat:'基本' },
+  { id:'dealerStreak9', name:'莊家連拉9', fan:9, cat:'基本' },
+  { id:'heavenDing', name:'天叮', fan:60, cat:'基本' },
+  { id:'earthDing', name:'地叮', fan:50, cat:'基本' },
+  { id:'eyeTile', name:'將眼（2/5/8）', fan:2, cat:'基本' },
+  { id:'pairPong', name:'對碰', fan:2, cat:'基本' },
+  { id:'realSingle', name:'獨獨', fan:2, cat:'基本' },
+  { id:'fakeSingle', name:'假獨', fan:1, cat:'基本' },
+  { id:'halfHelp', name:'半求人', fan:8, cat:'基本' },
+  { id:'fullHelp', name:'全求人', fan:15, cat:'基本' },
+  { id:'riverFish', name:'河底撈月', fan:3, cat:'基本' },
+  { id:'seaFish', name:'海底撈月', fan:5, cat:'基本' },
+  { id:'clearSingle', name:'明絕', fan:5, cat:'基本' },
+  { id:'missingOne', name:'缺一門', fan:5, cat:'組合' },
+  { id:'missingFive', name:'缺五', fan:5, cat:'組合' },
+  { id:'noTerminal', name:'斷幺九', fan:5, cat:'組合' },
+  { id:'smallFiveDoor', name:'小五門齊', fan:5, cat:'組合' },
+  { id:'bigFiveDoor', name:'大五門齊', fan:10, cat:'組合' },
+  { id:'smallSevenDoor', name:'小七門齊', fan:15, cat:'組合' },
+  { id:'bigSevenDoor', name:'大七門齊', fan:20, cat:'組合' },
+  { id:'threeColorStep1', name:'三色步步高(小)', fan:5, cat:'組合' },
+  { id:'threeColorStep2', name:'三色步步高(大)', fan:10, cat:'組合' },
+  { id:'threeColorStep4a', name:'三色四步高(小)', fan:20, cat:'組合' },
+  { id:'threeColorStep4b', name:'三色四步高(大)', fan:40, cat:'組合' },
+  { id:'threeColorSky1', name:'三色登天(小)', fan:100, cat:'組合' },
+  { id:'threeColorSky2', name:'三色登天(大)', fan:110, cat:'組合' },
+  { id:'sameColorStep1', name:'同色步步高(小)', fan:15, cat:'組合' },
+  { id:'sameColorStep2', name:'同色步步高(大)', fan:20, cat:'組合' },
+  { id:'sameColorStep4a', name:'同色四步高(小)', fan:50, cat:'組合' },
+  { id:'sameColorStep4b', name:'同色四步高(大)', fan:100, cat:'組合' },
+  { id:'sameColorSky1', name:'同色登天(小)', fan:200, cat:'組合' },
+  { id:'sameColorSky2', name:'同色登天(大)', fan:220, cat:'組合' },
+  { id:'fourChild', name:'四子', fan:30, cat:'組合' },
+  { id:'sevenChild', name:'七子', fan:15, cat:'組合' },
+  { id:'tenChild', name:'十子', fan:10, cat:'組合' },
+  { id:'clearDragon1', name:'清龍(小)', fan:10, cat:'組合' },
+  { id:'clearDragon2', name:'清龍(大)', fan:20, cat:'組合' },
+  { id:'mixedDragon1', name:'雜龍(小)', fan:8, cat:'組合' },
+  { id:'mixedDragon2', name:'雜龍(大)', fan:15, cat:'組合' },
+  { id:'fourBack1', name:'四歸一', fan:15, cat:'組合' },
+  { id:'fourBack2', name:'四歸二', fan:30, cat:'組合' },
+  { id:'fourBack4', name:'四歸四', fan:60, cat:'組合' },
+  { id:'chickenWu', name:'雞糊', fan:30, cat:'組合' },
+  { id:'duckWu', name:'鴨糊', fan:15, cat:'組合' },
+  { id:'sisters', name:'姊妹', fan:3, cat:'組合' },
+  { id:'threeMeet1', name:'三相逢', fan:10, cat:'組合' },
+  { id:'allSisters', name:'全姊妹', fan:30, cat:'組合' },
+  { id:'flatWu', name:'平糊', fan:5, cat:'組合' },
+  { id:'noWordBigFlat', name:'無字花大平糊', fan:20, cat:'組合' },
+  { id:'doublePairHigh1', name:'雙般高(小)', fan:5, cat:'組合' },
+  { id:'doublePairHigh2', name:'雙般高(大)', fan:10, cat:'組合' },
+  { id:'triplePairHigh', name:'三般高', fan:20, cat:'組合' },
+  { id:'quadPairHigh', name:'四般高', fan:100, cat:'組合' },
+  { id:'chainPong', name:'連刻', fan:5, cat:'組合' },
+  { id:'smallThreeChain', name:'小三連刻', fan:10, cat:'組合' },
+  { id:'bigThreeChain', name:'大三連刻', fan:20, cat:'組合' },
+  { id:'oldYoungUp', name:'老少上', fan:5, cat:'組合' },
+  { id:'oldYoungPong', name:'老少碰', fan:5, cat:'組合' },
+  { id:'twoHidden', name:'兩暗坎', fan:5, cat:'組合' },
+  { id:'threeHidden', name:'三暗坎', fan:10, cat:'組合' },
+  { id:'fourHidden', name:'四暗坎', fan:30, cat:'組合' },
+  { id:'fiveHidden', name:'五暗坎', fan:80, cat:'組合' },
+  { id:'pongPongWu', name:'對對糊', fan:40, cat:'大牌' },
+  { id:'kanKanWu', name:'坎坎糊', fan:150, cat:'大牌' },
+  { id:'twoNumbers', name:'兩數', fan:120, cat:'大牌' },
+  { id:'threeNumbers', name:'三數', fan:80, cat:'大牌' },
+  { id:'mixedOneColor', name:'混一色', fan:40, cat:'大牌' },
+  { id:'pureOneColor', name:'清一色', fan:100, cat:'大牌' },
+  { id:'wordOneColor', name:'字一色', fan:150, cat:'大牌' },
+  { id:'greenOneColor', name:'綠一色', fan:250, cat:'大牌' },
+  { id:'blueOneColor', name:'藍一色', fan:300, cat:'大牌' },
+  { id:'mixedTerminal', name:'混帶幺', fan:30, cat:'大牌' },
+  { id:'allTerminal', name:'全帶幺', fan:60, cat:'大牌' },
+  { id:'mixedOld', name:'混老頭', fan:50, cat:'大牌' },
+  { id:'pureOld', name:'清老頭', fan:300, cat:'大牌' },
+  { id:'mixedWithX', name:'混帶X', fan:30, cat:'大牌' },
+  { id:'allWithX', name:'全帶X', fan:80, cat:'大牌' },
+  { id:'sixteenNoMatch', name:'十六不搭', fan:50, cat:'大牌' },
+  { id:'noMatchThreeOpen', name:'不搭明三相逢', fan:60, cat:'大牌' },
+  { id:'noMatchThreeClosed', name:'不搭暗三相逢', fan:70, cat:'大牌' },
+  { id:'noMatchDragonOpen', name:'不搭明雜龍', fan:70, cat:'大牌' },
+  { id:'noMatchDragonClosed', name:'不搭暗雜龍', fan:80, cat:'大牌' },
+  { id:'sixteenFly', name:'十六飛', fan:60, cat:'大牌' },
+  { id:'thirteenOrphan', name:'十三幺', fan:130, cat:'大牌' },
+  { id:'thirteenFly', name:'十三飛', fan:143, cat:'大牌' },
+  { id:'luckyGulu', name:'嚦咕嚦咕', fan:50, cat:'大牌' },
+  { id:'eightFly', name:'八飛', fan:60, cat:'大牌' },
+  { id:'threePairChain', name:'三連對', fan:5, cat:'大牌' },
+  { id:'fourPairChain', name:'四連對', fan:10, cat:'大牌' },
+  { id:'fivePairChain', name:'五連對', fan:20, cat:'大牌' },
+  { id:'sixPairChain', name:'六連對', fan:40, cat:'大牌' },
+  { id:'sevenPairChain', name:'七連對', fan:80, cat:'大牌' },
+  { id:'allBig', name:'全大', fan:50, cat:'大牌' },
+  { id:'allSmall', name:'全細', fan:50, cat:'大牌' },
+  { id:'karonPongCar', name:'卡窿碰碰車', fan:110, cat:'大牌' },
+  { id:'heavenWu', name:'天糊', fan:120, cat:'大牌' },
+  { id:'earthWu', name:'地糊', fan:100, cat:'大牌' },
+  { id:'manWu', name:'人糊', fan:80, cat:'大牌' },
+  { id:'extraClosedKong', name:'暗槓(收籌)', fan:5, cat:'額外' },
+  { id:'dice', name:'圍骰', fan:5, cat:'額外' },
+  { id:'oneTwoThree', name:'123', fan:5, cat:'額外' },
+  { id:'oneSetFlower', name:'一台花', fan:5, cat:'額外' },
+  { id:'oneSetGrass', name:'一台草', fan:2, cat:'額外' },
+  { id:'chaseFan', name:'追番子', fan:5, cat:'額外' },
+  { id:'chaseOther', name:'追其他', fan:10, cat:'額外' },
+  { id:'threeChase1', name:'三追(小)', fan:2, cat:'額外' },
+  { id:'threeChase2', name:'三追(大)', fan:4, cat:'額外' },
+  { id:'noOpenClosed', name:'無開暗槓', fan:5, cat:'額外' },
+  { id:'callNotCall', name:'叫碰不碰', fan:5, cat:'額外' },
+  { id:'fakeWu', name:'詐糊', fan:30, cat:'額外' },
+  { id:'jackpot', name:'Jackpot', fan:10, cat:'額外' },
+];
+
+const FAN_MAP = {};
+FAN_TABLE.forEach(f => FAN_MAP[f.id] = f);
+
+let targetSection = 'closed';
+let redFlowerCount = 0;
+let blueFlowerCount = 0;
+let openSection = [];
+let closedSection = [];
+let kongSection = [];
+
+let historyData = [];
+let resultData = null;
+
+function setTargetSection(sec, el) {
+  targetSection = sec;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setFlowerTypeCount(type, count) {
+  if (type === 'red') redFlowerCount = count;
+  if (type === 'blue') blueFlowerCount = count;
+
+  if (redFlowerCount + blueFlowerCount > 8) {
+    if (type === 'red') blueFlowerCount = 8 - redFlowerCount;
+    else redFlowerCount = 8 - blueFlowerCount;
+    showToast('花牌總數最多 8 張');
+  }
+
+  const total = redFlowerCount + blueFlowerCount;
+  document.getElementById('flowerTotalDisplay').textContent = total;
+
+  const updateBtns = (containerId, currentCount) => {
+    const container = document.getElementById(containerId);
+    container.querySelectorAll('.f-btn').forEach((btn, idx) => {
+      if (idx === currentCount) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  };
+
+  updateBtns('redFlowerBtns', redFlowerCount);
+  updateBtns('blueFlowerBtns', blueFlowerCount);
+}
+
+let currentKongType = 'closed';
+function toggleKongType() {
+  currentKongType = (currentKongType === 'closed') ? 'open' : 'closed';
+  const labelEl = document.getElementById('kongTypeLabel');
+  labelEl.textContent = (currentKongType === 'closed') ? '暗槓' : '明槓';
+  if (currentKongType === 'open') labelEl.classList.add('open-mode');
+  else labelEl.classList.remove('open-mode');
+}
+
+function getAllSelectedTilesForWall() {
+  let tiles = [...openSection, ...closedSection];
+  kongSection.forEach(k => { tiles.push(k.id, k.id, k.id, k.id); });
+  return tiles;
+}
+
+function getTilesForCalculation() {
+  let tiles = [...openSection, ...closedSection];
+  kongSection.forEach(k => { tiles.push(k.id, k.id, k.id); });
+  return tiles;
+}
+
+function renderWall() {
+  const container = document.getElementById('wallContainer');
+  const suits = [
+    { key:'wan', label:'🀇 萬子' },
+    { key:'tong', label:'🀙 筒子' },
+    { key:'so', label:'🀐 索子' },
+    { key:'wind', label:'💨 風牌' },
+    { key:'dragon', label:'🐉 三元牌' },
+  ];
+  container.innerHTML = suits.map(s => {
+    const tiles = TILE_DEFS.filter(t => t.suit === s.key);
+    return `
+      <div class="suit-row">
+        <div class="suit-label">${s.label}</div>
+        <div class="tiles-row">${tiles.map(t => renderTileHTML(t)).join('')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTileHTML(t) {
+  const allTiles = getAllSelectedTilesForWall();
+  const used = allTiles.filter(id => id === t.id).length;
+  const usedClass = used >= 4 ? 'used' : '';
+  const badge = used > 0 ? `<span class="badge">${used}</span>` : '';
+  const colorClass = t.color || 'black';
+  const inner = t.type === 'num' 
+    ? `<span class="num ${colorClass}">${t.label}</span>`
+    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  return `<div class="tile ${usedClass}" onclick="addTileToTarget('${t.id}')">${badge}${inner}</div>`;
+}
+
+function addTileToTarget(id) {
+  const allTiles = getAllSelectedTilesForWall();
+  const count = allTiles.filter(x => x === id).length;
+  if (count >= 4) {
+    showToast('每張牌最多 4 隻');
+    return;
+  }
+
+  if (targetSection === 'open') {
+    openSection.push(id);
+  } else if (targetSection === 'kong') {
+    kongSection.push({ id: id, type: currentKongType });
+  } else {
+    closedSection.push(id);
+  }
+
+  refreshUI();
+}
+
+function removeFromSection(sectionName, index) {
+  if (sectionName === 'open') openSection.splice(index, 1);
+  else if (sectionName === 'closed') closedSection.splice(index, 1);
+  else if (sectionName === 'kong') kongSection.splice(index, 1);
+  refreshUI();
+}
+
+function clearHand() {
+  if (getAllSelectedTilesForWall().length === 0 && (redFlowerCount + blueFlowerCount) === 0) return;
+  if (confirm('確定清空所有牌組配置？')) {
+    redFlowerCount = 0;
+    blueFlowerCount = 0;
+    setFlowerTypeCount('red', 0);
+    setFlowerTypeCount('blue', 0);
+    openSection = [];
+    closedSection = [];
+    kongSection = [];
+    refreshUI();
+    document.getElementById('resultContainer').innerHTML = '<div class="empty-state">請先配置牌組<br>然後按「計算番數」</div>';
+    switchTab('wall', document.querySelector('.tab'));
+  }
+}
+
+function refreshUI() {
+  renderWall();
+  renderSections();
+}
+
+function renderSections() {
+  document.getElementById('closedCount').textContent = closedSection.length;
+  document.getElementById('closedTiles').innerHTML = closedSection.length === 0 
+    ? '<div class="empty-hint">無</div>' 
+    : closedSection.map((id, i) => renderHandTileHTML(id, 'closed', i)).join('');
+
+  document.getElementById('openCount').textContent = openSection.length;
+  document.getElementById('openTiles').innerHTML = openSection.length === 0 
+    ? '<div class="empty-hint">無</div>' 
+    : openSection.map((id, i) => renderHandTileHTML(id, 'open', i)).join('');
+
+  document.getElementById('kongCount').textContent = kongSection.length;
+  document.getElementById('kongTiles').innerHTML = kongSection.length === 0 
+    ? '<div class="empty-hint">只需點1張</div>' 
+    : kongSection.map((k, i) => renderKongTileHTML(k, i)).join('');
+}
+
+function renderHandTileHTML(id, secName, index) {
+  const t = TILE_MAP[id];
+  if (!t) return '';
+  const colorClass = t.color || 'black';
+  const inner = t.type === 'num' 
+    ? `<span class="num ${colorClass}">${t.label}</span>`
+    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  return `<div class="hand-tile" onclick="removeFromSection('${secName}', ${index})">${inner}</div>`;
+}
+
+function renderKongTileHTML(k, index) {
+  const t = TILE_MAP[k.id];
+  if (!t) return '';
+  const colorClass = t.color || 'black';
+  const inner = t.type === 'num' 
+    ? `<span class="num ${colorClass}">${t.label}</span>`
+    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  const typeTag = (k.type === 'closed') ? '暗' : '明';
+  const tagColor = (k.type === 'closed') ? '#ffd200' : '#ff6b6b';
+  return `<div class="hand-tile" onclick="removeFromSection('kong', ${index})" title="點擊刪除">${inner}<span style="position:absolute;bottom:0;right:2px;font-size:8px;font-weight:800;color:${tagColor};">${typeTag}</span></div>`;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.wall-section').forEach(s => s.classList.remove('active'));
+  if (tab === 'wall') document.getElementById('wallSection').classList.add('active');
+  else document.getElementById('resultSection').classList.add('active');
+}
+
+function analyzeHand() {
+  const counts = {};
+  const calcTiles = getTilesForCalculation();
+  calcTiles.forEach(id => counts[id] = (counts[id]||0)+1);
+
+  const suits = { wan:[], tong:[], so:[] };
+  const winds = [], dragons = [];
+  
+  for (const id in counts) {
+    const t = TILE_MAP[id];
+    if (!t) continue;
+    if (t.suit === 'wan') suits.wan.push({ num:t.num, count:counts[id] });
+    else if (t.suit === 'tong') suits.tong.push({ num:t.num, count:counts[id] });
+    else if (t.suit === 'so') suits.so.push({ num:t.num, count:counts[id] });
+    else if (t.suit === 'wind') winds.push({ num:t.num, count:counts[id] });
+    else if (t.suit === 'dragon') dragons.push({ num:t.num, count:counts[id] });
+  }
+  return { counts, suits, winds, dragons, redFlowers: redFlowerCount, blueFlowers: blueFlowerCount };
+}
+
+function searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds) {
+  if (currentMelds.length === targetNeed) {
+    const hasRemaining = Object.values(remCounts).some(c => c > 0);
+    if (!hasRemaining) allMelds.push([...currentMelds]);
+    return;
+  }
+
+  let firstId = null;
+  for (const t of TILE_DEFS) {
+    if ((remCounts[t.id] || 0) > 0) { firstId = t.id; break; }
+  }
+  if (!firstId) return;
+  const t = TILE_MAP[firstId];
+
+  if ((remCounts[firstId] || 0) >= 3) {
+    remCounts[firstId] -= 3;
+    currentMelds.push({ type: '刻子', nums: [t.num, t.num, t.num], suit: t.suit, id: t.id });
+    searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds);
+    currentMelds.pop();
+    remCounts[firstId] += 3;
+  }
+
+  if (t.type === 'num' && t.num <= 7) {
+    const id2 = `${t.suit}${t.num + 1}`;
+    const id3 = `${t.suit}${t.num + 2}`;
+    if ((remCounts[firstId] || 0) >= 1 && (remCounts[id2] || 0) >= 1 && (remCounts[id3] || 0) >= 1) {
+      remCounts[firstId]--; remCounts[id2]--; remCounts[id3]--;
+      currentMelds.push({ type: '順子', nums: [t.num, t.num + 1, t.num + 2], suit: t.suit });
+      searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds);
+      currentMelds.pop();
+      remCounts[firstId]++; remCounts[id2]++; remCounts[id3]++;
+    }
+  }
+}
+
+function getAllDecompositions(counts) {
+  const decompositions = [];
+  const tileIds = Object.keys(counts);
+  let normalTileCount = 0;
+  for (const id of tileIds) normalTileCount += counts[id];
+
+  const targetMeldsCount = (normalTileCount - 2) / 3;
+  if (targetMeldsCount < 0 || !Number.isInteger(targetMeldsCount)) return [];
+
+  for (const pairId of tileIds) {
+    if (counts[pairId] >= 2) {
+      const t = TILE_MAP[pairId];
+      const rem = { ...counts };
+      rem[pairId] -= 2;
+      const meldResults = [];
+      searchMeldsStrict(rem, targetMeldsCount, [], meldResults);
+      for (const melds of meldResults) {
+        decompositions.push({ pair: { suit: t.suit, num: t.num, id: pairId }, melds: melds });
+      }
+    }
+  }
+  return decompositions;
+}
+
+function evaluateDecomposition(decomp, hand) {
+  const { melds, pair } = decomp;
+  const matchedIds = [];
+  const dynamicDetails = [];
+  const { suits, winds, dragons, redFlowers, blueFlowers, counts } = hand;
+  const allTiles = getAllSelectedTilesForWall();
+  const totalFlowers = redFlowers + blueFlowers;
+
+  if (totalFlowers > 0) matchedIds.push('eachFlower');
+
+  const hasOpenKong = kongSection.some(k => k.type === 'open');
+  if (openSection.length === 0 && !hasOpenKong) matchedIds.push('closedHand');
+
+  let openKongCount = 0;
+  let closedKongCount = 0;
+  kongSection.forEach(k => {
+    if (k.type === 'open') openKongCount++;
+    else closedKongCount++;
+  });
+
+  for (let i = 0; i < openKongCount; i++) matchedIds.push('openKong');
+  if (closedKongCount === 1) matchedIds.push('closedKong');
+  else if (closedKongCount === 2) matchedIds.push('twoKong');
+  else if (closedKongCount === 3) matchedIds.push('threeKong');
+  else if (closedKongCount >= 4) matchedIds.push('fourKong');
+
+  let closedTripletsCount = closedKongCount;
+  const closedCounts = {};
+  closedSection.forEach(id => closedCounts[id] = (closedCounts[id] || 0) + 1);
+
+  melds.forEach(m => {
+    if (m.type === '刻子') {
+      if (m.id && closedCounts[m.id] >= 3) {
+        closedTripletsCount++;
+        closedCounts[m.id] -= 3;
+      }
+    }
+  });
+
+  if (closedTripletsCount === 2) matchedIds.push('twoHidden');
+  else if (closedTripletsCount === 3) matchedIds.push('threeHidden');
+  else if (closedTripletsCount === 4) matchedIds.push('fourHidden');
+  else if (closedTripletsCount >= 5) matchedIds.push('fiveHidden');
+
+  const hasFlower = totalFlowers > 0;
+  const hasWord = winds.length > 0 || dragons.length > 0;
+  const flatWu = meldListsIsFlat(melds);
+
+  if (!hasFlower && !hasWord && flatWu) {
+    matchedIds.push('noWordBigFlat');
+  } else {
+    if (!hasFlower && !hasWord) matchedIds.push('noWordFlower');
+    else {
+      if (!hasFlower) matchedIds.push('noFlower');
+      if (!hasWord) matchedIds.push('noWord');
+      else if (hasHonorTripletOrKong(melds)) matchedIds.push('wordTile');
+    }
+    if (flatWu) matchedIds.push('flatWu');
+  }
+
+  if (pair && pair.suit !== 'honor' && [2, 5, 8].includes(pair.num)) {
+    matchedIds.push('eyeTile');
+  }
+
+  const isBig = isAllBig(counts, winds, dragons);
+  const isSmall = isAllSmall(counts, winds, dragons);
+
+  if (isBig) matchedIds.push('allBig');
+  else if (isSmall) matchedIds.push('allSmall');
+  else {
+    if (isMissingFive(counts)) matchedIds.push('missingFive');
+  }
+
+  if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
+  if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
+  if (isWordOneColor(suits)) matchedIds.push('wordOneColor');
+  if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
+  if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
+  if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
+  if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
+  if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
+  if (melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) matchedIds.push('pongPongWu');
+
+  detectChainPongFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
+
+  const threeMeetResult = detectThreeMeetFromMelds(melds);
+  const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
+  if (threeMeetResult) dynamicDetails.push(threeMeetResult);
+
+  detectSistersFromMelds(melds, threeMeetKeys)?.forEach(r => dynamicDetails.push(r));
+  detectPairHighFromMelds(melds).forEach(r => dynamicDetails.push(r));
+
+  const mixedTerminalResult = detectMixedTerminalFromMelds(melds, hand);
+  if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
+
+  const mixedXResult = detectMixedWithXFromMelds(melds, allTiles);
+  if (mixedXResult) dynamicDetails.push(mixedXResult);
+
+  const uniqueMatchedIds = [...new Set(matchedIds)];
+  let total = 0;
+  let flowerFanTotal = 0;
+  const detail = [];
+
+  uniqueMatchedIds.forEach(id => {
+    const f = FAN_MAP[id];
+    if (f) { 
+      if (id === 'eachFlower') {
+        const flowerFan = totalFlowers * f.fan;
+        flowerFanTotal += flowerFan;
+        detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
+      } else {
+        total += f.fan; 
+        detail.push(f); 
+      }
+    }
+  });
+
+  total += flowerFanTotal;
+
+  dynamicDetails.forEach(item => {
+    total += item.fan;
+    detail.push(item);
+  });
+
+  return { total, detail };
+}
+
+function hasHonorTripletOrKong(melds) { return melds.some(m => m.type === '刻子' && m.suit === 'honor'); }
+
+function detectChainPongFromMelds(melds, pair) {
+  const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor');
+  const suitMap = {};
+  triplets.forEach(t => { if (!suitMap[t.suit]) suitMap[t.suit] = []; suitMap[t.suit].push(t.nums[0]); });
+  const results = [];
+  const suitNames = { wan:'萬', tong:'筒', so:'索' };
+
+  for (const suit in suitMap) {
+    const nums = suitMap[suit].sort((a, b) => a - b);
+    const sName = suitNames[suit];
+    let consecutiveGroups = [];
+    let currentGroup = [nums[0]];
+    for (let i = 1; i < nums.length; i++) {
+      if (nums[i] === nums[i - 1] + 1) currentGroup.push(nums[i]);
+      else { if (currentGroup.length >= 2) consecutiveGroups.push([...currentGroup]); currentGroup = [nums[i]]; }
+    }
+    if (currentGroup.length >= 2) consecutiveGroups.push([...currentGroup]);
+
+    for (const group of consecutiveGroups) {
+      const len = group.length;
+      const minN = group[0], maxN = group[group.length - 1];
+      let isSmallChain = (pair && pair.suit === suit && (pair.num === minN - 1 || pair.num === maxN + 1));
+
+      if (len >= 3 && !isSmallChain) {
+        results.push({ id: 'bigThreeChain', name: `大三連刻（${minN}~${maxN}${sName}）`, fan: 20, cat: '組合', detail: `${len}組相連刻子` });
+      } else if (len === 2 && isSmallChain) {
+        results.push({ id: 'smallThreeChain', name: `小三連刻（${minN}~${maxN}刻 + ${pair.num}${sName}眼）`, fan: 10, cat: '組合', detail: `2組相連刻子 + 相鄰將眼` });
+      } else if (len >= 2) {
+        results.push({ id: 'chainPong', name: `連刻（${minN}~${maxN}${sName}）`, fan: 5, cat: '組合', detail: `${len}組相連刻子` });
+      }
+    }
+  }
+  return results;
+}
+
+function isMissingFive(counts) { return ['wan5', 'tong5', 'so5'].every(id => !counts[id] || counts[id] === 0); }
+
+function isAllBig(counts, winds, dragons) {
+  if (winds.length > 0 || dragons.length > 0) return false;
+  let hasNum = false;
+  for (const id in counts) {
+    const t = TILE_MAP[id];
+    if (!t) continue;
+    if (t.type === 'honor') return false;
+    hasNum = true;
+    if (t.num < 6) return false;
+  }
+  return hasNum;
+}
+
+function isAllSmall(counts, winds, dragons) {
+  if (winds.length > 0 || dragons.length > 0) return false;
+  let hasNum = false;
+  for (const id in counts) {
+    const t = TILE_MAP[id];
+    if (!t) continue;
+    if (t.type === 'honor') return false;
+    hasNum = true;
+    if (t.num > 4) return false;
+  }
+  return hasNum;
+}
+
+function detectFourBackFromMelds(melds, pair, counts) {
+  const results = [];
+  const suitNames = { wan:'萬', tong:'筒', so:'索' };
+
+  for (const id in counts) {
+    if (counts[id] === 4) {
+      const t = TILE_MAP[id];
+      if (!t) continue;
+      const isPair = (pair && pair.id === id);
+      const seqMeldsCount = melds.filter(m => m.type === '順子' && m.suit === t.suit && m.nums.includes(t.num)).length;
+      const tripletMeldsCount = melds.filter(m => m.type === '刻子' && m.id === id).length;
+      const displayLabel = `${t.label}${suitNames[t.suit]||''}`;
+
+      if (seqMeldsCount === 4) {
+        results.push({ id: 'fourBack4', name: `四歸四（${displayLabel}）`, fan: 60, cat: '組合', detail: `4張${displayLabel}完全拆入4個順子之中` });
+      } else if (isPair) {
+        results.push({ id: 'fourBack2', name: `四歸二（${displayLabel}）`, fan: 30, cat: '組合', detail: `4張${displayLabel}用盡，其中2張作為將眼` });
+      } else if (seqMeldsCount >= 1 || tripletMeldsCount >= 1) {
+        results.push({ id: 'fourBack1', name: `四歸一（${displayLabel}）`, fan: 15, cat: '組合', detail: `4張${displayLabel}用盡於面子之中` });
+      }
+    }
+  }
+  return results;
+}
+
+function detectBrothersFromMelds(melds, pair) {
+  const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor');
+  const numMap = {};
+  triplets.forEach(t => { if (!numMap[t.nums[0]]) numMap[t.nums[0]] = new Set(); numMap[t.nums[0]].add(t.suit); });
+  const results = [];
+  const suitNames = { wan:'萬', tong:'筒', so:'索' };
+
+  for (const num in numMap) {
+    const suitsArr = [...numMap[num]];
+    const n = Number(num);
+    if (suitsArr.length === 3) {
+      results.push({ id: 'bigBrothers', name: `大兄弟（${n}萬筒索）`, fan: 30, cat: '組合', detail: `${n}萬、${n}筒、${n}索 三組刻子` });
+    } else if (suitsArr.length === 2) {
+      const s1 = suitNames[suitsArr[0]], s2 = suitNames[suitsArr[1]];
+      if (pair && pair.suit !== 'honor' && pair.num === n && !suitsArr.includes(pair.suit)) {
+        results.push({ id: 'smallBrothers', name: `小兄弟（${n}${s1}&${s2} + ${n}${suitNames[pair.suit]}眼）`, fan: 15, cat: '組合', detail: `兩組刻子 + 一對相同數字眼` });
+      } else {
+        results.push({ id: 'brothers', name: `兄弟（${n}${s1}&${s2}）`, fan: 5, cat: '組合', detail: `兩組相同數字不同花色刻子` });
+      }
+    }
+  }
+  return results;
+}
+
+function meldListsIsFlat(melds) { if (melds.length === 0) return false; return melds.every(m => m.type === '順子'); }
+
+function detectThreeMeetFromMelds(melds) {
+  const sequences = melds.filter(m => m.type === '順子');
+  const seqMap = {};
+  sequences.forEach(m => { const key = m.nums.join(','); if (!seqMap[key]) seqMap[key] = {}; seqMap[key][m.suit] = (seqMap[key][m.suit] || 0) + 1; });
+  let totalCount = 0; const details = []; const threeMeetKeys = new Set();
+  for (const key in seqMap) {
+    const sc = seqMap[key];
+    const count = Math.min(sc.wan || 0, sc.tong || 0, sc.so || 0);
+    if (count > 0) { totalCount += count; details.push(`${key.replace(/,/g,'')}萬筒索 ×${count}`); threeMeetKeys.add(key); }
+  }
+  if (totalCount === 0) return null;
+  return { id: 'threeMeet1', name: `三相逢 ×${totalCount}組`, fan: 10 * totalCount, cat: '組合', detail: details.join('、'), threeMeetKeys };
+}
+
+function detectSistersFromMelds(melds, threeMeetKeys) {
+  const sequences = melds.filter(m => m.type === '順子');
+  const seqMap = {};
+  sequences.forEach(m => { const key = m.nums.join(','); if (!seqMap[key]) seqMap[key] = {}; seqMap[key][m.suit] = (seqMap[key][m.suit] || 0) + 1; });
+  let totalSisterPairs = 0; const details = []; const suitNames = { wan:'萬', tong:'筒', so:'索' };
+  for (const key in seqMap) {
+    if (threeMeetKeys && threeMeetKeys.has(key)) continue;
+    const suitCounts = seqMap[key]; const suitsArr = Object.keys(suitCounts);
+    if (suitsArr.length >= 2) {
+      for (let i = 0; i < suitsArr.length; i++) {
+        for (let j = i + 1; j < suitsArr.length; j++) {
+          const pairs = suitCounts[suitsArr[i]] * suitCounts[suitsArr[j]];
+          if (pairs > 0) { totalSisterPairs += pairs; details.push(`${key.replace(/,/g,'')}(${suitNames[suitsArr[i]]}&${suitNames[suitsArr[j]]}) ×${pairs}`); }
+        }
+      }
+    }
+  }
+  if (totalSisterPairs === 0) return null;
+  return { id: 'sisters', name: `姊妹 ×${totalSisterPairs}組`, fan: 3 * totalSisterPairs, cat: '組合', detail: details.join('、') };
+}
+
+function detectPairHighFromMelds(melds) {
+  const sequences = melds.filter(m => m.type === '順子');
+  const seqMap = {};
+  sequences.forEach(m => { const key = `${m.suit}_${m.nums.join(',')}`; seqMap[key] = (seqMap[key] || 0) + 1; });
+  const results = []; const suitNames = { wan:'萬', tong:'筒', so:'索' };
+  for (const key in seqMap) {
+    const count = seqMap[key]; const [suit, numsStr] = key.split('_'); const displaySeq = `${numsStr.replace(/,/g,'')}${suitNames[suit]}`;
+    if (count === 2) results.push({ id: 'doublePairHigh1', name: `雙般高（${displaySeq}）`, fan: 5, cat: '組合', detail: `兩組相同的順子` });
+    else if (count === 3) results.push({ id: 'triplePairHigh', name: `三般高（${displaySeq}）`, fan: 20, cat: '組合', detail: `三組相同的順子` });
+    else if (count >= 4) results.push({ id: 'quadPairHigh', name: `四般高（${displaySeq}）`, fan: 100, cat: '組合', detail: `四組相同的順子` });
+  }
+  return results;
+}
+
+function detectMixedWithXFromMelds(melds, tiles) {
+  if (melds.length === 0) return null;
+  const meldNumSets = melds.map(m => new Set(m.nums));
+  let intersection = new Set(meldNumSets[0]);
+  for (let i = 1; i < meldNumSets.length; i++) intersection = new Set([...intersection].filter(x => meldNumSets[i].has(x)));
+  const xList = [...intersection].sort((a,b)=>a-b);
+  if (xList.length === 0) return null;
+  const fan = xList.length * 30;
+  return { id: 'mixedWithX', name: `混帶X（${xList.map(n=>`混${n}`).join('、')}）`, fan: fan, cat: '大牌', detail: `${xList.length} 個數字 × 30 番 = ${fan} 番` };
+}
+
+function detectMixedTerminalFromMelds(melds, hand) {
+  const { winds, dragons } = hand;
+  if (winds.length === 0 && dragons.length === 0) return null;
+  if (melds.length === 0) return null;
+  if (!melds.every(m => m.nums.some(n => n === 1 || n === 9))) return null;
+  return { id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '有字牌且所有面子都包含幺（1或9）' };
+}
+
+function isMixedOneColor(suits, winds, dragons) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 1 && (winds.length>0 || dragons.length>0); }
+function isPureOneColor(suits, winds, dragons) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 1 && winds.length===0 && dragons.length===0; }
+function isWordOneColor(suits) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 0; }
+function isMissingOne(suits, winds, dragons) { if (winds.length > 0 || dragons.length > 0) return false; return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 2; }
+function isNoTerminal(suits, winds, dragons) {
+  if (winds.length>0 || dragons.length>0) return false;
+  for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num === 1 || t.num === 9) return false;
+  return true;
+}
+function isMixedOld(suits, winds, dragons) {
+  if (winds.length===0 && dragons.length===0) return false;
+  for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num !== 1 && t.num !== 9) return false;
+  return true;
+}
+function isPureOld(suits, winds, dragons) {
+  if (winds.length>0 || dragons.length>0) return false;
+  let hasTile = false;
+  for (const s of ['wan','tong','so']) for (const t of suits[s]) { hasTile = true; if (t.num !== 1 && t.num !== 9) return false; }
+  return hasTile;
+}
+function isAllTerminal(suits, winds, dragons) {
+  for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num !== 1 && t.num !== 9) return false;
+  return winds.length>0 || dragons.length>0 || suits.wan.length+suits.tong.length+suits.so.length>0;
+}
+
+function calculateSafe() {
+  try {
+    const totalTilesCount = openSection.length + closedSection.length + (kongSection.length * 3);
+    if (totalTilesCount !== 17) {
+      showToast(`牌數不符（目前計算張數 ${totalTilesCount} 張，總計須為 17 張）`);
+      return;
+    }
+
+    const hand = analyzeHand();
+    const hiddenAndOpenTiles = [...openSection, ...closedSection];
+    kongSection.forEach(k => hiddenAndOpenTiles.push(k.id, k.id, k.id));
+
+    const countsForDecomp = {};
+    hiddenAndOpenTiles.forEach(id => countsForDecomp[id] = (countsForDecomp[id]||0)+1);
+
+    const decompositions = getAllDecompositions(countsForDecomp);
+
+    if (decompositions.length === 0) {
+      resultData = { total: 0, detail: [], handTiles: getAllSelectedTilesForWall() };
+      renderResult(0, []);
+      switchTab('result', document.querySelectorAll('.tab')[1]);
+      document.getElementById('resultPanel').classList.add('show');
+      return;
+    }
+
+    let bestResult = { total: -1, detail: [] };
+    for (const decomp of decompositions) {
+      const res = evaluateDecomposition(decomp, hand);
+      if (res.total > bestResult.total) bestResult = res;
+    }
+
+    resultData = { total: bestResult.total, detail: bestResult.detail, handTiles: getAllSelectedTilesForWall() };
+    renderResult(bestResult.total, bestResult.detail);
+    switchTab('result', document.querySelectorAll('.tab')[1]);
+    document.getElementById('resultPanel').classList.add('show');
+  } catch (err) {
+    console.error(err);
+    alert("計算過程發生例外錯誤：" + err.message);
+  }
+}
+
+function renderResult(total, detail) {
+  const body = document.getElementById('resultBody');
+  if (detail.length === 0) {
+    body.innerHTML = `
+      <div class="result-total"><div class="num">0</div><div class="label">番</div></div>
+      <div class="result-none">未偵測到任何合法食糊牌型<br>請確認各分區配置是否正確（是否符合面子結構）</div>
+    `;
+    return;
+  }
+
+  const grouped = {};
+  detail.forEach(f => {
+    const cat = f.cat || '其他';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(f);
+  });
+
+  const catOrder = ['花摸','槓摸','基本','組合','大牌','額外'];
+  const sortedCats = Object.keys(grouped).sort((a,b) => catOrder.indexOf(a) - catOrder.indexOf(b));
+
+  body.innerHTML = `
+    <div class="result-total">
+      <div class="num">${total}</div>
+      <div class="label">總番數（各分區檢測 + 最高番數優先）</div>
+    </div>
+    ${sortedCats.map(cat => `
+      <div style="font-size:12px;color:#f7971e;font-weight:700;padding:8px 4px 4px;">${cat}</div>${grouped[cat].map(f => `
+        <div class="result-item highlight">
+          <div>
+            <div class="r-name">${f.name}</div>
+            ${f.detail ? `<div style="font-size:10px;color:#888;margin-top:2px;">${f.detail}</div>` : ''}
+          </div>
+          <span class="r-fan">+${f.fan}番</span>
+        </div>
+      `).join('')}
+    `).join('')}
+    <div class="result-note">
+      ※ 將眼（2/5/8）僅限數字牌（風字眼不計）<br>
+      ※ 槓牌自動整合至17張牌型計算中，不再重複獨立計算「槓摸」番數<br>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button onclick="saveResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">💾 儲存本局</button>
+      <button onclick="closeResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#16213e;color:#ffd200;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #f7971e55;">返回</button>
+    </div>
+  `;
+}
+
+function closeResult() { document.getElementById('resultPanel').classList.remove('show'); }
+
+function saveResult() {
+  if (!resultData) return;
+  const now = new Date();
+  const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  historyData.unshift({
+    total: resultData.total,
+    details: resultData.detail.map(f => `${f.name}(${f.fan}番)`).join('、'),
+    time: timeStr,
+    tiles: `花(紅:${redFlowerCount},藍:${blueFlowerCount}) | ` + resultData.handTiles.map(id => TILE_MAP[id]?.label || '?').join(' ')
+  });
+  renderHistory();
+  showToast(`已儲存：${resultData.total}番`);
+  closeResult();
+  resultData = null;
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  document.getElementById('historyCount').textContent = historyData.length;
+  if (historyData.length === 0) { list.innerHTML = '<div class="empty-state">暫無紀錄</div>'; return; }
+  list.innerHTML = historyData.map(h => `
+    <div class="history-item">
+      <div class="h-total">${h.total} 番</div>
+      <div class="h-detail">${h.details}</div>
+      <div class="h-time">${h.time}</div>
+      <div class="h-time" style="color:#556;">🀫 ${h.tiles}</div>
+    </div>
+  `).join('');
+}
+
+function toggleHistory() {
+  const panel = document.getElementById('historyPanel');
+  panel.classList.toggle('show');
+  renderHistory();
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1300);
+}
+
+renderWall();
+refreshUI();
+</script>
+</body>
+</html>
