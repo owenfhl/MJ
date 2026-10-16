@@ -6,78 +6,73 @@
 <title>多仔港式台牌 自動算番 2026</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", sans-serif; background:#1a1a2e; color:#eee; min-height:100vh; padding:6px; padding-bottom:340px; user-select:none; }
-
-/* 縮小上方標題與分頁 */
-.header { text-align:center; padding:4px 0 4px; }
-.header h1 { font-size:15px; font-weight:800; background:linear-gradient(135deg,#f7971e,#ffd200); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.header p { font-size:10px; color:#888; margin-top:1px; }
-.tabs { display:flex; gap:5px; margin-bottom:6px; }
-.tab { flex:1; padding:6px; text-align:center; border-radius:7px; background:#16213e; color:#888; font-size:11px; font-weight:700; cursor:pointer; border:1px solid #1a3a5a; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", sans-serif; background:#1a1a2e; color:#eee; min-height:100vh; padding:8px; padding-bottom:190px; user-select:none; }
+.header { text-align:center; padding:10px 0 8px; }
+.header h1 { font-size:18px; font-weight:800; background:linear-gradient(135deg,#f7971e,#ffd200); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.header p { font-size:11px; color:#888; margin-top:3px; }
+.tabs { display:flex; gap:6px; margin-bottom:8px; }
+.tab { flex:1; padding:9px; text-align:center; border-radius:9px; background:#16213e; color:#888; font-size:12px; font-weight:700; cursor:pointer; border:1px solid #1a3a5a; }
 .tab.active { background:#0f3460; color:#ffd200; border-color:#f7971e; }
-
-/* 縮小牌牆選擇區 */
 .wall-section { display:none; }
 .wall-section.active { display:block; }
-.suit-row { margin-bottom:5px; }
-.suit-label { font-size:10px; color:#f7971e; font-weight:700; margin-bottom:2px; padding-left:2px; }
-.tiles-row { display:flex; flex-wrap:wrap; gap:3px; }
-.tile { width:32px; height:44px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:5px; border:1px solid #b8b0a0; box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 1px 2px rgba(0,0,0,0.3); position:relative; cursor:pointer; transition:transform 0.1s; display:flex; align-items:center; justify-content:center; }
+.suit-row { margin-bottom:8px; }
+.suit-label { font-size:11px; color:#f7971e; font-weight:700; margin-bottom:4px; padding-left:2px; }
+.tiles-row { display:flex; flex-wrap:wrap; gap:4px; }
+.tile { width:38px; height:52px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:6px; border:1px solid #b8b0a0; box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 3px rgba(0,0,0,0.3); position:relative; cursor:pointer; transition:transform 0.1s; display:flex; align-items:center; justify-content:center; }
 .tile:active { transform:scale(0.9); }
 .tile.used { opacity:0.25; pointer-events:none; }
-.tile .num { font-size:16px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
+.tile .num { font-size:20px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
 .tile .num.red { color:#cc2222; }
 .tile .num.green { color:#228822; }
 .tile .num.blue { color:#2222cc; }
-.tile .honor { font-size:15px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
+.tile .honor { font-size:18px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
 .tile .honor.red { color:#cc2222; }
 .tile .honor.green { color:#228822; }
 .tile .honor.blue { color:#2222cc; }
 .tile .honor.black { color:#333; }
-.tile .badge { position:absolute; top:-3px; right:-3px; background:#ffd200; color:#1a1a2e; font-size:8px; font-weight:800; width:14px; height:14px; line-height:14px; border-radius:50%; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,0.4); }
+.tile .badge { position:absolute; top:-4px; right:-4px; background:#ffd200; color:#1a1a2e; font-size:9px; font-weight:800; width:16px; height:16px; line-height:16px; border-radius:50%; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
 
-/* 放大下方手牌與操作區 */
-.hand-area { position:fixed; bottom:0; left:0; right:0; background:#16213e; border-top:2px solid #f7971e; padding:10px 10px 14px; z-index:9999; box-shadow:0 -6px 25px rgba(0,0,0,0.6); pointer-events:auto; max-height:330px; overflow-y:auto; }
-.mode-selector { display:flex; background:#0f3460; border-radius:8px; padding:4px; margin-bottom:8px; border:1px solid #1a4a7a; gap:4px; }
-.mode-btn { flex:1; text-align:center; padding:8px; font-size:13px; font-weight:800; color:#888; border-radius:6px; cursor:pointer; }
+.hand-area { position:fixed; bottom:0; left:0; right:0; background:#16213e; border-top:2px solid #f7971e; padding:6px 8px 10px; z-index:9999; box-shadow:0 -4px 20px rgba(0,0,0,0.5); pointer-events:auto; max-height:215px; overflow-y:auto; }
+.mode-selector { display:flex; background:#0f3460; border-radius:6px; padding:3px; margin-bottom:6px; border:1px solid #1a4a7a; }
+.mode-btn { flex:1; text-align:center; padding:5px; font-size:11px; font-weight:700; color:#888; border-radius:4px; cursor:pointer; }
 .mode-btn.active { background:#f7971e; color:#1a1a2e; }
 
-.flower-control { background:#0f3460; border-radius:8px; padding:8px 12px; margin-bottom:8px; border:1px solid #1a4a7a; }
-.flower-header { font-size:12px; font-weight:700; color:#ffd200; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
-.flower-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.flower-control { background:#0f3460; border-radius:6px; padding:6px 10px; margin-bottom:6px; border:1px solid #1a4a7a; }
+.flower-header { font-size:11px; font-weight:700; color:#ffd200; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+.flower-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
 .flower-row:last-child { margin-bottom:0; }
-.flower-label { font-size:12px; color:#ddd; font-weight:600; }
-.flower-btns { display:flex; gap:5px; }
-.f-btn { width:28px; height:28px; border-radius:5px; border:none; background:#16213e; color:#fff; font-size:12px; font-weight:800; cursor:pointer; }
+.flower-label { font-size:11px; color:#ddd; }
+.flower-btns { display:flex; gap:3px; }
+.f-btn { width:22px; height:22px; border-radius:3px; border:none; background:#16213e; color:#fff; font-size:10px; font-weight:800; cursor:pointer; }
 .f-btn.active { background:#ffd200; color:#1a1a2e; }
 
-.hand-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:10px; }
-.section-box { background:#0f3460; border-radius:8px; padding:6px 8px; border:1px solid #1a4a7a; position:relative; }
-.section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:12px; font-weight:800; color:#ffd200; }
-.section-tiles { display:flex; flex-wrap:wrap; gap:4px; min-height:52px; align-content:center; }
-.section-tiles .empty-hint { font-size:11px; color:#556; width:100%; text-align:center; }
+.hand-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-bottom:6px; }
+.section-box { background:#0f3460; border-radius:6px; padding:4px 6px; border:1px solid #1a4a7a; position:relative; }
+.section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; font-size:10px; font-weight:700; color:#ffd200; }
+.section-tiles { display:flex; flex-wrap:wrap; gap:2px; min-height:36px; align-content:center; }
+.section-tiles .empty-hint { font-size:9px; color:#556; width:100%; text-align:center; }
 
-.kong-type-switch { font-size:10px; background:#16213e; color:#ffd200; padding:2px 6px; border-radius:4px; cursor:pointer; border:1px solid #ffd20055; font-weight:700; }
+.kong-type-switch { font-size:9px; background:#16213e; color:#ffd200; padding:1px 5px; border-radius:3px; cursor:pointer; border:1px solid #ffd20055; font-weight:700; }
 .kong-type-switch.open-mode { background:#e74c3c; color:#fff; border-color:#c0392b; }
 
-.hand-tile { width:32px; height:44px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:5px; border:1px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 1px 2px rgba(0,0,0,0.3); }
+.hand-tile { width:26px; height:36px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:4px; border:1px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .hand-tile:active { transform:scale(0.9); }
-.hand-tile .num { font-size:16px; font-weight:900; }
+.hand-tile .num { font-size:13px; font-weight:900; }
 .hand-tile .num.red { color:#cc2222; }
 .hand-tile .num.green { color:#228822; }
 .hand-tile .num.blue { color:#2222cc; }
-.hand-tile .honor { font-size:15px; font-weight:900; }
+.hand-tile .honor { font-size:12px; font-weight:900; }
 .hand-tile .honor.red { color:#cc2222; }
 .hand-tile .honor.green { color:#228822; }
 .hand-tile .honor.blue { color:#2222cc; }
 .hand-tile .honor.black { color:#333; }
 
-.hand-actions { display:flex; gap:8px; position:relative; z-index:10000; }
-.hand-actions button { flex:1; padding:12px 8px; border-radius:9px; border:none; font-size:14px; font-weight:800; cursor:pointer; pointer-events:auto; transition:transform 0.1s; }
+.hand-actions { display:flex; gap:6px; position:relative; z-index:10000; }
+.hand-actions button { flex:1; padding:10px 6px; border-radius:8px; border:none; font-size:12px; font-weight:800; cursor:pointer; pointer-events:auto; transition:transform 0.1s; }
 .hand-actions button:active { transform:scale(0.95); }
 .btn-calc { background:linear-gradient(135deg,#f7971e,#ffd200); color:#1a1a2e; box-shadow:0 2px 8px rgba(247,151,30,0.4); }
-.btn-clear { background:#e74c3c; color:#fff; flex:0.55; }
-.btn-history2 { background:#16213e; color:#ffd200; border:1px solid #f7971e55 !important; flex:0.65; }
+.btn-clear { background:#e74c3c; color:#fff; flex:0.6; }
+.btn-history2 { background:#16213e; color:#ffd200; border:1px solid #f7971e55 !important; flex:0.7; }
 
 .result-panel { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:20000; display:none; flex-direction:column; backdrop-filter:blur(8px); }
 .result-panel.show { display:flex; }
@@ -100,8 +95,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .history-item .h-detail { font-size:11px; color:#999; margin-top:4px; line-height:1.6; }
 .history-item .h-time { font-size:10px; color:#666; margin-top:4px; }
 .empty-state { text-align:center; color:#555; padding:40px 20px; font-size:14px; }
-.toast { position:fixed; bottom:340px; left:50%; transform:translateX(-50%) translateY(20px); background:#ffd200; color:#1a1a2e; font-size:13px; font-weight:800; padding:10px 24px; border-radius:20px; opacity:0; transition:all 0.3s; pointer-events:none; z-index:30000; white-space:nowrap; }
+.toast { position:fixed; bottom:215px; left:50%; transform:translateX(-50%) translateY(20px); background:#ffd200; color:#1a1a2e; font-size:13px; font-weight:800; padding:10px 24px; border-radius:20px; opacity:0; transition:all 0.3s; pointer-events:none; z-index:30000; white-space:nowrap; }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 40000; display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.confirm-overlay.show { display: flex; }
+.confirm-box {
+  background: #16213e; border-radius: 14px; padding: 22px;
+  max-width: 320px; width: 88%; border: 1px solid #f7971e55;
+  text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+.confirm-box .c-title { font-size: 16px; font-weight: 800; color: #ffd200; margin-bottom: 8px; }
+.confirm-box .c-msg { font-size: 13px; color: #ccc; margin-bottom: 18px; line-height: 1.5; }
+.confirm-box .c-btns { display: flex; gap: 10px; }
+.confirm-box .c-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; }
+.c-btn-yes { background: #e74c3c; color: #fff; }
+.c-btn-no { background: #16213e; color: #ffd200; border: 1px solid #f7971e55 !important; }
 </style>
 </head>
 <body>
@@ -204,6 +217,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
   </div>
 </div>
 
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="c-title" id="confirmTitle">確認</div>
+    <div class="c-msg" id="confirmMsg">確定執行此操作？</div>
+    <div class="c-btns">
+      <button class="c-btn-yes" id="confirmYes">確定</button>
+      <button class="c-btn-no" id="confirmNo">取消</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -293,7 +317,8 @@ const FAN_TABLE = [
   { id:'chickenWu', name:'雞糊', fan:30, cat:'組合' },
   { id:'duckWu', name:'鴨糊', fan:15, cat:'組合' },
   { id:'sisters', name:'姊妹', fan:3, cat:'組合' },
-  { id:'threeMeet1', name:'三相逢', fan:10, cat:'組合' },
+  { id:'threeMeet1', name:'明三相逢', fan:10, cat:'組合' },
+  { id:'threeMeet2', name:'暗三相逢', fan:20, cat:'組合' },
   { id:'allSisters', name:'全姊妹', fan:30, cat:'組合' },
   { id:'flatWu', name:'平糊', fan:5, cat:'組合' },
   { id:'noWordBigFlat', name:'無字花大平糊', fan:20, cat:'組合' },
@@ -373,6 +398,29 @@ let kongSection = [];
 
 let historyData = [];
 let resultData = null;
+
+function showConfirm(title, msg, onYes) {
+  const overlay = document.getElementById('confirmOverlay');
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  overlay.classList.add('show');
+  
+  const yesBtn = document.getElementById('confirmYes');
+  const noBtn = document.getElementById('confirmNo');
+  
+  const newYes = yesBtn.cloneNode(true);
+  const newNo = noBtn.cloneNode(true);
+  yesBtn.parentNode.replaceChild(newYes, yesBtn);
+  noBtn.parentNode.replaceChild(newNo, noBtn);
+  
+  newYes.addEventListener('click', () => {
+    overlay.classList.remove('show');
+    if (onYes) onYes();
+  });
+  newNo.addEventListener('click', () => {
+    overlay.classList.remove('show');
+  });
+}
 
 function setTargetSection(sec, el) {
   targetSection = sec;
@@ -485,8 +533,12 @@ function removeFromSection(sectionName, index) {
 }
 
 function clearHand() {
-  if (getAllSelectedTilesForWall().length === 0 && (redFlowerCount + blueFlowerCount) === 0) return;
-  if (confirm('確定清空所有牌組配置？')) {
+  if (getAllSelectedTilesForWall().length === 0 && (redFlowerCount + blueFlowerCount) === 0) {
+    showToast('已經係空白');
+    return;
+  }
+  
+  showConfirm('確定清空？', '所有牌組配置將會被清除', () => {
     redFlowerCount = 0;
     blueFlowerCount = 0;
     setFlowerTypeCount('red', 0);
@@ -497,7 +549,8 @@ function clearHand() {
     refreshUI();
     document.getElementById('resultContainer').innerHTML = '<div class="empty-state">請先配置牌組<br>然後按「計算番數」</div>';
     switchTab('wall', document.querySelector('.tab'));
-  }
+    showToast('已清空');
+  });
 }
 
 function refreshUI() {
@@ -541,7 +594,7 @@ function renderKongTileHTML(k, index) {
     : `<span class="honor ${colorClass}">${t.label}</span>`;
   const typeTag = (k.type === 'closed') ? '暗' : '明';
   const tagColor = (k.type === 'closed') ? '#ffd200' : '#ff6b6b';
-  return `<div class="hand-tile" onclick="removeFromSection('kong', ${index})" title="點擊刪除">${inner}<span style="position:absolute;bottom:1px;right:2px;font-size:9px;font-weight:800;color:${tagColor};">${typeTag}</span></div>`;
+  return `<div class="hand-tile" onclick="removeFromSection('kong', ${index})" title="點擊刪除">${inner}<span style="position:absolute;bottom:0;right:2px;font-size:8px;font-weight:800;color:${tagColor};">${typeTag}</span></div>`;
 }
 
 function switchTab(tab, el) {
@@ -588,7 +641,8 @@ function searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds) {
 
   if ((remCounts[firstId] || 0) >= 3) {
     remCounts[firstId] -= 3;
-    currentMelds.push({ type: '刻子', nums: [t.num, t.num, t.num], suit: t.suit, id: t.id });
+    const mSuit = (t.type === 'honor') ? 'honor' : t.suit;
+    currentMelds.push({ type: '刻子', nums: [t.num, t.num, t.num], suit: mSuit, id: t.id });
     searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds);
     currentMelds.pop();
     remCounts[firstId] += 3;
@@ -599,7 +653,7 @@ function searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds) {
     const id3 = `${t.suit}${t.num + 2}`;
     if ((remCounts[firstId] || 0) >= 1 && (remCounts[id2] || 0) >= 1 && (remCounts[id3] || 0) >= 1) {
       remCounts[firstId]--; remCounts[id2]--; remCounts[id3]--;
-      currentMelds.push({ type: '順子', nums: [t.num, t.num + 1, t.num + 2], suit: t.suit });
+      currentMelds.push({ type: '順子', nums: [t.num, t.num + 1, t.num + 2], suit: t.suit, ids: [firstId, id2, id3] });
       searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds);
       currentMelds.pop();
       remCounts[firstId]++; remCounts[id2]++; remCounts[id3]++;
@@ -623,141 +677,150 @@ function getAllDecompositions(counts) {
       rem[pairId] -= 2;
       const meldResults = [];
       searchMeldsStrict(rem, targetMeldsCount, [], meldResults);
+      const pSuit = (t.type === 'honor') ? 'honor' : t.suit;
       for (const melds of meldResults) {
-        decompositions.push({ pair: { suit: t.suit, num: t.num, id: pairId }, melds: melds });
+        decompositions.push({ pair: { suit: pSuit, num: t.num, id: pairId }, melds: melds });
       }
     }
   }
   return decompositions;
 }
 
-function evaluateDecomposition(decomp, hand) {
-  const { melds, pair } = decomp;
-  const matchedIds = [];
-  const dynamicDetails = [];
-  const { suits, winds, dragons, redFlowers, blueFlowers, counts } = hand;
-  const allTiles = getAllSelectedTilesForWall();
-  const totalFlowers = redFlowers + blueFlowers;
+/* ============================================================
+   三相逢 明/暗 判斷（正確版 - 按組合數計算）
+   ------------------------------------------------------------
+   你嘅規則：
+   - 總三相逢 = 萬子順子數 × 筒子順子數 × 索子順子數
+   - 暗三相逢 = 萬子暗順子數 × 筒子暗順子數 × 索子暗順子數
+   - 明三相逢 = 總三相逢 - 暗三相逢
+   
+   暗順子數 = min(該序列每張牌喺暗手嘅數量, 該花色順子總數)
+   ============================================================ */
+function detectThreeMeetFromMelds(melds) {
+  const sequences = melds.filter(m => m.type === '順子');
+  if (sequences.length === 0) return null;
 
-  if (totalFlowers > 0) matchedIds.push('eachFlower');
-
-  const hasOpenKong = kongSection.some(k => k.type === 'open');
-  if (openSection.length === 0 && !hasOpenKong) matchedIds.push('closedHand');
-
-  let openKongCount = 0;
-  let closedKongCount = 0;
-  kongSection.forEach(k => {
-    if (k.type === 'open') openKongCount++;
-    else closedKongCount++;
-  });
-
-  for (let i = 0; i < openKongCount; i++) matchedIds.push('openKong');
-  if (closedKongCount === 1) matchedIds.push('closedKong');
-  else if (closedKongCount === 2) matchedIds.push('twoKong');
-  else if (closedKongCount === 3) matchedIds.push('threeKong');
-  else if (closedKongCount >= 4) matchedIds.push('fourKong');
-
-  let closedTripletsCount = closedKongCount;
   const closedCounts = {};
   closedSection.forEach(id => closedCounts[id] = (closedCounts[id] || 0) + 1);
 
-  melds.forEach(m => {
-    if (m.type === '刻子') {
-      if (m.id && closedCounts[m.id] >= 3) {
-        closedTripletsCount++;
-        closedCounts[m.id] -= 3;
+  const seqGroups = {};
+  sequences.forEach(m => {
+    const key = m.nums.join(',');
+    if (!seqGroups[key]) seqGroups[key] = { wan: [], tong: [], so: [] };
+    if (m.suit === 'wan' || m.suit === 'tong' || m.suit === 'so') {
+      seqGroups[key][m.suit].push(m);
+    }
+  });
+
+  let closedTotal = 0;
+  let openTotal = 0;
+  const closedDetails = [];
+  const openDetails = [];
+  const threeMeetKeys = new Set();
+
+  for (const key in seqGroups) {
+    const group = seqGroups[key];
+    const nums = key.split(',').map(Number);
+    
+    const wanCount = group.wan.length;
+    const tongCount = group.tong.length;
+    const soCount = group.so.length;
+    
+    if (wanCount === 0 || tongCount === 0 || soCount === 0) continue;
+    
+    threeMeetKeys.add(key);
+    
+    // 計算每個花色嘅「暗順子」數量
+    // 暗順子數 = min(該序列每張牌喺暗手嘅數量, 該花色順子總數)
+    const calcClosedSeqCount = (suit, totalCount) => {
+      let minClosed = Infinity;
+      for (const num of nums) {
+        const id = `${suit}${num}`;
+        const cnt = closedCounts[id] || 0;
+        minClosed = Math.min(minClosed, cnt);
+      }
+      if (minClosed === Infinity) minClosed = 0;
+      return Math.min(minClosed, totalCount);
+    };
+    
+    const wanClosed = calcClosedSeqCount('wan', wanCount);
+    const tongClosed = calcClosedSeqCount('tong', tongCount);
+    const soClosed = calcClosedSeqCount('so', soCount);
+    
+    // 暗三相逢 = 三個花色嘅暗順子數相乘
+    const closedThreeMeet = wanClosed * tongClosed * soClosed;
+    
+    // 總三相逢 = 三個花色順子數相乘
+    const totalThreeMeet = wanCount * tongCount * soCount;
+    
+    // 明三相逢 = 總數 - 暗數
+    const openThreeMeet = totalThreeMeet - closedThreeMeet;
+    
+    for (let i = 0; i < closedThreeMeet; i++) {
+      closedTotal++;
+      closedDetails.push(`${key.replace(/,/g,'')}萬筒索(暗)`);
+    }
+    
+    for (let i = 0; i < openThreeMeet; i++) {
+      openTotal++;
+      openDetails.push(`${key.replace(/,/g,'')}萬筒索(明)`);
+    }
+  }
+
+  if (closedTotal === 0 && openTotal === 0) return null;
+
+  const items = [];
+  
+  if (closedTotal > 0) {
+    items.push({
+      id: 'threeMeet2',
+      name: `暗三相逢 ×${closedTotal}組`,
+      fan: 20 * closedTotal,
+      cat: '組合',
+      detail: closedDetails.join('、')
+    });
+  }
+  
+  if (openTotal > 0) {
+    items.push({
+      id: 'threeMeet1',
+      name: `明三相逢 ×${openTotal}組`,
+      fan: 10 * openTotal,
+      cat: '組合',
+      detail: openDetails.join('、')
+    });
+  }
+
+  return {
+    id: 'threeMeet',
+    name: '三相逢',
+    fan: 0,
+    cat: '組合',
+    detail: '',
+    items: items,
+    threeMeetKeys
+  };
+}
+
+function detectSistersFromMelds(melds, threeMeetKeys) {
+  const sequences = melds.filter(m => m.type === '順子');
+  const seqMap = {};
+  sequences.forEach(m => { const key = m.nums.join(','); if (!seqMap[key]) seqMap[key] = {}; seqMap[key][m.suit] = (seqMap[key][m.suit] || 0) + 1; });
+  let totalSisterPairs = 0; const details = []; const suitNames = { wan:'萬', tong:'筒', so:'索' };
+  for (const key in seqMap) {
+    if (threeMeetKeys && threeMeetKeys.has(key)) continue;
+    const suitCounts = seqMap[key]; const suitsArr = Object.keys(suitCounts);
+    if (suitsArr.length >= 2) {
+      for (let i = 0; i < suitsArr.length; i++) {
+        for (let j = i + 1; j < suitsArr.length; j++) {
+          const pairs = suitCounts[suitsArr[i]] * suitCounts[suitsArr[j]];
+          if (pairs > 0) { totalSisterPairs += pairs; details.push(`${key.replace(/,/g,'')}(${suitNames[suitsArr[i]]}&${suitNames[suitsArr[j]]}) ×${pairs}`); }
+        }
       }
     }
-  });
-
-  if (closedTripletsCount === 2) matchedIds.push('twoHidden');
-  else if (closedTripletsCount === 3) matchedIds.push('threeHidden');
-  else if (closedTripletsCount === 4) matchedIds.push('fourHidden');
-  else if (closedTripletsCount >= 5) matchedIds.push('fiveHidden');
-
-  const hasFlower = totalFlowers > 0;
-  const hasWord = winds.length > 0 || dragons.length > 0;
-  const flatWu = meldListsIsFlat(melds);
-
-  if (!hasFlower && !hasWord && flatWu) {
-    matchedIds.push('noWordBigFlat');
-  } else {
-    if (!hasFlower && !hasWord) matchedIds.push('noWordFlower');
-    else {
-      if (!hasFlower) matchedIds.push('noFlower');
-      if (!hasWord) matchedIds.push('noWord');
-      else if (hasHonorTripletOrKong(melds)) matchedIds.push('wordTile');
-    }
-    if (flatWu) matchedIds.push('flatWu');
   }
-
-  if (pair && pair.suit !== 'honor' && [2, 5, 8].includes(pair.num)) {
-    matchedIds.push('eyeTile');
-  }
-
-  const isBig = isAllBig(counts, winds, dragons);
-  const isSmall = isAllSmall(counts, winds, dragons);
-
-  if (isBig) matchedIds.push('allBig');
-  else if (isSmall) matchedIds.push('allSmall');
-  else {
-    if (isMissingFive(counts)) matchedIds.push('missingFive');
-  }
-
-  if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
-  if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
-  if (isWordOneColor(suits)) matchedIds.push('wordOneColor');
-  if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
-  if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
-  if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
-  if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
-  if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
-  if (melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) matchedIds.push('pongPongWu');
-
-  detectChainPongFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
-  detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
-  detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
-
-  const threeMeetResult = detectThreeMeetFromMelds(melds);
-  const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
-  if (threeMeetResult) dynamicDetails.push(threeMeetResult);
-
-  detectSistersFromMelds(melds, threeMeetKeys)?.forEach(r => dynamicDetails.push(r));
-  detectPairHighFromMelds(melds).forEach(r => dynamicDetails.push(r));
-
-  const mixedTerminalResult = detectMixedTerminalFromMelds(melds, hand);
-  if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
-
-  const mixedXResult = detectMixedWithXFromMelds(melds, allTiles);
-  if (mixedXResult) dynamicDetails.push(mixedXResult);
-
-  const uniqueMatchedIds = [...new Set(matchedIds)];
-  let total = 0;
-  let flowerFanTotal = 0;
-  const detail = [];
-
-  uniqueMatchedIds.forEach(id => {
-    const f = FAN_MAP[id];
-    if (f) { 
-      if (id === 'eachFlower') {
-        const flowerFan = totalFlowers * f.fan;
-        flowerFanTotal += flowerFan;
-        detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
-      } else {
-        total += f.fan; 
-        detail.push(f); 
-      }
-    }
-  });
-
-  total += flowerFanTotal;
-
-  dynamicDetails.forEach(item => {
-    total += item.fan;
-    detail.push(item);
-  });
-
-  return { total, detail };
+  if (totalSisterPairs === 0) return null;
+  return { id: 'sisters', name: `姊妹 ×${totalSisterPairs}組`, fan: 3 * totalSisterPairs, cat: '組合', detail: details.join('、') };
 }
 
 function hasHonorTripletOrKong(melds) { return melds.some(m => m.type === '刻子' && m.suit === 'honor'); }
@@ -876,41 +939,6 @@ function detectBrothersFromMelds(melds, pair) {
 
 function meldListsIsFlat(melds) { if (melds.length === 0) return false; return melds.every(m => m.type === '順子'); }
 
-function detectThreeMeetFromMelds(melds) {
-  const sequences = melds.filter(m => m.type === '順子');
-  const seqMap = {};
-  sequences.forEach(m => { const key = m.nums.join(','); if (!seqMap[key]) seqMap[key] = {}; seqMap[key][m.suit] = (seqMap[key][m.suit] || 0) + 1; });
-  let totalCount = 0; const details = []; const threeMeetKeys = new Set();
-  for (const key in seqMap) {
-    const sc = seqMap[key];
-    const count = Math.min(sc.wan || 0, sc.tong || 0, sc.so || 0);
-    if (count > 0) { totalCount += count; details.push(`${key.replace(/,/g,'')}萬筒索 ×${count}`); threeMeetKeys.add(key); }
-  }
-  if (totalCount === 0) return null;
-  return { id: 'threeMeet1', name: `三相逢 ×${totalCount}組`, fan: 10 * totalCount, cat: '組合', detail: details.join('、'), threeMeetKeys };
-}
-
-function detectSistersFromMelds(melds, threeMeetKeys) {
-  const sequences = melds.filter(m => m.type === '順子');
-  const seqMap = {};
-  sequences.forEach(m => { const key = m.nums.join(','); if (!seqMap[key]) seqMap[key] = {}; seqMap[key][m.suit] = (seqMap[key][m.suit] || 0) + 1; });
-  let totalSisterPairs = 0; const details = []; const suitNames = { wan:'萬', tong:'筒', so:'索' };
-  for (const key in seqMap) {
-    if (threeMeetKeys && threeMeetKeys.has(key)) continue;
-    const suitCounts = seqMap[key]; const suitsArr = Object.keys(suitCounts);
-    if (suitsArr.length >= 2) {
-      for (let i = 0; i < suitsArr.length; i++) {
-        for (let j = i + 1; j < suitsArr.length; j++) {
-          const pairs = suitCounts[suitsArr[i]] * suitCounts[suitsArr[j]];
-          if (pairs > 0) { totalSisterPairs += pairs; details.push(`${key.replace(/,/g,'')}(${suitNames[suitsArr[i]]}&${suitNames[suitsArr[j]]}) ×${pairs}`); }
-        }
-      }
-    }
-  }
-  if (totalSisterPairs === 0) return null;
-  return { id: 'sisters', name: `姊妹 ×${totalSisterPairs}組`, fan: 3 * totalSisterPairs, cat: '組合', detail: details.join('、') };
-}
-
 function detectPairHighFromMelds(melds) {
   const sequences = melds.filter(m => m.type === '順子');
   const seqMap = {};
@@ -969,6 +997,137 @@ function isAllTerminal(suits, winds, dragons) {
   return winds.length>0 || dragons.length>0 || suits.wan.length+suits.tong.length+suits.so.length>0;
 }
 
+function evaluateDecomposition(decomp, hand) {
+  const { melds, pair } = decomp;
+  const matchedIds = [];
+  const dynamicDetails = [];
+  const { suits, winds, dragons, redFlowers, blueFlowers, counts } = hand;
+  const allTiles = getAllSelectedTilesForWall();
+  const totalFlowers = redFlowers + blueFlowers;
+
+  if (totalFlowers > 0) matchedIds.push('eachFlower');
+
+  const hasOpenKong = kongSection.some(k => k.type === 'open');
+  if (openSection.length === 0 && !hasOpenKong) matchedIds.push('closedHand');
+
+  let openKongCount = 0;
+  let closedKongCount = 0;
+  kongSection.forEach(k => {
+    if (k.type === 'open') openKongCount++;
+    else closedKongCount++;
+  });
+
+  for (let i = 0; i < openKongCount; i++) matchedIds.push('openKong');
+  if (closedKongCount === 1) matchedIds.push('closedKong');
+  else if (closedKongCount === 2) matchedIds.push('twoKong');
+  else if (closedKongCount === 3) matchedIds.push('threeKong');
+  else if (closedKongCount >= 4) matchedIds.push('fourKong');
+
+  let closedTripletsCount = closedKongCount;
+  const closedCounts = {};
+  closedSection.forEach(id => closedCounts[id] = (closedCounts[id] || 0) + 1);
+
+  melds.forEach(m => {
+    if (m.type === '刻子') {
+      if (m.id && closedCounts[m.id] >= 3) {
+        closedTripletsCount++;
+        closedCounts[m.id] -= 3;
+      }
+    }
+  });
+
+  if (closedTripletsCount === 2) matchedIds.push('twoHidden');
+  else if (closedTripletsCount === 3) matchedIds.push('threeHidden');
+  else if (closedTripletsCount === 4) matchedIds.push('fourHidden');
+  else if (closedTripletsCount >= 5) matchedIds.push('fiveHidden');
+
+  const hasFlower = totalFlowers > 0;
+  const hasWord = winds.length > 0 || dragons.length > 0;
+  const flatWu = meldListsIsFlat(melds);
+
+  if (!hasFlower && !hasWord && flatWu) {
+    matchedIds.push('noWordBigFlat');
+  } else {
+    if (!hasFlower && !hasWord) matchedIds.push('noWordFlower');
+    else {
+      if (!hasFlower) matchedIds.push('noFlower');
+      if (!hasWord) matchedIds.push('noWord');
+      else if (hasHonorTripletOrKong(melds)) matchedIds.push('wordTile');
+    }
+    if (flatWu) matchedIds.push('flatWu');
+  }
+
+  if (pair && pair.suit !== 'honor' && [2, 5, 8].includes(pair.num)) {
+    matchedIds.push('eyeTile');
+  }
+
+  const isBig = isAllBig(counts, winds, dragons);
+  const isSmall = isAllSmall(counts, winds, dragons);
+
+  if (isBig) matchedIds.push('allBig');
+  else if (isSmall) matchedIds.push('allSmall');
+  else {
+    if (isMissingFive(counts)) matchedIds.push('missingFive');
+  }
+
+  if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
+  if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
+  if (isWordOneColor(suits)) matchedIds.push('wordOneColor');
+  if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
+  if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
+  if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
+  if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
+  if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
+  if (melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) matchedIds.push('pongPongWu');
+
+  detectChainPongFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
+
+  const threeMeetResult = detectThreeMeetFromMelds(melds);
+  const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
+  if (threeMeetResult) dynamicDetails.push(threeMeetResult);
+
+  const sistersResult = detectSistersFromMelds(melds, threeMeetKeys);
+  if (sistersResult) dynamicDetails.push(sistersResult);
+
+  detectPairHighFromMelds(melds).forEach(r => dynamicDetails.push(r));
+
+  const mixedTerminalResult = detectMixedTerminalFromMelds(melds, hand);
+  if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
+
+  const mixedXResult = detectMixedWithXFromMelds(melds, allTiles);
+  if (mixedXResult) dynamicDetails.push(mixedXResult);
+
+  const uniqueMatchedIds = [...new Set(matchedIds)];
+  let total = 0;
+  let flowerFanTotal = 0;
+  const detail = [];
+
+  uniqueMatchedIds.forEach(id => {
+    const f = FAN_MAP[id];
+    if (f) { 
+      if (id === 'eachFlower') {
+        const flowerFan = totalFlowers * f.fan;
+        flowerFanTotal += flowerFan;
+        detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
+      } else {
+        total += f.fan; 
+        detail.push(f); 
+      }
+    }
+  });
+
+  total += flowerFanTotal;
+
+  dynamicDetails.forEach(item => {
+    total += item.fan;
+    detail.push(item);
+  });
+
+  return { total, detail };
+}
+
 function calculateSafe() {
   try {
     const totalTilesCount = openSection.length + closedSection.length + (kongSection.length * 3);
@@ -1020,8 +1179,17 @@ function renderResult(total, detail) {
     return;
   }
 
-  const grouped = {};
+  const expandedDetail = [];
   detail.forEach(f => {
+    if (f.items && Array.isArray(f.items)) {
+      f.items.forEach(item => expandedDetail.push(item));
+    } else {
+      expandedDetail.push(f);
+    }
+  });
+
+  const grouped = {};
+  expandedDetail.forEach(f => {
     const cat = f.cat || '其他';
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(f);
