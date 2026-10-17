@@ -115,6 +115,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .confirm-box .c-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; }
 .c-btn-yes { background: #e74c3c; color: #fff; }
 .c-btn-no { background: #16213e; color: #ffd200; border: 1px solid #f7971e55 !important; }
+
+/* 結算加番按鈕區 */
+.bonus-section { margin-top: 14px; background:#0f3460; border-radius:10px; padding:10px; border:1px solid #1a4a7a; }
+.bonus-title { font-size:12px; font-weight:800; color:#ffd200; margin-bottom:8px; }
+.bonus-group { margin-bottom:8px; }
+.bonus-group-label { font-size:10px; color:#f7971e; font-weight:700; margin-bottom:4px; }
+.bonus-btns { display:flex; flex-wrap:wrap; gap:5px; }
+.bonus-btn { padding:6px 9px; border-radius:6px; border:1px solid #1a4a7a; background:#16213e; color:#ccc; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.15s; }
+.bonus-btn.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; box-shadow:0 0 6px rgba(247,151,30,0.5); }
+.bonus-btn:active { transform:scale(0.94); }
+.bonus-hint { font-size:9px; color:#667; margin-top:2px; line-height:1.4; }
 </style>
 </head>
 <body>
@@ -250,7 +261,7 @@ const FAN_TABLE = [
   { id:'eachFlower', name:'花', fan:2, cat:'花摸' },
   { id:'properFlower', name:'正/爛花', fan:2, cat:'花摸' },
   { id:'noFlower', name:'無花', fan:2, cat:'花摸' },
-  { id:'wordTile', name:'字', fan:2, cat:'花摸' },
+  { id:'wordTile', name:'字（每組字刻+2）', fan:2, cat:'花摸' },
   { id:'noWord', name:'無字', fan:2, cat:'花摸' },
   { id:'noWordFlower', name:'無字花', fan:10, cat:'花摸' },
   { id:'sevenRobOne', name:'七搶一/一搶七', fan:40, cat:'花摸' },
@@ -329,6 +340,9 @@ const FAN_TABLE = [
   { id:'chainPong', name:'連刻', fan:5, cat:'組合' },
   { id:'smallThreeChain', name:'小三連刻', fan:10, cat:'組合' },
   { id:'bigThreeChain', name:'大三連刻', fan:20, cat:'組合' },
+  { id:'mixedThreeChain', name:'三雜連刻', fan:10, cat:'組合' },
+  { id:'mixedFourChain', name:'四雜連刻', fan:20, cat:'組合' },
+  { id:'mixedFiveChain', name:'五雜連刻', fan:40, cat:'大牌' },
   { id:'oldYoungUp', name:'老少上', fan:5, cat:'組合' },
   { id:'oldYoungPong', name:'老少碰', fan:5, cat:'組合' },
   { id:'twoHidden', name:'兩暗坎', fan:5, cat:'組合' },
@@ -344,6 +358,12 @@ const FAN_TABLE = [
   { id:'wordOneColor', name:'字一色', fan:150, cat:'大牌' },
   { id:'greenOneColor', name:'綠一色', fan:250, cat:'大牌' },
   { id:'blueOneColor', name:'藍一色', fan:300, cat:'大牌' },
+  { id:'smallThreeWind', name:'小三風', fan:15, cat:'組合' },
+  { id:'bigThreeWind', name:'大三風', fan:30, cat:'大牌' },
+  { id:'smallThreeDragon', name:'小三元', fan:20, cat:'大牌' },
+  { id:'bigThreeDragon', name:'大三元', fan:40, cat:'大牌' },
+  { id:'smallFourJoy', name:'小四喜', fan:60, cat:'大牌' },
+  { id:'bigFourJoy', name:'大四喜', fan:100, cat:'大牌' },
   { id:'mixedTerminal', name:'混帶幺', fan:30, cat:'大牌' },
   { id:'allTerminal', name:'全帶幺', fan:60, cat:'大牌' },
   { id:'mixedOld', name:'混老頭', fan:50, cat:'大牌' },
@@ -398,6 +418,11 @@ let kongSection = [];
 
 let historyData = [];
 let resultData = null;
+
+// 結算加番狀態
+let bonusState = {};
+let baseResultTotal = 0;
+let baseResultDetail = [];
 
 function showConfirm(title, msg, onYes) {
   const overlay = document.getElementById('confirmOverlay');
@@ -901,56 +926,356 @@ function evaluateSixteenNoMatch(counts, hand) {
 }
 
 /* ============================================================
-   三色步步高 / 三色四步高 / 三色登天 檢測
-   ------------------------------------------------------------
-   - 分明暗、按副本相乘
-   - 取最高層級：登天 > 四步高 > 步步高（同一組面子唔會重複計低層級）
-   - 可以有多條（只要面子唔重疊）
+   嚦咕嚦咕 (Lucky Gulu) 檢測與計番 (不計門清)
    ============================================================ */
-const SUIT_NAMES = { wan: '萬', tong: '筒', so: '索' };
+function checkLuckyGulu(counts) {
+  if (openSection.length > 0 || kongSection.length > 0) return null;
 
-function detectThreeColorStep(melds, closedCounts) {
-  const sequences = melds.filter(m => m.type === '順子');
-  if (sequences.length < 3) return [];
+  let totalTiles = 0;
+  const tileIds = Object.keys(counts).filter(id => counts[id] > 0);
+  for (const id of tileIds) totalTiles += counts[id];
+  if (totalTiles !== 17) return null;
 
-  const allCounts = {};
-  const allTiles = getTilesForCalculation();
-  allTiles.forEach(id => allCounts[id] = (allCounts[id] || 0) + 1);
+  const oddTiles = tileIds.filter(id => counts[id] % 2 !== 0);
+  if (oddTiles.length !== 1) return null;
+
+  const oddId = oddTiles[0];
+  const oddCount = counts[oddId];
+  if (oddCount !== 1 && oddCount !== 3) return null;
+
+  for (const id of tileIds) {
+    if (id !== oddId) {
+      if (counts[id] !== 2 && counts[id] !== 4) return null;
+    }
+  }
+
+  return { oddId, oddCount };
+}
+
+function detectLuckyGuluPairChains(counts) {
+  const results = [];
+  const suitNames = { wan: '萬', tong: '筒', so: '索' };
+
+  for (const suit of ['wan', 'tong', 'so']) {
+    const pairCounts = {};
+    for (let n = 1; n <= 9; n++) {
+      const id = `${suit}${n}`;
+      pairCounts[n] = Math.floor((counts[id] || 0) / 2);
+    }
+
+    let start = null;
+    for (let n = 1; n <= 10; n++) {
+      if (n <= 9 && pairCounts[n] > 0) {
+        if (start === null) start = n;
+      } else {
+        if (start !== null) {
+          const end = n - 1;
+          const len = end - start + 1;
+          if (len >= 3) {
+            if (len <= 7) {
+              let copies = 1;
+              for (let k = start; k <= end; k++) {
+                copies *= pairCounts[k];
+              }
+              const chainInfo = getChainTierInfo(len);
+              if (chainInfo && copies > 0) {
+                results.push({
+                  id: chainInfo.id,
+                  name: `${chainInfo.name}（${start}~${end}${suitNames[suit]}）×${copies}組`,
+                  fan: chainInfo.fan * copies,
+                  cat: '大牌',
+                  detail: `${copies}組 ${start}~${end}${suitNames[suit]} 連對，每組 +${chainInfo.fan} 番`
+                });
+              }
+            } else {
+              for (let s = start; s <= end - 6; s++) {
+                const e = s + 6;
+                let copies = 1;
+                for (let k = s; k <= e; k++) {
+                  copies *= pairCounts[k];
+                }
+                const chainInfo = getChainTierInfo(7);
+                if (chainInfo && copies > 0) {
+                  results.push({
+                    id: chainInfo.id,
+                    name: `${chainInfo.name}（${s}~${e}${suitNames[suit]}）×${copies}組`,
+                    fan: chainInfo.fan * copies,
+                    cat: '大牌',
+                    detail: `${copies}組 ${s}~${e}${suitNames[suit]} 連對，每組 +${chainInfo.fan} 番`
+                  });
+                }
+              }
+            }
+          }
+          start = null;
+        }
+      }
+    }
+  }
+  return results;
+}
+
+function getChainTierInfo(len) {
+  if (len === 3) return { id: 'threePairChain', name: '三連對', fan: 5 };
+  if (len === 4) return { id: 'fourPairChain', name: '四連對', fan: 10 };
+  if (len === 5) return { id: 'fivePairChain', name: '五連對', fan: 20 };
+  if (len === 6) return { id: 'sixPairChain', name: '六連對', fan: 40 };
+  if (len >= 7) return { id: 'sevenPairChain', name: '七連對', fan: 80 };
+  return null;
+}
+
+function evaluateLuckyGulu(counts, hand) {
+  const guluMatch = checkLuckyGulu(counts);
+  if (!guluMatch) return null;
+
+  const detail = [];
+  let totalFan = 50;
+
+  detail.push({
+    id: 'luckyGulu',
+    name: '嚦咕嚦咕',
+    fan: 50,
+    cat: '大牌',
+    detail: guluMatch.oddCount === 3 ? '七對一刻（八對半，不計門清）' : '八對一單張（八對半，不計門清）'
+  });
+
+  const chainResults = detectLuckyGuluPairChains(counts);
+  chainResults.forEach(r => {
+    totalFan += r.fan;
+    detail.push(r);
+  });
+
+  let eyeCount = 0;
+  const eyeDetails = [];
+  const suitNames = { wan: '萬', tong: '筒', so: '索' };
+  for (const suit of ['wan', 'tong', 'so']) {
+    for (const num of [2, 5, 8]) {
+      const id = `${suit}${num}`;
+      const pCount = Math.floor((counts[id] || 0) / 2);
+      if (pCount > 0) {
+        eyeCount += pCount;
+        eyeDetails.push(`${num}${suitNames[suit]}眼 ×${pCount}`);
+      }
+    }
+  }
+  if (eyeCount > 0) {
+    const eyeFan = eyeCount * 2;
+    totalFan += eyeFan;
+    detail.push({
+      id: 'eyeTile',
+      name: `將眼（2/5/8）×${eyeCount}個`,
+      fan: eyeFan,
+      cat: '基本',
+      detail: eyeDetails.join('、') + `，每個 +2 番`
+    });
+  }
+
+  const { suits, winds, dragons, redFlowers, blueFlowers } = hand;
+  const totalFlowers = redFlowers + blueFlowers;
+  const isWord = isWordOneColor(suits);
+
+  if (isWord) {
+    totalFan += 150;
+    detail.push({ id: 'wordOneColor', name: '字一色', fan: 150, cat: '大牌' });
+  } else {
+    if (isPureOneColor(suits, winds, dragons)) { totalFan += 100; detail.push(FAN_MAP['pureOneColor']); }
+    else if (isMixedOneColor(suits, winds, dragons)) { totalFan += 40; detail.push(FAN_MAP['mixedOneColor']); }
+    if (isPureOld(suits, winds, dragons)) { totalFan += 300; detail.push(FAN_MAP['pureOld']); }
+    else if (isMixedOld(suits, winds, dragons)) { totalFan += 50; detail.push(FAN_MAP['mixedOld']); }
+    if (isNoTerminal(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['noTerminal']); }
+    if (isMissingOne(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['missingOne']); }
+  }
+
+  const isBig = isAllBig(counts, winds, dragons);
+  const isSmall = isAllSmall(counts, winds, dragons);
+  if (isBig) { totalFan += 50; detail.push(FAN_MAP['allBig']); }
+  else if (isSmall) { totalFan += 50; detail.push(FAN_MAP['allSmall']); }
+  else if (!isWord && isMissingFive(counts)) { totalFan += 5; detail.push(FAN_MAP['missingFive']); }
+
+  if (guluMatch.oddCount === 3 && TILE_MAP[guluMatch.oddId]?.type === 'honor') {
+    totalFan += 2;
+    detail.push({ id: 'wordTile', name: '字（每組字刻+2）×1組', fan: 2, cat: '花摸', detail: '字牌刻子 +2 番' });
+  }
+
+  if (totalFlowers > 0) {
+    const flowerFan = totalFlowers * 2;
+    totalFan += flowerFan;
+    detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
+  } else {
+    totalFan += 2;
+    detail.push({ id: 'noFlower', name: '無花', fan: 2, cat: '花摸' });
+  }
+
+  if (winds.length === 0 && dragons.length === 0) {
+    totalFan += 2;
+    detail.push({ id: 'noWord', name: '無字', fan: 2, cat: '花摸' });
+  }
+
+  return { total: totalFan, detail };
+}
+
+/* ============================================================
+   三 / 四 / 五雜連刻 檢測
+   ============================================================ */
+function detectMixedChainPongFromMelds(melds) {
+  const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor').map(m => ({
+    suit: m.suit,
+    num: m.nums[0],
+    meld: m
+  }));
+
+  if (triplets.length < 3) return [];
+
+  const validChains = [];
+
+  function dfs(currentChain) {
+    const last = currentChain[currentChain.length - 1];
+    if (currentChain.length >= 3) {
+      let hasThreeMixedSubchain = false;
+      for (let i = 0; i <= currentChain.length - 3; i++) {
+        const sub = currentChain.slice(i, i + 3);
+        const subSuits = new Set(sub.map(x => x.suit));
+        if (subSuits.size === 3 && subSuits.has('wan') && subSuits.has('tong') && subSuits.has('so')) {
+          hasThreeMixedSubchain = true;
+          break;
+        }
+      }
+      if (hasThreeMixedSubchain) {
+        validChains.push([...currentChain]);
+      }
+    }
+    if (currentChain.length === 5) return;
+
+    for (const t of triplets) {
+      if (currentChain.includes(t)) continue;
+      if (t.num === last.num + 1 && t.suit !== last.suit) {
+        currentChain.push(t);
+        dfs(currentChain);
+        currentChain.pop();
+      }
+    }
+  }
+
+  for (const t of triplets) {
+    dfs([t]);
+  }
+
+  if (validChains.length === 0) return [];
+
+  validChains.sort((a, b) => b.length - a.length);
+  const maxLen = validChains[0].length;
+  const bestChains = validChains.filter(c => c.length === maxLen);
+
+  const seen = new Set();
+  const uniqueChains = [];
+  for (const c of bestChains) {
+    const key = c.map(t => `${t.num}${t.suit}`).join('-');
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueChains.push(c);
+    }
+  }
+
+  const suitNames = { wan: '萬', tong: '筒', so: '索' };
+  const results = [];
+
+  for (const chain of uniqueChains) {
+    const len = chain.length;
+    const pathStr = chain.map(t => `${t.num}${suitNames[t.suit]}`).join('→');
+    if (len === 5) {
+      results.push({
+        id: 'mixedFiveChain',
+        name: `五雜連刻（${pathStr}）`,
+        fan: 40,
+        cat: '大牌',
+        detail: `五組相連數字刻子，相鄰不同門且包含三雜連刻`
+      });
+    } else if (len === 4) {
+      results.push({
+        id: 'mixedFourChain',
+        name: `四雜連刻（${pathStr}）`,
+        fan: 20,
+        cat: '組合',
+        detail: `四組相連數字刻子，相鄰不同門且包含三雜連刻`
+      });
+    } else if (len === 3) {
+      results.push({
+        id: 'mixedThreeChain',
+        name: `三雜連刻（${pathStr}）`,
+        fan: 10,
+        cat: '組合',
+        detail: `三組相連數字刻子（萬、筒、索各一）`
+      });
+    }
+  }
+
+  return results;
+}
+
+/* ============================================================
+   順子面子實際副本及明暗計數器
+   ============================================================ */
+function getSequenceMeldCounts(melds, pair) {
+  const remClosed = {};
+  closedSection.forEach(id => remClosed[id] = (remClosed[id] || 0) + 1);
+  if (pair && remClosed[pair.id]) {
+    remClosed[pair.id] = Math.max(0, remClosed[pair.id] - 2);
+  }
+
+  melds.forEach(m => {
+    if (m.type === '刻子' && m.id) {
+      if ((remClosed[m.id] || 0) >= 3) {
+        remClosed[m.id] -= 3;
+      }
+    }
+  });
 
   const seqCopyCount = {};
-  for (const m of sequences) {
+  melds.forEach(m => {
+    if (m.type !== '順子') return;
     const suit = m.suit;
     const start = m.nums[0];
-    const id1 = `${suit}${start}`;
-    const id2 = `${suit}${start + 1}`;
-    const id3 = `${suit}${start + 2}`;
-    const c1 = allCounts[id1] || 0;
-    const c2 = allCounts[id2] || 0;
-    const c3 = allCounts[id3] || 0;
-    const totalCopies = Math.min(c1, c2, c3);
-
-    const cc1 = closedCounts[id1] || 0;
-    const cc2 = closedCounts[id2] || 0;
-    const cc3 = closedCounts[id3] || 0;
-    const closedCopies = Math.min(cc1, cc2, cc3);
-
-    const openCopies = totalCopies - closedCopies;
-
     const key = `${suit}${start}`;
     if (!seqCopyCount[key]) {
       seqCopyCount[key] = {
         suit,
         start,
-        totalCopies,
-        closedCopies,
-        openCopies,
-        key,
-        meld: m
+        totalCopies: 0,
+        closedCopies: 0,
+        openCopies: 0,
+        key
       };
     }
-  }
+    seqCopyCount[key].totalCopies++;
 
+    const id1 = `${suit}${start}`;
+    const id2 = `${suit}${start + 1}`;
+    const id3 = `${suit}${start + 2}`;
+    if ((remClosed[id1] || 0) > 0 && (remClosed[id2] || 0) > 0 && (remClosed[id3] || 0) > 0) {
+      seqCopyCount[key].closedCopies++;
+      remClosed[id1]--;
+      remClosed[id2]--;
+      remClosed[id3]--;
+    } else {
+      seqCopyCount[key].openCopies++;
+    }
+  });
+
+  return seqCopyCount;
+}
+
+/* ============================================================
+   三色步步高 / 三色四步高 / 三色登天 檢測
+   ============================================================ */
+const SUIT_NAMES = { wan: '萬', tong: '筒', so: '索' };
+
+function detectThreeColorStep(melds, pair) {
+  const sequences = melds.filter(m => m.type === '順子');
+  if (sequences.length < 3) return [];
+
+  const seqCopyCount = getSequenceMeldCounts(melds, pair);
   const seqList = Object.values(seqCopyCount);
+
   const suitOrders = [
     ['wan', 'so', 'tong'],
     ['so', 'tong', 'wan'],
@@ -968,7 +1293,6 @@ function detectThreeColorStep(melds, closedCounts) {
   const step4Matches = [];
   const stepMatches = [];
 
-  // 三色登天（5 順子）
   for (const order of suitOrders) {
     const s1 = seqList.filter(x => x.suit === order[0]);
     const s2 = seqList.filter(x => x.suit === order[1]);
@@ -991,7 +1315,6 @@ function detectThreeColorStep(melds, closedCounts) {
     }
   }
 
-  // 三色四步高（4 順子）
   for (const order of suitOrders) {
     const s1 = seqList.filter(x => x.suit === order[0]);
     const s2 = seqList.filter(x => x.suit === order[1]);
@@ -1011,7 +1334,6 @@ function detectThreeColorStep(melds, closedCounts) {
     }
   }
 
-  // 三色步步高（3 順子）
   for (const order of suitOrders) {
     const s1 = seqList.filter(x => x.suit === order[0]);
     const s2 = seqList.filter(x => x.suit === order[1]);
@@ -1048,7 +1370,6 @@ function detectThreeColorStep(melds, closedCounts) {
   const usedMeldKeys = new Set();
   const results = [];
 
-  // 1. 先處理登天（最高層級）
   for (const m of uniqueSky) {
     const infos = m.infos;
     const keys = infos.map(x => x.key);
@@ -1061,7 +1382,7 @@ function detectThreeColorStep(melds, closedCounts) {
         name: `三色登天(暗) ×${allClosedCopies}條（${infos.map(x => `${x.start}${SUIT_NAMES[x.suit]}`).join('→')}）`,
         fan: 110 * allClosedCopies,
         cat: '組合',
-        detail: `五順子數字依次遞增 1，排序 a,b,c,a,b，全暗 ${allClosedCopies} 條`
+        detail: `五順子數字依次遞增 1，全暗 ${allClosedCopies} 條`
       });
     }
     if (openCopies > 0) {
@@ -1070,13 +1391,12 @@ function detectThreeColorStep(melds, closedCounts) {
         name: `三色登天(明) ×${openCopies}條（${infos.map(x => `${x.start}${SUIT_NAMES[x.suit]}`).join('→')}）`,
         fan: 100 * openCopies,
         cat: '組合',
-        detail: `五順子數字依次遞增 1，排序 a,b,c,a,b，非全暗 ${openCopies} 條`
+        detail: `五順子數字依次遞增 1，非全暗 ${openCopies} 條`
       });
     }
     keys.forEach(k => usedMeldKeys.add(k));
   }
 
-  // 2. 再處理四步高（跳過已被登天使用嘅面子）
   for (const m of uniqueStep4) {
     const infos = m.infos;
     const keys = infos.map(x => x.key);
@@ -1089,7 +1409,7 @@ function detectThreeColorStep(melds, closedCounts) {
         name: `三色四步高(暗) ×${allClosedCopies}條（${infos.map(x => `${x.start}${SUIT_NAMES[x.suit]}`).join('→')}）`,
         fan: 40 * allClosedCopies,
         cat: '組合',
-        detail: `四順子數字依次遞增 1，排序 a,b,c,a，全暗 ${allClosedCopies} 條`
+        detail: `四順子數字依次遞增 1，全暗 ${allClosedCopies} 條`
       });
     }
     if (openCopies > 0) {
@@ -1098,13 +1418,12 @@ function detectThreeColorStep(melds, closedCounts) {
         name: `三色四步高(明) ×${openCopies}條（${infos.map(x => `${x.start}${SUIT_NAMES[x.suit]}`).join('→')}）`,
         fan: 20 * openCopies,
         cat: '組合',
-        detail: `四順子數字依次遞增 1，排序 a,b,c,a，非全暗 ${openCopies} 條`
+        detail: `四順子數字依次遞增 1，非全暗 ${openCopies} 條`
       });
     }
     keys.forEach(k => usedMeldKeys.add(k));
   }
 
-  // 3. 最後處理步步高（跳過已被登天或四步高使用嘅面子）
   for (const m of uniqueStep) {
     const infos = m.infos;
     const keys = infos.map(x => x.key);
@@ -1142,65 +1461,24 @@ function detectThreeColorStep(melds, closedCounts) {
 }
 
 /* ============================================================
-   同色步步高 / 同色四步高 / 同色登天 檢測
-   ------------------------------------------------------------
-   - 同一花色內，連續遞增 1 嘅順子
-   - 分明暗、按副本相乘
-   - 取最高層級：登天 > 四步高 > 步步高
-   - 可以有多條（只要面子唔重疊）
+   同色步步高 / 同色四步高 / 同色登天 檢測（修正版）
    ============================================================ */
-function detectSameColorStep(melds, closedCounts) {
+function detectSameColorStep(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 3) return [];
 
-  const allCounts = {};
-  const allTiles = getTilesForCalculation();
-  allTiles.forEach(id => allCounts[id] = (allCounts[id] || 0) + 1);
-
-  const seqCopyCount = {};
-  for (const m of sequences) {
-    if (m.suit !== 'wan' && m.suit !== 'tong' && m.suit !== 'so') continue;
-    const suit = m.suit;
-    const start = m.nums[0];
-    const id1 = `${suit}${start}`;
-    const id2 = `${suit}${start + 1}`;
-    const id3 = `${suit}${start + 2}`;
-    const c1 = allCounts[id1] || 0;
-    const c2 = allCounts[id2] || 0;
-    const c3 = allCounts[id3] || 0;
-    const totalCopies = Math.min(c1, c2, c3);
-
-    const cc1 = closedCounts[id1] || 0;
-    const cc2 = closedCounts[id2] || 0;
-    const cc3 = closedCounts[id3] || 0;
-    const closedCopies = Math.min(cc1, cc2, cc3);
-
-    const openCopies = totalCopies - closedCopies;
-
-    const key = `${suit}${start}`;
-    if (!seqCopyCount[key]) {
-      seqCopyCount[key] = {
-        suit,
-        start,
-        totalCopies,
-        closedCopies,
-        openCopies,
-        key,
-        meld: m
-      };
-    }
-  }
-
+  const seqCopyCount = getSequenceMeldCounts(melds, pair);
   const results = [];
 
   for (const suit of ['wan', 'tong', 'so']) {
-    const suitSeqs = Object.values(seqCopyCount).filter(x => x.suit === suit).sort((a, b) => a.start - b.start);
+    const suitSeqs = Object.values(seqCopyCount)
+      .filter(x => x.suit === suit && x.totalCopies > 0)
+      .sort((a, b) => a.start - b.start);
 
     const skyMatches = [];
     const step4Matches = [];
     const stepMatches = [];
 
-    // 同色登天（5 順子）
     for (const a of suitSeqs) {
       const b = suitSeqs.find(x => x.start === a.start + 1);
       const c = suitSeqs.find(x => x.start === a.start + 2);
@@ -1211,7 +1489,6 @@ function detectSameColorStep(melds, closedCounts) {
       }
     }
 
-    // 同色四步高（4 順子）
     for (const a of suitSeqs) {
       const b = suitSeqs.find(x => x.start === a.start + 1);
       const c = suitSeqs.find(x => x.start === a.start + 2);
@@ -1221,7 +1498,6 @@ function detectSameColorStep(melds, closedCounts) {
       }
     }
 
-    // 同色步步高（3 順子）
     for (const a of suitSeqs) {
       const b = suitSeqs.find(x => x.start === a.start + 1);
       const c = suitSeqs.find(x => x.start === a.start + 2);
@@ -1231,15 +1507,32 @@ function detectSameColorStep(melds, closedCounts) {
     }
 
     const calcMatchCopies = (infos) => {
-      const allClosedCopies = infos.reduce((acc, x) => acc * x.closedCopies, 1);
-      const totalCopies = infos.reduce((acc, x) => acc * (x.closedCopies + x.openCopies), 1);
+      const minTotal = Math.min(...infos.map(x => x.totalCopies));
+      if (minTotal <= 0) return { allClosedCopies: 0, openCopies: 0 };
+
+      const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+      const hasAnyNonClosed = infos.some(x => x.closedCopies === 0);
+
+      let allClosedCopies = 0;
+      if (!hasAnyNonClosed) {
+        const hasAnyOpen = infos.some(x => x.openCopies > 0);
+        if (!hasAnyOpen) {
+          allClosedCopies = totalCopies;
+        } else {
+          const branchSeq = infos.find(x => x.totalCopies > 1 && x.openCopies > 0);
+          if (branchSeq) {
+            allClosedCopies = Math.min(branchSeq.closedCopies, totalCopies);
+          } else {
+            allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
+          }
+        }
+      }
       const openCopies = totalCopies - allClosedCopies;
       return { allClosedCopies, openCopies };
     };
 
     const usedKeys = new Set();
 
-    // 登天
     for (const m of skyMatches) {
       const infos = m.infos;
       const keys = infos.map(x => x.key);
@@ -1266,7 +1559,6 @@ function detectSameColorStep(melds, closedCounts) {
       keys.forEach(k => usedKeys.add(k));
     }
 
-    // 四步高
     for (const m of step4Matches) {
       const infos = m.infos;
       const keys = infos.map(x => x.key);
@@ -1293,7 +1585,6 @@ function detectSameColorStep(melds, closedCounts) {
       keys.forEach(k => usedKeys.add(k));
     }
 
-    // 步步高
     for (const m of stepMatches) {
       const infos = m.infos;
       const keys = infos.map(x => x.key);
@@ -1325,49 +1616,13 @@ function detectSameColorStep(melds, closedCounts) {
 }
 
 /* ============================================================
-   清龍 / 雜龍 / 老少 檢測 — 按副本相乘、分明暗
+   清龍 / 雜龍 / 老少 檢測
    ============================================================ */
-function detectDragonsFromMelds(melds, closedCounts) {
+function detectDragonsFromMelds(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 2) return [];
 
-  const allCounts = {};
-  const allTiles = getTilesForCalculation();
-  allTiles.forEach(id => allCounts[id] = (allCounts[id] || 0) + 1);
-
-  const seqCopyCount = {};
-  for (const m of sequences) {
-    if (m.suit !== 'wan' && m.suit !== 'tong' && m.suit !== 'so') continue;
-    const suit = m.suit;
-    const start = m.nums[0];
-    const id1 = `${suit}${start}`;
-    const id2 = `${suit}${start + 1}`;
-    const id3 = `${suit}${start + 2}`;
-    const c1 = allCounts[id1] || 0;
-    const c2 = allCounts[id2] || 0;
-    const c3 = allCounts[id3] || 0;
-    const totalCopies = Math.min(c1, c2, c3);
-
-    const cc1 = closedCounts[id1] || 0;
-    const cc2 = closedCounts[id2] || 0;
-    const cc3 = closedCounts[id3] || 0;
-    const closedCopies = Math.min(cc1, cc2, cc3);
-
-    const openCopies = totalCopies - closedCopies;
-
-    const key = `${suit}${start}`;
-    if (!seqCopyCount[key]) {
-      seqCopyCount[key] = {
-        suit,
-        start,
-        totalCopies,
-        closedCopies,
-        openCopies,
-        key
-      };
-    }
-  }
-
+  const seqCopyCount = getSequenceMeldCounts(melds, pair);
   const suitSeqs = { wan: {}, tong: {}, so: {} };
   for (const key in seqCopyCount) {
     const s = seqCopyCount[key];
@@ -1377,7 +1632,6 @@ function detectDragonsFromMelds(melds, closedCounts) {
   const results = [];
   const suitNames = { wan: '萬', tong: '筒', so: '索' };
 
-  // 清龍：同色 123 + 456 + 789
   for (const suit of ['wan', 'tong', 'so']) {
     const s123 = suitSeqs[suit][1];
     const s456 = suitSeqs[suit][4];
@@ -1385,8 +1639,10 @@ function detectDragonsFromMelds(melds, closedCounts) {
     if (!s123 || !s456 || !s789) continue;
 
     const infos = [s123, s456, s789];
-    const allClosedCopies = infos.reduce((acc, x) => acc * x.closedCopies, 1);
-    const totalCopies = infos.reduce((acc, x) => acc * (x.closedCopies + x.openCopies), 1);
+    const minCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (minCopies <= 0) continue;
+    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
     if (allClosedCopies > 0) {
@@ -1395,7 +1651,7 @@ function detectDragonsFromMelds(melds, closedCounts) {
         name: `清龍(暗) ×${allClosedCopies}條（${suitNames[suit]}123+456+789）`,
         fan: 20 * allClosedCopies,
         cat: '組合',
-        detail: `同色 123 + 456 + 789，全暗 ${allClosedCopies} 條（${s123.closedCopies}×${s456.closedCopies}×${s789.closedCopies}）`
+        detail: `同色 123 + 456 + 789，全暗 ${allClosedCopies} 條`
       });
     }
     if (openCopies > 0) {
@@ -1409,7 +1665,6 @@ function detectDragonsFromMelds(melds, closedCounts) {
     }
   }
 
-  // 雜龍：三色 123 + 456 + 789
   const suits = ['wan', 'tong', 'so'];
   const perms = [];
   for (const s1 of suits) {
@@ -1428,8 +1683,10 @@ function detectDragonsFromMelds(melds, closedCounts) {
     if (!sA || !sB || !sC) continue;
 
     const infos = [sA, sB, sC];
-    const allClosedCopies = infos.reduce((acc, x) => acc * x.closedCopies, 1);
-    const totalCopies = infos.reduce((acc, x) => acc * (x.closedCopies + x.openCopies), 1);
+    const minCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (minCopies <= 0) continue;
+    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
     if (allClosedCopies > 0) {
@@ -1452,7 +1709,6 @@ function detectDragonsFromMelds(melds, closedCounts) {
     }
   }
 
-  // 老少：同色 123 + 789（唔同清龍重複）
   for (const suit of ['wan', 'tong', 'so']) {
     const s123 = suitSeqs[suit][1];
     const s789 = suitSeqs[suit][7];
@@ -1461,8 +1717,10 @@ function detectDragonsFromMelds(melds, closedCounts) {
     if (s456) continue;
 
     const infos = [s123, s789];
-    const allClosedCopies = infos.reduce((acc, x) => acc * x.closedCopies, 1);
-    const totalCopies = infos.reduce((acc, x) => acc * (x.closedCopies + x.openCopies), 1);
+    const minCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (minCopies <= 0) continue;
+    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
     if (allClosedCopies > 0) {
@@ -1488,21 +1746,14 @@ function detectDragonsFromMelds(melds, closedCounts) {
   return results;
 }
 
-function detectThreeMeetFromMelds(melds) {
+/* ============================================================
+   三相逢 檢測（更新：採用複式相乘萬×筒×索計算組數）
+   ============================================================ */
+function detectThreeMeetFromMelds(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
-  if (sequences.length === 0) return null;
+  if (sequences.length < 3) return null;
 
-  const closedCounts = {};
-  closedSection.forEach(id => closedCounts[id] = (closedCounts[id] || 0) + 1);
-
-  const seqGroups = {};
-  sequences.forEach(m => {
-    const key = m.nums.join(',');
-    if (!seqGroups[key]) seqGroups[key] = { wan: [], tong: [], so: [] };
-    if (m.suit === 'wan' || m.suit === 'tong' || m.suit === 'so') {
-      seqGroups[key][m.suit].push(m);
-    }
-  });
+  const seqCopyCount = getSequenceMeldCounts(melds, pair);
 
   let closedTotal = 0;
   let openTotal = 0;
@@ -1510,52 +1761,35 @@ function detectThreeMeetFromMelds(melds) {
   const openDetails = [];
   const threeMeetKeys = new Set();
 
-  for (const key in seqGroups) {
-    const group = seqGroups[key];
-    const nums = key.split(',').map(Number);
-    
-    const wanCount = group.wan.length;
-    const tongCount = group.tong.length;
-    const soCount = group.so.length;
-    
-    if (wanCount === 0 || tongCount === 0 || soCount === 0) continue;
-    
+  for (let start = 1; start <= 7; start++) {
+    const wanSeq = seqCopyCount[`wan${start}`];
+    const tongSeq = seqCopyCount[`tong${start}`];
+    const soSeq = seqCopyCount[`so${start}`];
+
+    if (!wanSeq || !tongSeq || !soSeq) continue;
+    if (wanSeq.totalCopies === 0 || tongSeq.totalCopies === 0 || soSeq.totalCopies === 0) continue;
+
+    const key = `${start},${start+1},${start+2}`;
     threeMeetKeys.add(key);
-    
-    const calcClosedSeqCount = (suit, totalCount) => {
-      let minClosed = Infinity;
-      for (const num of nums) {
-        const id = `${suit}${num}`;
-        const cnt = closedCounts[id] || 0;
-        minClosed = Math.min(minClosed, cnt);
-      }
-      if (minClosed === Infinity) minClosed = 0;
-      return Math.min(minClosed, totalCount);
-    };
-    
-    const wanClosed = calcClosedSeqCount('wan', wanCount);
-    const tongClosed = calcClosedSeqCount('tong', tongCount);
-    const soClosed = calcClosedSeqCount('so', soCount);
-    
-    const closedThreeMeet = wanClosed * tongClosed * soClosed;
-    const totalThreeMeet = wanCount * tongCount * soCount;
+
+    const totalThreeMeet = wanSeq.totalCopies * tongSeq.totalCopies * soSeq.totalCopies;
+    const closedThreeMeet = wanSeq.closedCopies * tongSeq.closedCopies * soSeq.closedCopies;
     const openThreeMeet = totalThreeMeet - closedThreeMeet;
-    
-    for (let i = 0; i < closedThreeMeet; i++) {
-      closedTotal++;
-      closedDetails.push(`${key.replace(/,/g,'')}萬筒索(暗)`);
+
+    const displayNums = `${start}${start+1}${start+2}`;
+    if (closedThreeMeet > 0) {
+      closedTotal += closedThreeMeet;
+      closedDetails.push(`${displayNums}萬筒索(暗) ×${closedThreeMeet}`);
     }
-    
-    for (let i = 0; i < openThreeMeet; i++) {
-      openTotal++;
-      openDetails.push(`${key.replace(/,/g,'')}萬筒索(明)`);
+    if (openThreeMeet > 0) {
+      openTotal += openThreeMeet;
+      openDetails.push(`${displayNums}萬筒索(明) ×${openThreeMeet}`);
     }
   }
 
   if (closedTotal === 0 && openTotal === 0) return null;
 
   const items = [];
-  
   if (closedTotal > 0) {
     items.push({
       id: 'threeMeet2',
@@ -1565,7 +1799,6 @@ function detectThreeMeetFromMelds(melds) {
       detail: closedDetails.join('、')
     });
   }
-  
   if (openTotal > 0) {
     items.push({
       id: 'threeMeet1',
@@ -1598,7 +1831,7 @@ function detectSistersFromMelds(melds, threeMeetKeys) {
     if (suitsArr.length >= 2) {
       for (let i = 0; i < suitsArr.length; i++) {
         for (let j = i + 1; j < suitsArr.length; j++) {
-          const pairs = suitCounts[suitsArr[i]] * suitCounts[suitsArr[j]];
+          const pairs = Math.min(suitCounts[suitsArr[i]], suitCounts[suitsArr[j]]);
           if (pairs > 0) { totalSisterPairs += pairs; details.push(`${key.replace(/,/g,'')}(${suitNames[suitsArr[i]]}&${suitNames[suitsArr[j]]}) ×${pairs}`); }
         }
       }
@@ -1609,6 +1842,10 @@ function detectSistersFromMelds(melds, threeMeetKeys) {
 }
 
 function hasHonorTripletOrKong(melds) { return melds.some(m => m.type === '刻子' && m.suit === 'honor'); }
+
+function countHonorTriplets(melds) {
+  return melds.filter(m => m.type === '刻子' && m.suit === 'honor').length;
+}
 
 function detectChainPongFromMelds(melds, pair) {
   const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor');
@@ -1793,7 +2030,13 @@ function evaluateDecomposition(decomp, hand) {
   if (totalFlowers > 0) matchedIds.push('eachFlower');
 
   const hasOpenKong = kongSection.some(k => k.type === 'open');
-  if (openSection.length === 0 && !hasOpenKong) matchedIds.push('closedHand');
+  const hasClosedKong = kongSection.some(k => k.type === 'closed');
+  if (openSection.length === 0 && !hasOpenKong && !hasClosedKong) matchedIds.push('closedHand');
+
+  // 全求人：全部吃、碰或明槓（不能暗槓），暗手牌區只有 2 張且為將眼
+  if (!hasClosedKong && closedSection.length === 2 && pair && closedSection.filter(id => id === pair.id).length === 2) {
+    matchedIds.push('fullHelp');
+  }
 
   let openKongCount = 0;
   let closedKongCount = 0;
@@ -1830,12 +2073,115 @@ function evaluateDecomposition(decomp, hand) {
   const hasWord = winds.length > 0 || dragons.length > 0;
   let flatWu = meldListsIsFlat(melds);
 
-  // 檢查有冇三色登天，如果有就唔計平糊
-  const closedCountsForStepCheck = {};
-  closedSection.forEach(id => closedCountsForStepCheck[id] = (closedCountsForStepCheck[id] || 0) + 1);
-  const stepResults = detectThreeColorStep(melds, closedCountsForStepCheck);
+  const stepResults = detectThreeColorStep(melds, pair);
+  const sameStepResults = detectSameColorStep(melds, pair);
   const hasSky = stepResults.some(r => r.name.includes('三色登天'));
-  if (hasSky) flatWu = false;
+  const hasSameSky = sameStepResults.some(r => r.name.includes('同色登天'));
+  if (hasSky || hasSameSky) flatWu = false;
+
+  // 檢查 全姊妹：平和型（5順子），順子結構為 A組×2 + B組×3
+  let isAllSisters = false;
+  const seqKeyCounts = {};
+  if (meldListsIsFlat(melds) && melds.length === 5) {
+    melds.forEach(m => {
+      const key = m.nums.join('');
+      seqKeyCounts[key] = (seqKeyCounts[key] || 0) + 1;
+    });
+    const gCounts = Object.values(seqKeyCounts).sort((a, b) => a - b);
+    if (gCounts.length === 2 && gCounts[0] === 2 && gCounts[1] === 3) {
+      isAllSisters = true;
+      flatWu = false;
+    }
+  }
+
+  // 三元牌判定：大三元 / 小三元
+  const dragonMeldCount = melds.filter(m => m.type === '刻子' && ['chung', 'fat', 'bak'].includes(m.id)).length;
+  const isDragonPair = pair && ['chung', 'fat', 'bak'].includes(pair.id);
+
+  if (dragonMeldCount === 3) {
+    matchedIds.push('bigThreeDragon');
+  } else if (dragonMeldCount === 2 && isDragonPair) {
+    matchedIds.push('smallThreeDragon');
+  }
+
+  // 風牌判定：大四喜 / 小四喜 / 大三風 / 小三風
+  const windMeldCount = melds.filter(m => m.type === '刻子' && ['east', 'south', 'west', 'north'].includes(m.id)).length;
+  const isWindPair = pair && ['east', 'south', 'west', 'north'].includes(pair.id);
+
+  if (windMeldCount === 4) {
+    matchedIds.push('bigFourJoy');
+  } else if (windMeldCount === 3 && isWindPair) {
+    matchedIds.push('smallFourJoy');
+  } else if (windMeldCount === 3) {
+    matchedIds.push('bigThreeWind');
+  } else if (windMeldCount === 2 && isWindPair) {
+    matchedIds.push('smallThreeWind');
+  }
+
+  const isWord = isWordOneColor(suits);
+
+  const isBig = isAllBig(counts, winds, dragons);
+  const isSmall = isAllSmall(counts, winds, dragons);
+
+  if (isBig) matchedIds.push('allBig');
+  else if (isSmall) matchedIds.push('allSmall');
+  else {
+    if (!isWord && isMissingFive(counts)) matchedIds.push('missingFive');
+  }
+
+  if (isWord) {
+    matchedIds.push('wordOneColor');
+  } else {
+    if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
+    if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
+    if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
+    else if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
+    if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
+    if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
+    if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
+  }
+
+  if (!isWord && melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) {
+    matchedIds.push('pongPongWu');
+  }
+
+  // 五門齊 / 七門齊 檢測
+  const getMeldDoor = (m) => {
+    if (m.suit === 'wan' || m.suit === 'tong' || m.suit === 'so') return m.suit;
+    if (m.id && TILE_MAP[m.id]) return TILE_MAP[m.id].suit;
+    return null;
+  };
+
+  const getPairDoor = (p) => {
+    if (!p) return null;
+    if (p.suit === 'wan' || p.suit === 'tong' || p.suit === 'so') return p.suit;
+    if (p.id && TILE_MAP[p.id]) return TILE_MAP[p.id].suit;
+    return null;
+  };
+
+  const meldDoors = new Set();
+  melds.forEach(m => {
+    const d = getMeldDoor(m);
+    if (d) meldDoors.add(d);
+  });
+  const pDoor = getPairDoor(pair);
+  const allHandDoors = new Set(meldDoors);
+  if (pDoor) allHandDoors.add(pDoor);
+
+  const hasAllFiveDoors = ['wan', 'tong', 'so', 'wind', 'dragon'].every(d => allHandDoors.has(d));
+  if (hasAllFiveDoors) {
+    const hasBothFlowers = (redFlowers > 0 && blueFlowers > 0);
+    const isBigDoor = (meldDoors.size === 5);
+    if (hasBothFlowers) {
+      if (isBigDoor) matchedIds.push('bigSevenDoor');
+      else matchedIds.push('smallSevenDoor');
+    } else {
+      if (isBigDoor) matchedIds.push('bigFiveDoor');
+      else matchedIds.push('smallFiveDoor');
+    }
+  }
+
+  const honorTripletCount = countHonorTriplets(melds);
 
   if (!hasFlower && !hasWord && flatWu) {
     matchedIds.push('noWordBigFlat');
@@ -1844,7 +2190,6 @@ function evaluateDecomposition(decomp, hand) {
     else {
       if (!hasFlower) matchedIds.push('noFlower');
       if (!hasWord) matchedIds.push('noWord');
-      else if (hasHonorTripletOrKong(melds)) matchedIds.push('wordTile');
     }
     if (flatWu) matchedIds.push('flatWu');
   }
@@ -1853,54 +2198,43 @@ function evaluateDecomposition(decomp, hand) {
     matchedIds.push('eyeTile');
   }
 
-  const isBig = isAllBig(counts, winds, dragons);
-  const isSmall = isAllSmall(counts, winds, dragons);
-
-  if (isBig) matchedIds.push('allBig');
-  else if (isSmall) matchedIds.push('allSmall');
-  else {
-    if (isMissingFive(counts)) matchedIds.push('missingFive');
-  }
-
-  if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
-  if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
-  if (isWordOneColor(suits)) matchedIds.push('wordOneColor');
-  if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
-  if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
-  if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
-  if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
-  if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
-  if (melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) matchedIds.push('pongPongWu');
-
   detectChainPongFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectMixedChainPongFromMelds(melds).forEach(r => dynamicDetails.push(r));
   detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
   detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
 
-  const threeMeetResult = detectThreeMeetFromMelds(melds);
+  // 全姊妹（30番）
+  if (isAllSisters) {
+    const detailStr = Object.keys(seqKeyCounts).map(k => `${k}×${seqKeyCounts[k]}`).join('、');
+    dynamicDetails.push({
+      id: 'allSisters',
+      name: '全姊妹',
+      fan: 30,
+      cat: '組合',
+      detail: `5組順子為 ${detailStr}（不計平糊、姊妹）`
+    });
+  }
+
+  // 三相逢（複式相乘）
+  const threeMeetResult = detectThreeMeetFromMelds(melds, pair);
   const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
   if (threeMeetResult) dynamicDetails.push(threeMeetResult);
 
+  // 全姊妹時不計姊妹
   const sistersResult = detectSistersFromMelds(melds, threeMeetKeys);
-  if (sistersResult) dynamicDetails.push(sistersResult);
+  if (sistersResult && !isAllSisters) dynamicDetails.push(sistersResult);
 
   detectPairHighFromMelds(melds).forEach(r => dynamicDetails.push(r));
 
-  const closedCountsForStep = {};
-  closedSection.forEach(id => closedCountsForStep[id] = (closedCountsForStep[id] || 0) + 1);
+  detectDragonsFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  sameStepResults.forEach(r => dynamicDetails.push(r));
+  stepResults.forEach(r => dynamicDetails.push(r));
 
-  // 清龍 / 雜龍 / 老少
-  detectDragonsFromMelds(melds, closedCountsForStep).forEach(r => dynamicDetails.push(r));
-
-  // 同色步步高 / 四步高 / 登天
-  detectSameColorStep(melds, closedCountsForStep).forEach(r => dynamicDetails.push(r));
-
-  // 三色步步高 / 四步高 / 登天
-  detectThreeColorStep(melds, closedCountsForStep).forEach(r => dynamicDetails.push(r));
-
-  const mixedTerminalResult = detectMixedTerminalFromMelds(melds, hand);
+  // 字一色不計混帶幺
+  const mixedTerminalResult = !isWord ? detectMixedTerminalFromMelds(melds, hand) : null;
   if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
 
-  const mixedXResult = detectMixedWithXFromMelds(melds, allTiles);
+  const mixedXResult = !isWord ? detectMixedWithXFromMelds(melds, allTiles) : null;
   if (mixedXResult) dynamicDetails.push(mixedXResult);
 
   const uniqueMatchedIds = [...new Set(matchedIds)];
@@ -1924,10 +2258,37 @@ function evaluateDecomposition(decomp, hand) {
 
   total += flowerFanTotal;
 
+  if (honorTripletCount > 0) {
+    const wordFan = honorTripletCount * 2;
+    total += wordFan;
+    detail.push({
+      id: 'wordTile',
+      name: `字（每組字刻 +2）×${honorTripletCount}組`,
+      fan: wordFan,
+      cat: '花摸',
+      detail: `${honorTripletCount} 組字牌刻子，每組 +2 番`
+    });
+  }
+
   dynamicDetails.forEach(item => {
     total += item.fan;
     detail.push(item);
   });
+
+  // 雞糊檢測：必須只有 1 隻花，全牌無任何其他番數，直接計 30 番（不計花2番）
+  const nonFlowerItems = detail.filter(item => item.id !== 'eachFlower');
+  if (totalFlowers === 1 && nonFlowerItems.length === 0) {
+    return {
+      total: 30,
+      detail: [{
+        id: 'chickenWu',
+        name: '雞糊',
+        fan: 30,
+        cat: '組合',
+        detail: '只有 1 隻花且全牌無任何其他番數（不計花2番，直計雞糊30番）'
+      }]
+    };
+  }
 
   return { total, detail };
 }
@@ -1949,46 +2310,196 @@ function calculateSafe() {
     const countsForDecomp = {};
     hiddenAndOpenTiles.forEach(id => countsForDecomp[id] = (countsForDecomp[id]||0)+1);
 
-    const decompositions = getAllDecompositions(countsForDecomp);
+    const candidates = [];
 
+    const decompositions = getAllDecompositions(countsForDecomp);
     if (decompositions.length > 0) {
       let bestResult = { total: -1, detail: [] };
       for (const decomp of decompositions) {
         const res = evaluateDecomposition(decomp, hand);
         if (res.total > bestResult.total) bestResult = res;
       }
-      resultData = { total: bestResult.total, detail: bestResult.detail, handTiles: getAllSelectedTilesForWall() };
-      renderResult(bestResult.total, bestResult.detail);
-      switchTab('result', document.querySelectorAll('.tab')[1]);
-      document.getElementById('resultPanel').classList.add('show');
-      return;
+      candidates.push(bestResult);
+    }
+
+    const guluResult = evaluateLuckyGulu(counts, hand);
+    if (guluResult) {
+      candidates.push(guluResult);
     }
 
     const noMatchResult = evaluateSixteenNoMatch(counts, hand);
     if (noMatchResult) {
-      resultData = { total: noMatchResult.total, detail: noMatchResult.detail, handTiles: getAllSelectedTilesForWall() };
-      renderResult(noMatchResult.total, noMatchResult.detail);
-      switchTab('result', document.querySelectorAll('.tab')[1]);
-      document.getElementById('resultPanel').classList.add('show');
-      return;
+      candidates.push(noMatchResult);
     }
 
     const orphanResult = evaluateThirteenOrphan(counts, hand);
     if (orphanResult) {
-      resultData = { total: orphanResult.total, detail: orphanResult.detail, handTiles: getAllSelectedTilesForWall() };
-      renderResult(orphanResult.total, orphanResult.detail);
+      candidates.push(orphanResult);
+    }
+
+    if (candidates.length > 0) {
+      let best = candidates[0];
+      for (let i = 1; i < candidates.length; i++) {
+        if (candidates[i].total > best.total) {
+          best = candidates[i];
+        }
+      }
+      resultData = { total: best.total, detail: best.detail, handTiles: getAllSelectedTilesForWall() };
+      baseResultTotal = best.total;
+      baseResultDetail = best.detail;
+      bonusState = {};
+      renderResult(best.total, best.detail);
       switchTab('result', document.querySelectorAll('.tab')[1]);
       document.getElementById('resultPanel').classList.add('show');
       return;
     }
 
     resultData = { total: 0, detail: [], handTiles: getAllSelectedTilesForWall() };
+    baseResultTotal = 0;
+    baseResultDetail = [];
+    bonusState = {};
     renderResult(0, []);
     switchTab('result', document.querySelectorAll('.tab')[1]);
     document.getElementById('resultPanel').classList.add('show');
   } catch (err) {
     console.error(err);
     alert("計算過程發生例外錯誤：" + err.message);
+  }
+}
+
+function getBonusFanTotal() {
+  let total = 0;
+  for (const key in bonusState) {
+    if (bonusState[key]) total += bonusState[key];
+  }
+  // 特殊取代：自摸雞糊轉鴨糊 → 扣掉雞糊30番
+  if (bonusState.duckWu && hasBaseFan('chickenWu')) total -= 30;
+  if (bonusState.kanKanWu && hasBaseFan('pongPongWu')) {
+    // 坎坎糊取代對對糊：扣掉對對糊40番
+    total -= 40;
+  }
+  if (bonusState.halfHelp && hasBaseFan('fullHelp')) {
+    // 半求人取代全求人：扣掉全求人15番
+    total -= 15;
+  }
+  return total;
+}
+
+// 檢查是否已有某個番種（從 baseResultDetail 中找）
+function hasBaseFan(id) {
+  const expanded = [];
+  baseResultDetail.forEach(f => {
+    if (f.items && Array.isArray(f.items)) f.items.forEach(i => expanded.push(i));
+    else expanded.push(f);
+  });
+  return expanded.some(f => f.id === id);
+}
+
+function toggleBonus(key, fan) {
+  // 特殊規則：自摸
+  if (key === 'selfDraw') {
+    if (bonusState.selfDraw !== undefined) {
+      // 取消自摸
+      delete bonusState.selfDraw;
+      // 同時取消自動轉換
+      delete bonusState.duckWu;
+      delete bonusState.kanKanWu;
+      delete bonusState.halfHelp;
+    } else {
+      // 檢查特殊情況
+      const hasChickenWu = hasBaseFan('chickenWu');
+      const hasPongPong = hasBaseFan('pongPongWu');
+      const hasFullHelp = hasBaseFan('fullHelp');
+      const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
+
+      if (hasChickenWu) {
+        // 自摸雞糊 → 鴨糊 15番，自摸不加1
+        bonusState.selfDraw = 0; // 不額外加番，但標記已按
+        if (!hasBaseFan('duckWu')) {
+          bonusState['duckWu'] = 15;
+        }
+      } else if (hasPongPong && isClosed) {
+        // 門清對對胡自摸 → 坎坎糊 150番，自摸不加1
+        bonusState.selfDraw = 0;
+        if (!hasBaseFan('kanKanWu')) {
+          bonusState['kanKanWu'] = 150;
+        }
+      } else if (hasFullHelp) {
+        // 自摸全求人 → 半求人 8番，自摸不加1
+        bonusState.selfDraw = 0;
+        if (!hasBaseFan('halfHelp')) {
+          bonusState['halfHelp'] = 8;
+        }
+      } else if (isClosed) {
+        // 門清自摸額外 +2（即門清自摸 8 番，取代門清5+自摸1）
+        bonusState.selfDraw = 3; // 自摸1 + 額外2 = 3
+      } else {
+        bonusState.selfDraw = 1;
+      }
+    }
+    updateBonusButtons();
+    recalcBonus();
+    return;
+  }
+
+  // 叮
+  if (key === 'ding') {
+    if (bonusState.ding) {
+      delete bonusState.ding;
+    } else {
+      const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
+      if (isClosed) {
+        bonusState.ding = 15; // 門清叮額外+10 → 叮變15
+      } else {
+        bonusState.ding = 5;
+      }
+    }
+    updateBonusButtons();
+    recalcBonus();
+    return;
+  }
+
+  // 其他按鈕：直接切換
+  if (bonusState[key] !== undefined) {
+    delete bonusState[key];
+  } else {
+    bonusState[key] = fan;
+  }
+  updateBonusButtons();
+  recalcBonus();
+}
+
+function updateBonusButtons() {
+  document.querySelectorAll('.bonus-btn').forEach(btn => {
+    const key = btn.dataset.bonus;
+    if (bonusState[key] !== undefined && bonusState[key] !== null) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+function recalcBonus() {
+  const bonusTotal = getBonusFanTotal();
+  const newTotal = baseResultTotal + bonusTotal;
+  // 更新畫面上的總番數
+  const totalEl = document.querySelector('.result-total .num');
+  if (totalEl) totalEl.textContent = newTotal;
+
+  // 更新按鈕區下方顯示的「目前加番」
+  let bonusInfo = document.getElementById('bonusInfo');
+  if (!bonusInfo) {
+    bonusInfo = document.createElement('div');
+    bonusInfo.id = 'bonusInfo';
+    bonusInfo.style.cssText = 'text-align:center;font-size:12px;color:#ffd200;margin-top:8px;';
+    const bonusSection = document.querySelector('.bonus-section');
+    if (bonusSection) bonusSection.appendChild(bonusInfo);
+  }
+  if (bonusTotal > 0) {
+    bonusInfo.textContent = `目前加番：+${bonusTotal}（基礎 ${baseResultTotal} + 加番 ${bonusTotal} = ${newTotal}）`;
+  } else {
+    bonusInfo.textContent = `目前加番：+0（基礎 ${baseResultTotal}）`;
   }
 }
 
@@ -2021,6 +2532,78 @@ function renderResult(total, detail) {
   const catOrder = ['花摸','槓摸','基本','組合','大牌','額外'];
   const sortedCats = Object.keys(grouped).sort((a,b) => catOrder.indexOf(a) - catOrder.indexOf(b));
 
+  const bonusHTML = `
+    <div class="bonus-section">
+      <div class="bonus-title">➕ 加番按鈕（點擊切換）</div>
+
+      <div class="bonus-group">
+        <div class="bonus-group-label">基本狀態</div>
+        <div class="bonus-btns">
+          <button class="bonus-btn" data-bonus="selfDraw" onclick="toggleBonus('selfDraw', 1)">自摸</button>
+          <button class="bonus-btn" data-bonus="ding" onclick="toggleBonus('ding', 5)">叮</button>
+          <button class="bonus-btn" data-bonus="pairPong" onclick="toggleBonus('pairPong', 2)">對碰/單吊</button>
+          <button class="bonus-btn" data-bonus="fakeSingle" onclick="toggleBonus('fakeSingle', 1)">假獨</button>
+          <button class="bonus-btn" data-bonus="robKong" onclick="toggleBonus('robKong', 5)">搶槓</button>
+          <button class="bonus-btn" data-bonus="doubleWin" onclick="toggleBonus('doubleWin', 5)">雙響</button>
+          <button class="bonus-btn" data-bonus="tripleWin" onclick="toggleBonus('tripleWin', 10)">三響</button>
+        </div>
+      </div>
+
+      <div class="bonus-group">
+        <div class="bonus-group-label">特別（飛 / 海底 / 河底）</div>
+        <div class="bonus-btns">
+          <button class="bonus-btn" data-bonus="fly8" onclick="toggleBonus('fly8', 10)">8飛</button>
+          <button class="bonus-btn" data-bonus="fly13" onclick="toggleBonus('fly13', 10)">13飛</button>
+          <button class="bonus-btn" data-bonus="fly16" onclick="toggleBonus('fly16', 10)">16飛</button>
+          <button class="bonus-btn" data-bonus="seaFish" onclick="toggleBonus('seaFish', 5)">海底撈月</button>
+          <button class="bonus-btn" data-bonus="riverFish" onclick="toggleBonus('riverFish', 3)">河底撈月</button>
+        </div>
+      </div>
+
+      <div class="bonus-group">
+        <div class="bonus-group-label">花摸</div>
+        <div class="bonus-btns">
+          <button class="bonus-btn" data-bonus="flower1" onclick="toggleBonus('flower1', 1)">花摸*1</button>
+          <button class="bonus-btn" data-bonus="flower2" onclick="toggleBonus('flower2', 5)">花摸*2</button>
+          <button class="bonus-btn" data-bonus="flower3" onclick="toggleBonus('flower3', 10)">花摸*3</button>
+          <button class="bonus-btn" data-bonus="flower4" onclick="toggleBonus('flower4', 20)">花摸*4</button>
+          <button class="bonus-btn" data-bonus="flower5" onclick="toggleBonus('flower5', 40)">花摸*5</button>
+          <button class="bonus-btn" data-bonus="flower6" onclick="toggleBonus('flower6', 70)">花摸*6</button>
+          <button class="bonus-btn" data-bonus="flower7" onclick="toggleBonus('flower7', 100)">花摸*7</button>
+          <button class="bonus-btn" data-bonus="flower8" onclick="toggleBonus('flower8', 140)">花摸*8</button>
+        </div>
+      </div>
+
+      <div class="bonus-group">
+        <div class="bonus-group-label">槓摸</div>
+        <div class="bonus-btns">
+          <button class="bonus-btn" data-bonus="kong1" onclick="toggleBonus('kong1', 1)">槓摸*1</button>
+          <button class="bonus-btn" data-bonus="kong2" onclick="toggleBonus('kong2', 5)">槓摸*2</button>
+          <button class="bonus-btn" data-bonus="kong3" onclick="toggleBonus('kong3', 10)">槓摸*3</button>
+          <button class="bonus-btn" data-bonus="kong4" onclick="toggleBonus('kong4', 25)">槓摸*4</button>
+          <button class="bonus-btn" data-bonus="kong5" onclick="toggleBonus('kong5', 50)">槓摸*5</button>
+        </div>
+      </div>
+
+      <div class="bonus-group">
+        <div class="bonus-group-label">花槓自摸</div>
+        <div class="bonus-btns">
+          <button class="bonus-btn" data-bonus="flowerKong1" onclick="toggleBonus('flowerKong1', 8)">花槓自摸</button>
+          <button class="bonus-btn" data-bonus="flowerKong3" onclick="toggleBonus('flowerKong3', 15)">花槓自摸*3</button>
+          <button class="bonus-btn" data-bonus="flowerKong4" onclick="toggleBonus('flowerKong4', 25)">花槓自摸*4</button>
+          <button class="bonus-btn" data-bonus="flowerKong5" onclick="toggleBonus('flowerKong5', 50)">花槓自摸*5</button>
+          <button class="bonus-btn" data-bonus="flowerKong6" onclick="toggleBonus('flowerKong6', 80)">花槓自摸*6</button>
+          <button class="bonus-btn" data-bonus="flowerKong7" onclick="toggleBonus('flowerKong7', 120)">花槓自摸*7</button>
+        </div>
+      </div>
+
+      <div class="bonus-hint" style="margin-top:6px;">
+        ※ 自摸額外規則自動處理：門清自摸 +2、自摸雞糊轉鴨糊、門清對對胡自摸轉坎坎糊、自摸全求人轉半求人，以上情況自摸不再 +1。<br>
+        ※ 叮額外規則：門清叮額外 +10（即門清時按叮，叮由 +5 變 +15）。
+      </div>
+    </div>
+  `;
+
   body.innerHTML = `
     <div class="result-total">
       <div class="num">${total}</div>
@@ -2037,33 +2620,59 @@ function renderResult(total, detail) {
         </div>
       `).join('')}
     `).join('')}
+    ${bonusHTML}
     <div class="result-note">
       ※ 將眼（2/5/8）僅限數字牌（風字眼不計）<br>
+      ※ 全求人（15番）：全部吃、碰或明槓（無暗槓），暗手牌只有 2 張（單釣將眼）<br>
       ※ 槓牌自動整合至17張牌型計算中，不再重複獨立計算「槓摸」番數<br>
-      ※ 三色/同色步步高、四步高、登天 分明暗、按副本相乘、取最高層級<br>
+      ※ 三色/同色步步高、四步高、登天 分明暗、按分支點條數計算、取最高層級<br>
+      ※ 雜連刻：三雜連刻(10番)、四雜連刻(20番)、五雜連刻(40番)；相鄰刻子不得同色，且必須包含三雜連刻（萬筒索齊集）<br>
       ※ 清龍 / 雜龍 / 老少 可複式；登天唔計平糊<br>
+      ※ 三相逢：採複式相乘計算（例如 2索×2萬×1筒 = 4組）<br>
+      ※ 全姊妹（30番）：5組順子為 A組×2 + B組×3，達成時不計平糊及姊妹<br>
+      ※ 嚦咕嚦咕（50番）：不計門清；七對一刻或八對半；達成後計算 3-7 連對（複式）及將眼（2/5/8 每對+2番）<br>
+      ※ 雞糊（30番）：必須恰好 1 隻花且全牌無任何其他番數，不計花2番直接計雞糊30番<br>
+      ※ 五門齊：大五門(10番) / 小五門(5番)；七門齊：大七門(20番) / 小七門(15番)<br>
+      ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計混老頭、全帶幺、對對胡、缺五)<br>
+      ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button onclick="saveResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">💾 儲存本局</button>
       <button onclick="closeResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#16213e;color:#ffd200;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #f7971e55;">返回</button>
     </div>
   `;
+
+  updateBonusButtons();
+  setTimeout(() => {
+    let bonusInfo = document.getElementById('bonusInfo');
+    if (!bonusInfo) {
+      bonusInfo = document.createElement('div');
+      bonusInfo.id = 'bonusInfo';
+      bonusInfo.style.cssText = 'text-align:center;font-size:12px;color:#ffd200;margin-top:8px;';
+      const bonusSection = document.querySelector('.bonus-section');
+      if (bonusSection) bonusSection.appendChild(bonusInfo);
+    }
+    bonusInfo.textContent = `目前加番：+0（基礎 ${baseResultTotal}）`;
+  }, 0);
 }
 
 function closeResult() { document.getElementById('resultPanel').classList.remove('show'); }
 
 function saveResult() {
   if (!resultData) return;
+  const bonusTotal = getBonusFanTotal();
+  const finalTotal = baseResultTotal + bonusTotal;
   const now = new Date();
   const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const bonusDesc = Object.keys(bonusState).filter(k => bonusState[k] > 0).map(k => `${k}(${bonusState[k]}番)`).join('、');
   historyData.unshift({
-    total: resultData.total,
-    details: resultData.detail.map(f => `${f.name}(${f.fan}番)`).join('、'),
+    total: finalTotal,
+    details: resultData.detail.map(f => `${f.name}(${f.fan}番)`).join('、') + (bonusDesc ? ' + 加番：' + bonusDesc : ''),
     time: timeStr,
     tiles: `花(紅:${redFlowerCount},藍:${blueFlowerCount}) | ` + resultData.handTiles.map(id => TILE_MAP[id]?.label || '?').join(' ')
   });
   renderHistory();
-  showToast(`已儲存：${resultData.total}番`);
+  showToast(`已儲存：${finalTotal}番`);
   closeResult();
   resultData = null;
 }
