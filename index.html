@@ -131,8 +131,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 <body>
 
 <div class="header">
-  <h1>🀄 多仔港式台牌 自動算番</h1>
-  <p>上方選擇目標區域 · 點擊牌牆直接加入 · 2026</p>
+  <h1> 多狗計數機 </h1>
+  <p>2026測試版v1 有問題聯絡Owen </p>
 </div>
 
 <div class="tabs">
@@ -265,13 +265,13 @@ const FAN_TABLE = [
   { id:'noWord', name:'無字', fan:2, cat:'花摸' },
   { id:'noWordFlower', name:'無字花', fan:10, cat:'花摸' },
   { id:'sevenRobOne', name:'七搶一/一搶七', fan:40, cat:'花摸' },
-  { id:'eightImmortal', name:'八仙過海', fan:88, cat:'花摸' },
+  { id:'eightImmortal', name:'八仙過海', fan:80, cat:'花摸' },
   { id:'openKong', name:'明槓', fan:1, cat:'槓摸' },
   { id:'closedKong', name:'暗槓', fan:2, cat:'槓摸' },
-  { id:'twoKong', name:'兩槓', fan:20, cat:'槓摸' },
-  { id:'threeKong', name:'三槓', fan:40, cat:'槓摸' },
-  { id:'fourKong', name:'四槓', fan:80, cat:'槓摸' },
-  { id:'fiveKong', name:'五槓', fan:180, cat:'槓摸' },
+  { id:'twoKong', name:'兩槓', fan:10, cat:'槓摸' },
+  { id:'threeKong', name:'三槓', fan:30, cat:'槓摸' },
+  { id:'fourKong', name:'四槓', fan:70, cat:'槓摸' },
+  { id:'fiveKong', name:'五槓', fan:160, cat:'槓摸' },
   { id:'selfDraw', name:'自摸', fan:1, cat:'基本' },
   { id:'ding', name:'叮', fan:5, cat:'基本' },
   { id:'closedHand', name:'門清', fan:5, cat:'基本' },
@@ -322,9 +322,9 @@ const FAN_TABLE = [
   { id:'clearDragon2', name:'清龍(大)', fan:20, cat:'組合' },
   { id:'mixedDragon1', name:'雜龍(小)', fan:8, cat:'組合' },
   { id:'mixedDragon2', name:'雜龍(大)', fan:15, cat:'組合' },
-  { id:'fourBack1', name:'四歸一', fan:15, cat:'組合' },
-  { id:'fourBack2', name:'四歸二', fan:30, cat:'組合' },
-  { id:'fourBack4', name:'四歸四', fan:60, cat:'組合' },
+  { id:'fourBack1', name:'四歸一', fan:5, cat:'組合' },
+  { id:'fourBack2', name:'四歸二', fan:10, cat:'組合' },
+  { id:'fourBack4', name:'四歸四', fan:15, cat:'組合' },
   { id:'chickenWu', name:'雞糊', fan:30, cat:'組合' },
   { id:'duckWu', name:'鴨糊', fan:15, cat:'組合' },
   { id:'sisters', name:'姊妹', fan:3, cat:'組合' },
@@ -340,33 +340,32 @@ const FAN_TABLE = [
   { id:'chainPong', name:'連刻', fan:5, cat:'組合' },
   { id:'smallThreeChain', name:'小三連刻', fan:10, cat:'組合' },
   { id:'bigThreeChain', name:'大三連刻', fan:20, cat:'組合' },
-  { id:'mixedThreeChain', name:'三雜連刻', fan:10, cat:'組合' },
-  { id:'mixedFourChain', name:'四雜連刻', fan:20, cat:'組合' },
-  { id:'mixedFiveChain', name:'五雜連刻', fan:40, cat:'大牌' },
+  { id:'mixedThreeChain', name:'三雜連刻', fan:20, cat:'組合' },
+  { id:'mixedFourChain', name:'四雜連刻', fan:40, cat:'組合' },
+  { id:'mixedFiveChain', name:'五雜連刻', fan:100, cat:'大牌' },
   { id:'oldYoungUp', name:'老少上', fan:5, cat:'組合' },
   { id:'oldYoungPong', name:'老少碰', fan:5, cat:'組合' },
   { id:'twoHidden', name:'兩暗坎', fan:5, cat:'組合' },
   { id:'threeHidden', name:'三暗坎', fan:10, cat:'組合' },
-  { id:'fourHidden', name:'四暗坎', fan:30, cat:'組合' },
+  { id:'fourHidden', name:'四暗坎', fan:20, cat:'組合' },
   { id:'fiveHidden', name:'五暗坎', fan:80, cat:'組合' },
   { id:'pongPongWu', name:'對對糊', fan:40, cat:'大牌' },
-  { id:'kanKanWu', name:'坎坎糊', fan:150, cat:'大牌' },
+  { id:'kanKanWu', name:'坎坎糊', fan:110, cat:'大牌' },
   { id:'twoNumbers', name:'兩數', fan:120, cat:'大牌' },
   { id:'threeNumbers', name:'三數', fan:80, cat:'大牌' },
   { id:'mixedOneColor', name:'混一色', fan:40, cat:'大牌' },
   { id:'pureOneColor', name:'清一色', fan:100, cat:'大牌' },
-  { id:'wordOneColor', name:'字一色', fan:150, cat:'大牌' },
+  { id:'wordOneColor', name:'字一色', fan:100, cat:'大牌' },
   { id:'greenOneColor', name:'綠一色', fan:250, cat:'大牌' },
   { id:'blueOneColor', name:'藍一色', fan:300, cat:'大牌' },
-  { id:'smallThreeWind', name:'小三風', fan:15, cat:'組合' },
-  { id:'bigThreeWind', name:'大三風', fan:30, cat:'大牌' },
-  { id:'smallThreeDragon', name:'小三元', fan:20, cat:'大牌' },
-  { id:'bigThreeDragon', name:'大三元', fan:40, cat:'大牌' },
+  { id:'smallThreeWind', name:'小三風', fan:20, cat:'組合' },
+  { id:'bigThreeWind', name:'大三風', fan:40, cat:'大牌' },
+  { id:'smallThreeDragon', name:'小三元', fan:30, cat:'大牌' },
+  { id:'bigThreeDragon', name:'大三元', fan:60, cat:'大牌' },
   { id:'smallFourJoy', name:'小四喜', fan:60, cat:'大牌' },
-  { id:'bigFourJoy', name:'大四喜', fan:100, cat:'大牌' },
+  { id:'bigFourJoy', name:'大四喜', fan:80, cat:'大牌' },
   { id:'mixedTerminal', name:'混帶幺', fan:30, cat:'大牌' },
   { id:'allTerminal', name:'全帶幺', fan:60, cat:'大牌' },
-  { id:'mixedOld', name:'混老頭', fan:50, cat:'大牌' },
   { id:'pureOld', name:'清老頭', fan:300, cat:'大牌' },
   { id:'mixedWithX', name:'混帶X', fan:30, cat:'大牌' },
   { id:'allWithX', name:'全帶X', fan:80, cat:'大牌' },
@@ -1081,7 +1080,6 @@ function evaluateLuckyGulu(counts, hand) {
     if (isPureOneColor(suits, winds, dragons)) { totalFan += 100; detail.push(FAN_MAP['pureOneColor']); }
     else if (isMixedOneColor(suits, winds, dragons)) { totalFan += 40; detail.push(FAN_MAP['mixedOneColor']); }
     if (isPureOld(suits, winds, dragons)) { totalFan += 300; detail.push(FAN_MAP['pureOld']); }
-    else if (isMixedOld(suits, winds, dragons)) { totalFan += 50; detail.push(FAN_MAP['mixedOld']); }
     if (isNoTerminal(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['noTerminal']); }
     if (isMissingOne(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['missingOne']); }
   }
@@ -2003,11 +2001,6 @@ function isNoTerminal(suits, winds, dragons) {
   for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num === 1 || t.num === 9) return false;
   return true;
 }
-function isMixedOld(suits, winds, dragons) {
-  if (winds.length===0 && dragons.length===0) return false;
-  for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num !== 1 && t.num !== 9) return false;
-  return true;
-}
 function isPureOld(suits, winds, dragons) {
   if (winds.length>0 || dragons.length>0) return false;
   let hasTile = false;
@@ -2135,7 +2128,6 @@ function evaluateDecomposition(decomp, hand) {
     if (isPureOneColor(suits, winds, dragons)) matchedIds.push('pureOneColor');
     if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
     if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
-    else if (isMixedOld(suits, winds, dragons)) matchedIds.push('mixedOld');
     if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
     if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
     if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
@@ -2633,7 +2625,7 @@ function renderResult(total, detail) {
       ※ 嚦咕嚦咕（50番）：不計門清；七對一刻或八對半；達成後計算 3-7 連對（複式）及將眼（2/5/8 每對+2番）<br>
       ※ 雞糊（30番）：必須恰好 1 隻花且全牌無任何其他番數，不計花2番直接計雞糊30番<br>
       ※ 五門齊：大五門(10番) / 小五門(5番)；七門齊：大七門(20番) / 小七門(15番)<br>
-      ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計混老頭、全帶幺、對對胡、缺五)<br>
+      ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計全帶幺、對對胡、缺五)<br>
       ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;">
