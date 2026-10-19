@@ -159,7 +159,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 
 <div class="header">
   <h1> 多狗計數機 </h1>
-  <p>2026測試版v2 有問題聯絡10Owen </p>
+  <p>2026測試版v1 有問題聯絡Owen </p>
 </div>
 
 <div class="tabs">
@@ -424,9 +424,9 @@ const FAN_TABLE = [
   { id:'noMatchThreeClosed', name:'不搭暗三相逢', fan:70, cat:'大牌' },
   { id:'noMatchDragonOpen', name:'不搭明雜龍', fan:70, cat:'大牌' },
   { id:'noMatchDragonClosed', name:'不搭暗雜龍', fan:80, cat:'大牌' },
-  { id:'sixteenFly', name:'十六飛', fan:60, cat:'大牌' },
-  { id:'thirteenOrphan', name:'十三幺', fan:130, cat:'大牌' },
-  { id:'thirteenFly', name:'十三飛', fan:143, cat:'大牌' },
+  { id:'sixteenFly', name:'十六飛', fan:10, cat:'大牌' },
+  { id:'thirteenOrphan', name:'十三幺', fan:100, cat:'大牌' },
+  { id:'thirteenFly', name:'十三飛', fan:10, cat:'大牌' },
   { id:'luckyGulu', name:'嚦咕嚦咕', fan:50, cat:'大牌' },
   { id:'eightFly', name:'八飛', fan:60, cat:'大牌' },
   { id:'threePairChain', name:'三連對', fan:5, cat:'大牌' },
@@ -766,6 +766,12 @@ function isValidWinningHand(counts) {
 function detectWinPatterns(hand, winTile) {
   if (!winTile) return { items: [], total: 0 };
   const counts = { ...hand.counts };
+
+  // 十六不搭 / 十三幺：不計對碰／獨獨／假獨
+  if (checkSixteenNoMatch(counts) || checkThirteenOrphan(counts)) {
+    return { items: [], total: 0 };
+  }
+
   const winId = winTile.id;
   const winCount = counts[winId] || 0;
   if (winCount <= 0) return { items: [], total: 0 };
@@ -964,9 +970,12 @@ function evaluateThirteenOrphan(counts, hand) {
   if (!result) return null;
 
   const detail = [];
-  let totalFan = 130;
+  let totalFan = 100;
 
-  detail.push({ id: 'thirteenOrphan', name: '十三幺', fan: 130, cat: '大牌', detail: '齊集 13 種么九字牌 + 1 對眼 + 1 坎' });
+  detail.push({ id: 'thirteenOrphan', name: '十三幺', fan: 100, cat: '大牌', detail: '齊集 13 種么九字牌 + 1 對眼 + 1 坎' });
+
+  totalFan += 10;
+  detail.push({ id: 'thirteenFly', name: '十三飛', fan: 10, cat: '大牌', detail: '十三幺 + 十三飛' });
 
   const { winds, dragons, redFlowers, blueFlowers } = hand;
   if (isMissingFive(counts)) {
@@ -1067,6 +1076,9 @@ function evaluateSixteenNoMatch(counts, hand) {
   let totalFan = 50;
 
   detail.push({ id: 'sixteenNoMatch', name: '十六不搭', fan: 50, cat: '大牌', detail: '7 種字牌 + 三門各 3 張不搭數牌 + 1 對眼' });
+
+  totalFan += 10;
+  detail.push({ id: 'sixteenFly', name: '十六飛', fan: 10, cat: '大牌', detail: '十六不搭 + 十六飛' });
 
   if (isMissingFive(counts)) {
     totalFan += 5;
@@ -1473,9 +1485,6 @@ function getSequenceMeldCounts(melds, pair) {
 
 const SUIT_NAMES = { wan: '萬', tong: '筒', so: '索' };
 
-/* ============================================================
-   三色步步高 / 三色四步高 / 三色登天（支援全部 6 種花色排列）
-   ============================================================ */
 function detectThreeColorStep(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 3) return [];
@@ -2898,6 +2907,8 @@ function renderResultBody(total, detail, variants, activeIdx) {
       ※ 缺一門（5番）一定冇字（有風牌或三元牌即不計）<br>
       ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計全帶幺、對對胡、缺五)<br>
       ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）<br>
+      ※ 十六不搭：計十六不搭(50) + 十六飛(10)，不計對碰／獨獨／假獨<br>
+      ※ 十三幺：計十三幺(100) + 十三飛(10)，不計對碰／獨獨／假獨<br>
       ※ 對碰／獨獨／假獨：由程式根據食胡牌自動判斷（對碰 +2、獨獨 +2、假獨 +1），不再手動按。
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;">
