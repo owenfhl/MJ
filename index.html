@@ -18,7 +18,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .suit-row { margin-bottom:8px; }
 .suit-label { font-size:11px; color:#f7971e; font-weight:700; margin-bottom:4px; padding-left:2px; }
 .tiles-row { display:flex; flex-wrap:wrap; gap:4px; }
-.tile { width:38px; height:52px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:6px; border:1px solid #b8b0a0; box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 3px rgba(0,0,0,0.3); position:relative; cursor:pointer; transition:transform 0.1s; display:flex; align-items:center; justify-content:center; }
+.tile { width:38px; height:52px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:6px; border:1px solid #b8b0a0; box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 3px rgba(0,0,0,0.3); position:relative; cursor:pointer; transition:transform 0.1s; display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .tile:active { transform:scale(0.9); }
 .tile.used { opacity:0.25; pointer-events:none; }
 .tile .num { font-size:20px; font-weight:900; line-height:1; text-shadow:0 1px 1px rgba(255,255,255,0.7); }
@@ -30,21 +30,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .tile .honor.green { color:#228822; }
 .tile .honor.blue { color:#2222cc; }
 .tile .honor.black { color:#333; }
-.tile .badge { position:absolute; top:-4px; right:-4px; background:#ffd200; color:#1a1a2e; font-size:9px; font-weight:800; width:16px; height:16px; line-height:16px; border-radius:50%; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+.tile .badge { position:absolute; top:-4px; right:-4px; background:#ffd200; color:#1a1a2e; font-size:9px; font-weight:800; width:16px; height:16px; line-height:16px; border-radius:50%; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.4); z-index:2; }
+.tile img { width:100%; height:100%; object-fit:contain; border-radius:4px; pointer-events:none; }
 
 .hand-area { position:fixed; bottom:0; left:0; right:0; background:#16213e; border-top:2px solid #f7971e; padding:6px 8px 10px; z-index:9999; box-shadow:0 -4px 20px rgba(0,0,0,0.5); pointer-events:auto; max-height:215px; overflow-y:auto; }
 .mode-selector { display:flex; background:#0f3460; border-radius:6px; padding:3px; margin-bottom:6px; border:1px solid #1a4a7a; }
 .mode-btn { flex:1; text-align:center; padding:5px; font-size:11px; font-weight:700; color:#888; border-radius:4px; cursor:pointer; }
 .mode-btn.active { background:#f7971e; color:#1a1a2e; }
-
-.flower-control { background:#0f3460; border-radius:6px; padding:6px 10px; margin-bottom:6px; border:1px solid #1a4a7a; }
-.flower-header { font-size:11px; font-weight:700; color:#ffd200; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
-.flower-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
-.flower-row:last-child { margin-bottom:0; }
-.flower-label { font-size:11px; color:#ddd; }
-.flower-btns { display:flex; gap:3px; }
-.f-btn { width:22px; height:22px; border-radius:3px; border:none; background:#16213e; color:#fff; font-size:10px; font-weight:800; cursor:pointer; }
-.f-btn.active { background:#ffd200; color:#1a1a2e; }
 
 .hand-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-bottom:6px; }
 .section-box { background:#0f3460; border-radius:6px; padding:4px 6px; border:1px solid #1a4a7a; position:relative; }
@@ -55,7 +47,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .kong-type-switch { font-size:9px; background:#16213e; color:#ffd200; padding:1px 5px; border-radius:3px; cursor:pointer; border:1px solid #ffd20055; font-weight:700; }
 .kong-type-switch.open-mode { background:#e74c3c; color:#fff; border-color:#c0392b; }
 
-.hand-tile { width:26px; height:36px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:4px; border:1px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hand-tile { width:26px; height:36px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:4px; border:1px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
 .hand-tile:active { transform:scale(0.9); }
 .hand-tile .num { font-size:13px; font-weight:900; }
 .hand-tile .num.red { color:#cc2222; }
@@ -66,6 +58,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .hand-tile .honor.green { color:#228822; }
 .hand-tile .honor.blue { color:#2222cc; }
 .hand-tile .honor.black { color:#333; }
+.hand-tile img { width:100%; height:100%; object-fit:contain; border-radius:3px; pointer-events:none; }
 
 .hand-actions { display:flex; gap:6px; position:relative; z-index:10000; }
 .hand-actions button { flex:1; padding:10px 6px; border-radius:8px; border:none; font-size:12px; font-weight:800; cursor:pointer; pointer-events:auto; transition:transform 0.1s; }
@@ -106,8 +99,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .confirm-overlay.show { display: flex; }
 .confirm-box {
   background: #16213e; border-radius: 14px; padding: 22px;
-  max-width: 320px; width: 88%; border: 1px solid #f7971e55;
+  max-width: 380px; width: 92%; border: 1px solid #f7971e55;
   text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  max-height: 88vh; overflow-y: auto;
 }
 .confirm-box .c-title { font-size: 16px; font-weight: 800; color: #ffd200; margin-bottom: 8px; }
 .confirm-box .c-msg { font-size: 13px; color: #ccc; margin-bottom: 18px; line-height: 1.5; }
@@ -126,13 +120,46 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .bonus-btn.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; box-shadow:0 0 6px rgba(247,151,30,0.5); }
 .bonus-btn:active { transform:scale(0.94); }
 .bonus-hint { font-size:9px; color:#667; margin-top:2px; line-height:1.4; }
+
+/* 雙食嚦咕 variant chip */
+.variant-chip { display:inline-block; padding:2px 10px; border-radius:8px; background:#0f3460; border:1px solid #f7971e55; cursor:pointer; color:#ffd200; }
+.variant-chip.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; }
+.variant-plus { color:#f7971e; margin:0 4px; font-weight:900; }
+
+/* 確認視窗：花牌與食胡牌選擇 */
+.confirm-flower { background:#0f3460; border-radius:8px; padding:8px 10px; margin-bottom:10px; border:1px solid #1a4a7a; text-align:left; }
+.confirm-flower .cf-title { font-size:12px; font-weight:800; color:#ffd200; margin-bottom:6px; }
+.confirm-flower .cf-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.confirm-flower .cf-row:last-child { margin-bottom:0; }
+.confirm-flower .cf-label { font-size:11px; color:#ddd; }
+.confirm-flower .cf-btns { display:flex; gap:3px; }
+.confirm-flower .cf-btn { width:24px; height:24px; border-radius:4px; border:none; background:#16213e; color:#fff; font-size:11px; font-weight:800; cursor:pointer; }
+.confirm-flower .cf-btn.active { background:#ffd200; color:#1a1a2e; }
+
+.confirm-tiles { background:#0f3460; border-radius:8px; padding:8px 10px; margin-bottom:10px; border:1px solid #1a4a7a; text-align:left; }
+.confirm-tiles .ct-title { font-size:12px; font-weight:800; color:#ffd200; margin-bottom:6px; }
+.confirm-tiles .ct-hint { font-size:10px; color:#888; margin-bottom:6px; }
+.confirm-tiles .ct-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.confirm-tile { width:44px; height:60px; background:linear-gradient(145deg,#f5f5f0,#e0dcd0); border-radius:6px; border:2px solid #b8b0a0; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.confirm-tile.selected { border-color:#ffd200; box-shadow:0 0 10px rgba(255,210,0,0.7); transform:scale(1.05); }
+.confirm-tile .num { font-size:20px; font-weight:900; }
+.confirm-tile .num.red { color:#cc2222; }
+.confirm-tile .num.green { color:#228822; }
+.confirm-tile .num.blue { color:#2222cc; }
+.confirm-tile .honor { font-size:18px; font-weight:900; }
+.confirm-tile .honor.red { color:#cc2222; }
+.confirm-tile .honor.green { color:#228822; }
+.confirm-tile .honor.blue { color:#2222cc; }
+.confirm-tile .honor.black { color:#333; }
+.confirm-tile img { width:100%; height:100%; object-fit:contain; border-radius:4px; pointer-events:none; }
+.confirm-tile .ct-tag { position:absolute; bottom:1px; left:1px; font-size:8px; font-weight:800; background:#ffd200; color:#1a1a2e; padding:0 3px; border-radius:3px; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1> 多狗計數機 </h1>
-  <p>2026測試版v1 有問題聯絡Owen </p>
+  <p>2026測試版v2 有問題聯絡Owen </p>
 </div>
 
 <div class="tabs">
@@ -157,32 +184,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
     <div class="mode-btn" onclick="setTargetSection('kong', this)">🔒 槓區</div>
   </div>
 
-  <div class="flower-control">
-    <div class="flower-header">
-      <span>🌸 花牌配置（共 <span id="flowerTotalDisplay">0</span> 張，每花+2番）</span>
-    </div>
-    <div class="flower-row">
-      <span class="flower-label">🔴 紅花數量：</span>
-      <div class="flower-btns" id="redFlowerBtns">
-        <button class="f-btn active" onclick="setFlowerTypeCount('red', 0)">0</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('red', 1)">1</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('red', 2)">2</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('red', 3)">3</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('red', 4)">4</button>
-      </div>
-    </div>
-    <div class="flower-row">
-      <span class="flower-label">🔵 藍花數量：</span>
-      <div class="flower-btns" id="blueFlowerBtns">
-        <button class="f-btn active" onclick="setFlowerTypeCount('blue', 0)">0</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('blue', 1)">1</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('blue', 2)">2</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('blue', 3)">3</button>
-        <button class="f-btn" onclick="setFlowerTypeCount('blue', 4)">4</button>
-      </div>
-    </div>
-  </div>
-
   <div class="hand-grid">
     <div class="section-box">
       <div class="section-header">🖐️ 暗手牌 (<span id="closedCount">0</span>)</div>
@@ -202,7 +203,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
   </div>
   
   <div class="hand-actions">
-    <button class="btn-calc" onclick="calculateSafe()">🧮 計算番數</button>
+    <button class="btn-calc" onclick="openCalcConfirm()">🧮 計算番數</button>
     <button class="btn-clear" onclick="clearHand()">🗑 清空</button>
     <button class="btn-history2" onclick="toggleHistory()">📋 紀錄 (<span id="historyCount">0</span>)</button>
   </div>
@@ -228,6 +229,50 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
   </div>
 </div>
 
+<!-- 計算前確認視窗：花牌配置 + 食胡牌選擇 -->
+<div class="confirm-overlay" id="calcConfirmOverlay">
+  <div class="confirm-box">
+    <div class="c-title">確認牌組</div>
+    <div class="c-msg">請設定花牌，並點選食胡嗰張牌</div>
+
+    <div class="confirm-flower">
+      <div class="cf-title">🌸 花牌配置（每花 +2 番）</div>
+      <div class="cf-row">
+        <span class="cf-label">🔴 紅花數量：</span>
+        <div class="cf-btns" id="cfRedBtns">
+          <button class="cf-btn active" onclick="setConfirmFlower('red', 0)">0</button>
+          <button class="cf-btn" onclick="setConfirmFlower('red', 1)">1</button>
+          <button class="cf-btn" onclick="setConfirmFlower('red', 2)">2</button>
+          <button class="cf-btn" onclick="setConfirmFlower('red', 3)">3</button>
+          <button class="cf-btn" onclick="setConfirmFlower('red', 4)">4</button>
+        </div>
+      </div>
+      <div class="cf-row">
+        <span class="cf-label">🔵 藍花數量：</span>
+        <div class="cf-btns" id="cfBlueBtns">
+          <button class="cf-btn active" onclick="setConfirmFlower('blue', 0)">0</button>
+          <button class="cf-btn" onclick="setConfirmFlower('blue', 1)">1</button>
+          <button class="cf-btn" onclick="setConfirmFlower('blue', 2)">2</button>
+          <button class="cf-btn" onclick="setConfirmFlower('blue', 3)">3</button>
+          <button class="cf-btn" onclick="setConfirmFlower('blue', 4)">4</button>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#888;margin-top:4px;">共 <span id="cfFlowerTotal">0</span> 張</div>
+    </div>
+
+    <div class="confirm-tiles">
+      <div class="ct-title">🀫 食胡牌（點選食出嗰張）</div>
+      <div class="ct-hint">可選暗手牌、明手牌或槓區的牌；再按「確認計算」</div>
+      <div class="ct-grid" id="cfTilesGrid"></div>
+    </div>
+
+    <div class="c-btns">
+      <button class="c-btn-yes" onclick="confirmCalc()">確認計算</button>
+      <button class="c-btn-no" onclick="closeCalcConfirm()">取消</button>
+    </div>
+  </div>
+</div>
+
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
     <div class="c-title" id="confirmTitle">確認</div>
@@ -243,16 +288,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 
 <script>
 const TILE_DEFS = [];
-for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'wan', num:i, id:`wan${i}`, label:i, type:'num', color:'red' });
-for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'tong', num:i, id:`tong${i}`, label:i, type:'num', color:'blue' });
-for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'so', num:i, id:`so${i}`, label:i, type:'num', color:'green' });
-TILE_DEFS.push({ suit:'wind', num:1, id:'east',  label:'東', type:'honor', color:'black' });
-TILE_DEFS.push({ suit:'wind', num:2, id:'south', label:'南', type:'honor', color:'black' });
-TILE_DEFS.push({ suit:'wind', num:3, id:'west',  label:'西', type:'honor', color:'black' });
-TILE_DEFS.push({ suit:'wind', num:4, id:'north', label:'北', type:'honor', color:'black' });
-TILE_DEFS.push({ suit:'dragon', num:1, id:'chung', label:'中', type:'honor', color:'red' });
-TILE_DEFS.push({ suit:'dragon', num:2, id:'fat',   label:'發', type:'honor', color:'green' });
-TILE_DEFS.push({ suit:'dragon', num:3, id:'bak',   label:'白', type:'honor', color:'blue' });
+// 萬子 1m-9m
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'wan', num:i, id:`wan${i}`, label:i, type:'num', color:'red', img:`mjphoto/${i}m.png` });
+// 筒子 1p-9p
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'tong', num:i, id:`tong${i}`, label:i, type:'num', color:'blue', img:`mjphoto/${i}p.png` });
+// 索子 1s-9s
+for (let i=1;i<=9;i++) TILE_DEFS.push({ suit:'so', num:i, id:`so${i}`, label:i, type:'num', color:'green', img:`mjphoto/${i}s.png` });
+// 風牌 1z-4z（東南西北）
+TILE_DEFS.push({ suit:'wind', num:1, id:'east',  label:'東', type:'honor', color:'black', img:'mjphoto/1z.png' });
+TILE_DEFS.push({ suit:'wind', num:2, id:'south', label:'南', type:'honor', color:'black', img:'mjphoto/2z.png' });
+TILE_DEFS.push({ suit:'wind', num:3, id:'west',  label:'西', type:'honor', color:'black', img:'mjphoto/3z.png' });
+TILE_DEFS.push({ suit:'wind', num:4, id:'north', label:'北', type:'honor', color:'black', img:'mjphoto/4z.png' });
+// 三元牌 5z-7z（白發中）
+TILE_DEFS.push({ suit:'dragon', num:1, id:'chung', label:'中', type:'honor', color:'red',   img:'mjphoto/7z.png' });
+TILE_DEFS.push({ suit:'dragon', num:2, id:'fat',   label:'發', type:'honor', color:'green', img:'mjphoto/6z.png' });
+TILE_DEFS.push({ suit:'dragon', num:3, id:'bak',   label:'白', type:'honor', color:'blue',  img:'mjphoto/5z.png' });
 
 const TILE_MAP = {};
 TILE_DEFS.forEach(t => TILE_MAP[t.id] = t);
@@ -300,9 +350,9 @@ const FAN_TABLE = [
   { id:'missingFive', name:'缺五', fan:5, cat:'組合' },
   { id:'noTerminal', name:'斷幺九', fan:5, cat:'組合' },
   { id:'smallFiveDoor', name:'小五門齊', fan:5, cat:'組合' },
-  { id:'bigFiveDoor', name:'大五門齊', fan:10, cat:'組合' },
+  { id:'bigFiveDoor', name:'五門齊', fan:10, cat:'組合' },
   { id:'smallSevenDoor', name:'小七門齊', fan:15, cat:'組合' },
-  { id:'bigSevenDoor', name:'大七門齊', fan:20, cat:'組合' },
+  { id:'bigSevenDoor', name:'七門齊', fan:15, cat:'組合' },
   { id:'threeColorStep1', name:'三色步步高(小)', fan:5, cat:'組合' },
   { id:'threeColorStep2', name:'三色步步高(大)', fan:10, cat:'組合' },
   { id:'threeColorStep4a', name:'三色四步高(小)', fan:20, cat:'組合' },
@@ -423,6 +473,15 @@ let bonusState = {};
 let baseResultTotal = 0;
 let baseResultDetail = [];
 
+// 雙食嚦咕
+let bonusStateByVariant = null;
+let currentVariantIndex = 0;
+
+// 確認視窗暫存
+let cfRed = 0;
+let cfBlue = 0;
+let cfSelectedTile = null;
+
 function showConfirm(title, msg, onYes) {
   const overlay = document.getElementById('confirmOverlay');
   document.getElementById('confirmTitle').textContent = title;
@@ -450,31 +509,6 @@ function setTargetSection(sec, el) {
   targetSection = sec;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-}
-
-function setFlowerTypeCount(type, count) {
-  if (type === 'red') redFlowerCount = count;
-  if (type === 'blue') blueFlowerCount = count;
-
-  if (redFlowerCount + blueFlowerCount > 8) {
-    if (type === 'red') blueFlowerCount = 8 - redFlowerCount;
-    else redFlowerCount = 8 - blueFlowerCount;
-    showToast('花牌總數最多 8 張');
-  }
-
-  const total = redFlowerCount + blueFlowerCount;
-  document.getElementById('flowerTotalDisplay').textContent = total;
-
-  const updateBtns = (containerId, currentCount) => {
-    const container = document.getElementById(containerId);
-    container.querySelectorAll('.f-btn').forEach((btn, idx) => {
-      if (idx === currentCount) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
-  };
-
-  updateBtns('redFlowerBtns', redFlowerCount);
-  updateBtns('blueFlowerBtns', blueFlowerCount);
 }
 
 let currentKongType = 'closed';
@@ -523,10 +557,11 @@ function renderTileHTML(t) {
   const used = allTiles.filter(id => id === t.id).length;
   const usedClass = used >= 4 ? 'used' : '';
   const badge = used > 0 ? `<span class="badge">${used}</span>` : '';
-  const colorClass = t.color || 'black';
-  const inner = t.type === 'num' 
-    ? `<span class="num ${colorClass}">${t.label}</span>`
-    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  const inner = t.img
+    ? `<img src="${t.img}" alt="${t.label}">`
+    : (t.type === 'num'
+        ? `<span class="num ${t.color || 'black'}">${t.label}</span>`
+        : `<span class="honor ${t.color || 'black'}">${t.label}</span>`);
   return `<div class="tile ${usedClass}" onclick="addTileToTarget('${t.id}')">${badge}${inner}</div>`;
 }
 
@@ -565,8 +600,6 @@ function clearHand() {
   showConfirm('確定清空？', '所有牌組配置將會被清除', () => {
     redFlowerCount = 0;
     blueFlowerCount = 0;
-    setFlowerTypeCount('red', 0);
-    setFlowerTypeCount('blue', 0);
     openSection = [];
     closedSection = [];
     kongSection = [];
@@ -602,23 +635,25 @@ function renderSections() {
 function renderHandTileHTML(id, secName, index) {
   const t = TILE_MAP[id];
   if (!t) return '';
-  const colorClass = t.color || 'black';
-  const inner = t.type === 'num' 
-    ? `<span class="num ${colorClass}">${t.label}</span>`
-    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  const inner = t.img
+    ? `<img src="${t.img}" alt="${t.label}">`
+    : (t.type === 'num'
+        ? `<span class="num ${t.color || 'black'}">${t.label}</span>`
+        : `<span class="honor ${t.color || 'black'}">${t.label}</span>`);
   return `<div class="hand-tile" onclick="removeFromSection('${secName}', ${index})">${inner}</div>`;
 }
 
 function renderKongTileHTML(k, index) {
   const t = TILE_MAP[k.id];
   if (!t) return '';
-  const colorClass = t.color || 'black';
-  const inner = t.type === 'num' 
-    ? `<span class="num ${colorClass}">${t.label}</span>`
-    : `<span class="honor ${colorClass}">${t.label}</span>`;
+  const inner = t.img
+    ? `<img src="${t.img}" alt="${t.label}">`
+    : (t.type === 'num'
+        ? `<span class="num ${t.color || 'black'}">${t.label}</span>`
+        : `<span class="honor ${t.color || 'black'}">${t.label}</span>`);
   const typeTag = (k.type === 'closed') ? '暗' : '明';
   const tagColor = (k.type === 'closed') ? '#ffd200' : '#ff6b6b';
-  return `<div class="hand-tile" onclick="removeFromSection('kong', ${index})" title="點擊刪除">${inner}<span style="position:absolute;bottom:0;right:2px;font-size:8px;font-weight:800;color:${tagColor};">${typeTag}</span></div>`;
+  return `<div class="hand-tile" onclick="removeFromSection('kong', ${index})" title="點擊刪除">${inner}<span style="position:absolute;bottom:0;right:2px;font-size:8px;font-weight:800;color:${tagColor};z-index:2;">${typeTag}</span></div>`;
 }
 
 function switchTab(tab, el) {
@@ -629,6 +664,159 @@ function switchTab(tab, el) {
   else document.getElementById('resultSection').classList.add('active');
 }
 
+/* ============================================================
+   確認視窗：花牌 + 食胡牌
+   ============================================================ */
+function openCalcConfirm() {
+  const totalTilesCount = openSection.length + closedSection.length + (kongSection.length * 3);
+  if (totalTilesCount !== 17) {
+    showToast(`牌數不符（目前計算張數 ${totalTilesCount} 張，總計須為 17 張）`);
+    return;
+  }
+
+  cfRed = redFlowerCount;
+  cfBlue = blueFlowerCount;
+  cfSelectedTile = null;
+
+  renderCfFlowerBtns();
+  renderCfTiles();
+
+  document.getElementById('calcConfirmOverlay').classList.add('show');
+}
+
+function closeCalcConfirm() {
+  document.getElementById('calcConfirmOverlay').classList.remove('show');
+}
+
+function setConfirmFlower(type, count) {
+  if (type === 'red') cfRed = count;
+  if (type === 'blue') cfBlue = count;
+
+  if (cfRed + cfBlue > 8) {
+    if (type === 'red') cfBlue = 8 - cfRed;
+    else cfRed = 8 - cfBlue;
+    showToast('花牌總數最多 8 張');
+  }
+  renderCfFlowerBtns();
+}
+
+function renderCfFlowerBtns() {
+  document.getElementById('cfFlowerTotal').textContent = cfRed + cfBlue;
+  document.getElementById('cfRedBtns').querySelectorAll('.cf-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === cfRed);
+  });
+  document.getElementById('cfBlueBtns').querySelectorAll('.cf-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === cfBlue);
+  });
+}
+
+function renderCfTiles() {
+  const grid = document.getElementById('cfTilesGrid');
+  const items = [];
+  closedSection.forEach((id, i) => items.push({ sec:'closed', index:i, id, tag:'暗' }));
+  openSection.forEach((id, i) => items.push({ sec:'open', index:i, id, tag:'明' }));
+  kongSection.forEach((k, i) => items.push({ sec:'kong', index:i, id:k.id, tag: k.type === 'closed' ? '暗槓' : '明槓' }));
+
+  grid.innerHTML = items.map(it => {
+    const t = TILE_MAP[it.id];
+    if (!t) return '';
+    const inner = t.img
+      ? `<img src="${t.img}" alt="${t.label}">`
+      : (t.type === 'num'
+          ? `<span class="num ${t.color || 'black'}">${t.label}</span>`
+          : `<span class="honor ${t.color || 'black'}">${t.label}</span>`);
+    const selected = cfSelectedTile && cfSelectedTile.sec === it.sec && cfSelectedTile.index === it.index ? 'selected' : '';
+    return `<div class="confirm-tile ${selected}" onclick="selectCfTile('${it.sec}', ${it.index}, '${it.id}')">${inner}<span class="ct-tag">${it.tag}</span></div>`;
+  }).join('');
+}
+
+function selectCfTile(sec, index, id) {
+  if (cfSelectedTile && cfSelectedTile.sec === sec && cfSelectedTile.index === index) {
+    cfSelectedTile = null;
+  } else {
+    cfSelectedTile = { sec, index, id };
+  }
+  renderCfTiles();
+}
+
+function confirmCalc() {
+  if (!cfSelectedTile) {
+    showToast('請先點選食胡嗰張牌');
+    return;
+  }
+  redFlowerCount = cfRed;
+  blueFlowerCount = cfBlue;
+  window.selectedWinTile = { ...cfSelectedTile };
+  closeCalcConfirm();
+  calculateSafe();
+}
+
+/* ============================================================
+   對碰 / 獨獨 / 假獨 自動判斷
+   ============================================================ */
+function isValidWinningHand(counts) {
+  const decomps = getAllDecompositions(counts);
+  if (decomps.length > 0) return true;
+  if (checkLuckyGulu(counts)) return true;
+  if (checkThirteenOrphan(counts)) return true;
+  if (checkSixteenNoMatch(counts)) return true;
+  return false;
+}
+
+function detectWinPatterns(hand, winTile) {
+  if (!winTile) return { items: [], total: 0 };
+  const counts = { ...hand.counts };
+  const winId = winTile.id;
+  const winCount = counts[winId] || 0;
+  if (winCount <= 0) return { items: [], total: 0 };
+
+  const beforeCounts = { ...counts };
+  beforeCounts[winId] -= 1;
+  if (beforeCounts[winId] <= 0) delete beforeCounts[winId];
+
+  const items = [];
+  let total = 0;
+
+  // ---------- 對碰 ----------
+  let pairPong = false;
+  if ((beforeCounts[winId] || 0) >= 2) {
+    for (const id in beforeCounts) {
+      if (id === winId) continue;
+      if ((beforeCounts[id] || 0) >= 2) { pairPong = true; break; }
+    }
+  }
+  if (pairPong) {
+    items.push({ id: 'pairPong', name: '對碰', fan: 2, cat: '基本', detail: '食胡牌與手上對子湊成刻子，另一對作將眼' });
+    total += 2;
+  }
+
+  // ---------- 聽牌分析：獨獨 / 假獨 ----------
+  const possibleWins = [];
+  for (const t of TILE_DEFS) {
+    const testCounts = { ...beforeCounts };
+    testCounts[t.id] = (testCounts[t.id] || 0) + 1;
+    if (isValidWinningHand(testCounts)) {
+      possibleWins.push(t.id);
+    }
+  }
+
+  const uniqueWins = [...new Set(possibleWins)];
+  const isOnlyWin = uniqueWins.length === 1 && uniqueWins[0] === winId;
+
+  if (isOnlyWin) {
+    items.push({ id: 'realSingle', name: '獨獨', fan: 2, cat: '基本', detail: '全場只聽食胡呢一張牌' });
+    total += 2;
+  } else if (uniqueWins.includes(winId) && uniqueWins.length > 1) {
+    items.push({ id: 'fakeSingle', name: '假獨', fan: 1, cat: '基本', detail: '食胡牌看似獨聽，實際多面聽' });
+    total += 1;
+  }
+
+  return { items, total };
+}
+
+/* ============================================================
+   計番邏輯
+   ============================================================ */
 function analyzeHand() {
   const counts = {};
   const calcTiles = getTilesForCalculation();
@@ -710,9 +898,6 @@ function getAllDecompositions(counts) {
   return decompositions;
 }
 
-/* ============================================================
-   十三幺 (Thirteen Orphans) 檢測
-   ============================================================ */
 function checkThirteenOrphan(counts) {
   const orphanIds = [
     'east', 'south', 'west', 'north', 'chung', 'fat', 'bak',
@@ -836,9 +1021,6 @@ function evaluateThirteenOrphan(counts, hand) {
   return { total: totalFan, detail };
 }
 
-/* ============================================================
-   十六不搭 (Sixteen No-Match) 檢測
-   ============================================================ */
 function checkSixteenNoMatch(counts) {
   const honorIds = ['east', 'south', 'west', 'north', 'chung', 'fat', 'bak'];
   for (const id of honorIds) {
@@ -924,9 +1106,6 @@ function evaluateSixteenNoMatch(counts, hand) {
   return { total: totalFan, detail };
 }
 
-/* ============================================================
-   嚦咕嚦咕 (Lucky Gulu) 檢測與計番 (不計門清)
-   ============================================================ */
 function checkLuckyGulu(counts) {
   if (openSection.length > 0 || kongSection.length > 0) return null;
 
@@ -959,7 +1138,10 @@ function detectLuckyGuluPairChains(counts) {
     const pairCounts = {};
     for (let n = 1; n <= 9; n++) {
       const id = `${suit}${n}`;
-      pairCounts[n] = Math.floor((counts[id] || 0) / 2);
+      const c = counts[id] || 0;
+      if (c === 2) pairCounts[n] = 1;
+      else if (c === 4) pairCounts[n] = 2;
+      else pairCounts[n] = 0;
     }
 
     let start = null;
@@ -1050,7 +1232,8 @@ function evaluateLuckyGulu(counts, hand) {
   for (const suit of ['wan', 'tong', 'so']) {
     for (const num of [2, 5, 8]) {
       const id = `${suit}${num}`;
-      const pCount = Math.floor((counts[id] || 0) / 2);
+      const c = counts[id] || 0;
+      const pCount = c === 2 ? 1 : c === 4 ? 2 : 0;
       if (pCount > 0) {
         eyeCount += pCount;
         eyeDetails.push(`${num}${suitNames[suit]}眼 ×${pCount}`);
@@ -1072,6 +1255,40 @@ function evaluateLuckyGulu(counts, hand) {
   const { suits, winds, dragons, redFlowers, blueFlowers } = hand;
   const totalFlowers = redFlowers + blueFlowers;
   const isWord = isWordOneColor(suits);
+
+  const guluDoors = new Set();
+  for (const suit of ['wan', 'tong', 'so']) {
+    if (suits[suit].length > 0) guluDoors.add(suit);
+  }
+  if (winds.length > 0) guluDoors.add('wind');
+  if (dragons.length > 0) guluDoors.add('dragon');
+  const hasFiveDoors = ['wan', 'tong', 'so', 'wind', 'dragon'].every(d => guluDoors.has(d));
+  if (hasFiveDoors) {
+    const hasBothFlowers = redFlowers > 0 && blueFlowers > 0;
+    if (hasBothFlowers) {
+      totalFan += 15;
+      detail.push({ id: 'bigSevenDoor', name: '七門齊（嚦咕）', fan: 15, cat: '組合', detail: '五門齊 + 紅藍花齊，不分大小計 15 番' });
+    } else {
+      totalFan += 10;
+      detail.push({ id: 'bigFiveDoor', name: '五門齊（嚦咕）', fan: 10, cat: '組合', detail: '萬筒索風三元五門齊，不分大小計 10 番' });
+    }
+  }
+
+  const dragonPairCount = ['chung', 'fat', 'bak'].filter(id => (counts[id] || 0) >= 2).length;
+  if (dragonPairCount === 3) {
+    totalFan += 15;
+    detail.push({ id: 'smallThreeDragon', name: '小三元（嚦咕）', fan: 15, cat: '大牌', detail: '中發白各齊一對，番數對半 15 番' });
+  }
+
+  const windPairIds = ['east', 'south', 'west', 'north'].filter(id => (counts[id] || 0) >= 2);
+  const windPairCount = windPairIds.length;
+  if (windPairCount === 4) {
+    totalFan += 30;
+    detail.push({ id: 'smallFourJoy', name: '小四喜（嚦咕）', fan: 30, cat: '大牌', detail: '東南西北各齊一對，番數對半 30 番' });
+  } else if (windPairCount === 3) {
+    totalFan += 10;
+    detail.push({ id: 'smallThreeWind', name: '小三風（嚦咕）', fan: 10, cat: '組合', detail: '東南西北任三款各齊一對，番數對半 10 番' });
+  }
 
   if (isWord) {
     totalFan += 150;
@@ -1112,9 +1329,6 @@ function evaluateLuckyGulu(counts, hand) {
   return { total: totalFan, detail };
 }
 
-/* ============================================================
-   三 / 四 / 五雜連刻 檢測
-   ============================================================ */
 function detectMixedChainPongFromMelds(melds) {
   const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor').map(m => ({
     suit: m.suit,
@@ -1210,9 +1424,6 @@ function detectMixedChainPongFromMelds(melds) {
   return results;
 }
 
-/* ============================================================
-   順子面子實際副本及明暗計數器
-   ============================================================ */
 function getSequenceMeldCounts(melds, pair) {
   const remClosed = {};
   closedSection.forEach(id => remClosed[id] = (remClosed[id] || 0) + 1);
@@ -1262,9 +1473,6 @@ function getSequenceMeldCounts(melds, pair) {
   return seqCopyCount;
 }
 
-/* ============================================================
-   三色步步高 / 三色四步高 / 三色登天 檢測
-   ============================================================ */
 const SUIT_NAMES = { wan: '萬', tong: '筒', so: '索' };
 
 function detectThreeColorStep(melds, pair) {
@@ -1458,9 +1666,6 @@ function detectThreeColorStep(melds, pair) {
   return results;
 }
 
-/* ============================================================
-   同色步步高 / 同色四步高 / 同色登天 檢測（修正版）
-   ============================================================ */
 function detectSameColorStep(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 3) return [];
@@ -1613,9 +1818,6 @@ function detectSameColorStep(melds, pair) {
   return results;
 }
 
-/* ============================================================
-   清龍 / 雜龍 / 老少 檢測
-   ============================================================ */
 function detectDragonsFromMelds(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 2) return [];
@@ -1744,9 +1946,6 @@ function detectDragonsFromMelds(melds, pair) {
   return results;
 }
 
-/* ============================================================
-   三相逢 檢測（更新：採用複式相乘萬×筒×索計算組數）
-   ============================================================ */
 function detectThreeMeetFromMelds(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 3) return null;
@@ -1838,8 +2037,6 @@ function detectSistersFromMelds(melds, threeMeetKeys) {
   if (totalSisterPairs === 0) return null;
   return { id: 'sisters', name: `姊妹 ×${totalSisterPairs}組`, fan: 3 * totalSisterPairs, cat: '組合', detail: details.join('、') };
 }
-
-function hasHonorTripletOrKong(melds) { return melds.some(m => m.type === '刻子' && m.suit === 'honor'); }
 
 function countHonorTriplets(melds) {
   return melds.filter(m => m.type === '刻子' && m.suit === 'honor').length;
@@ -1992,10 +2189,10 @@ function detectMixedTerminalFromMelds(melds, hand) {
   return { id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '有字牌且所有面子都包含幺（1或9）' };
 }
 
+function isMissingOne(suits, winds, dragons) { if (winds.length > 0 || dragons.length > 0) return false; return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 2; }
 function isMixedOneColor(suits, winds, dragons) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 1 && (winds.length>0 || dragons.length>0); }
 function isPureOneColor(suits, winds, dragons) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 1 && winds.length===0 && dragons.length===0; }
 function isWordOneColor(suits) { return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 0; }
-function isMissingOne(suits, winds, dragons) { if (winds.length > 0 || dragons.length > 0) return false; return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 2; }
 function isNoTerminal(suits, winds, dragons) {
   if (winds.length>0 || dragons.length>0) return false;
   for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num === 1 || t.num === 9) return false;
@@ -2026,7 +2223,6 @@ function evaluateDecomposition(decomp, hand) {
   const hasClosedKong = kongSection.some(k => k.type === 'closed');
   if (openSection.length === 0 && !hasOpenKong && !hasClosedKong) matchedIds.push('closedHand');
 
-  // 全求人：全部吃、碰或明槓（不能暗槓），暗手牌區只有 2 張且為將眼
   if (!hasClosedKong && closedSection.length === 2 && pair && closedSection.filter(id => id === pair.id).length === 2) {
     matchedIds.push('fullHelp');
   }
@@ -2072,7 +2268,6 @@ function evaluateDecomposition(decomp, hand) {
   const hasSameSky = sameStepResults.some(r => r.name.includes('同色登天'));
   if (hasSky || hasSameSky) flatWu = false;
 
-  // 檢查 全姊妹：平和型（5順子），順子結構為 A組×2 + B組×3
   let isAllSisters = false;
   const seqKeyCounts = {};
   if (meldListsIsFlat(melds) && melds.length === 5) {
@@ -2087,7 +2282,6 @@ function evaluateDecomposition(decomp, hand) {
     }
   }
 
-  // 三元牌判定：大三元 / 小三元
   const dragonMeldCount = melds.filter(m => m.type === '刻子' && ['chung', 'fat', 'bak'].includes(m.id)).length;
   const isDragonPair = pair && ['chung', 'fat', 'bak'].includes(pair.id);
 
@@ -2097,7 +2291,6 @@ function evaluateDecomposition(decomp, hand) {
     matchedIds.push('smallThreeDragon');
   }
 
-  // 風牌判定：大四喜 / 小四喜 / 大三風 / 小三風
   const windMeldCount = melds.filter(m => m.type === '刻子' && ['east', 'south', 'west', 'north'].includes(m.id)).length;
   const isWindPair = pair && ['east', 'south', 'west', 'north'].includes(pair.id);
 
@@ -2137,7 +2330,6 @@ function evaluateDecomposition(decomp, hand) {
     matchedIds.push('pongPongWu');
   }
 
-  // 五門齊 / 七門齊 檢測
   const getMeldDoor = (m) => {
     if (m.suit === 'wan' || m.suit === 'tong' || m.suit === 'so') return m.suit;
     if (m.id && TILE_MAP[m.id]) return TILE_MAP[m.id].suit;
@@ -2163,13 +2355,10 @@ function evaluateDecomposition(decomp, hand) {
   const hasAllFiveDoors = ['wan', 'tong', 'so', 'wind', 'dragon'].every(d => allHandDoors.has(d));
   if (hasAllFiveDoors) {
     const hasBothFlowers = (redFlowers > 0 && blueFlowers > 0);
-    const isBigDoor = (meldDoors.size === 5);
     if (hasBothFlowers) {
-      if (isBigDoor) matchedIds.push('bigSevenDoor');
-      else matchedIds.push('smallSevenDoor');
+      matchedIds.push('bigSevenDoor');
     } else {
-      if (isBigDoor) matchedIds.push('bigFiveDoor');
-      else matchedIds.push('smallFiveDoor');
+      matchedIds.push('bigFiveDoor');
     }
   }
 
@@ -2195,7 +2384,6 @@ function evaluateDecomposition(decomp, hand) {
   detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
   detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
 
-  // 全姊妹（30番）
   if (isAllSisters) {
     const detailStr = Object.keys(seqKeyCounts).map(k => `${k}×${seqKeyCounts[k]}`).join('、');
     dynamicDetails.push({
@@ -2207,12 +2395,10 @@ function evaluateDecomposition(decomp, hand) {
     });
   }
 
-  // 三相逢（複式相乘）
   const threeMeetResult = detectThreeMeetFromMelds(melds, pair);
   const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
   if (threeMeetResult) dynamicDetails.push(threeMeetResult);
 
-  // 全姊妹時不計姊妹
   const sistersResult = detectSistersFromMelds(melds, threeMeetKeys);
   if (sistersResult && !isAllSisters) dynamicDetails.push(sistersResult);
 
@@ -2222,7 +2408,6 @@ function evaluateDecomposition(decomp, hand) {
   sameStepResults.forEach(r => dynamicDetails.push(r));
   stepResults.forEach(r => dynamicDetails.push(r));
 
-  // 字一色不計混帶幺
   const mixedTerminalResult = !isWord ? detectMixedTerminalFromMelds(melds, hand) : null;
   if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
 
@@ -2267,7 +2452,6 @@ function evaluateDecomposition(decomp, hand) {
     detail.push(item);
   });
 
-  // 雞糊檢測：必須只有 1 隻花，全牌無任何其他番數，直接計 30 番（不計花2番）
   const nonFlowerItems = detail.filter(item => item.id !== 'eachFlower');
   if (totalFlowers === 1 && nonFlowerItems.length === 0) {
     return {
@@ -2336,20 +2520,77 @@ function calculateSafe() {
           best = candidates[i];
         }
       }
-      resultData = { total: best.total, detail: best.detail, handTiles: getAllSelectedTilesForWall() };
+
+      const guluCand = candidates.find(c => c.detail.some(d => d.id === 'luckyGulu'));
+      const normalCand = candidates.find(c => !c.detail.some(d => d.id === 'luckyGulu' || d.id === 'sixteenNoMatch' || d.id === 'thirteenOrphan'));
+
+      if (guluCand && normalCand) {
+        const sharedIds = ['eachFlower', 'noFlower', 'noWord', 'noWordFlower'];
+        const guluFilteredDetail = [];
+        let guluDeduct = 0;
+        guluCand.detail.forEach(d => {
+          if (sharedIds.includes(d.id)) {
+            guluDeduct += d.fan;
+            return;
+          }
+          guluFilteredDetail.push(d);
+        });
+
+        const guluFiltered = {
+          total: guluCand.total - guluDeduct,
+          detail: guluFilteredDetail,
+          label: '嚦咕嚦咕'
+        };
+
+        const variants = [
+          { total: normalCand.total, detail: normalCand.detail, label: '一般牌型' },
+          guluFiltered
+        ];
+
+        const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
+        if (winPatterns.total > 0) {
+          variants.forEach(v => {
+            v.detail = [...v.detail, ...winPatterns.items];
+            v.total += winPatterns.total;
+          });
+        }
+
+        resultData = { variants, handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
+        baseResultTotal = variants[0].total;
+        baseResultDetail = variants[0].detail;
+        bonusStateByVariant = variants.map(() => ({}));
+        currentVariantIndex = 0;
+        bonusState = bonusStateByVariant[0];
+        renderResultBody(variants[0].total, variants[0].detail, variants, 0);
+        switchTab('result', document.querySelectorAll('.tab')[1]);
+        document.getElementById('resultPanel').classList.add('show');
+        return;
+      }
+
+      const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
+      if (winPatterns.total > 0) {
+        best.detail = [...best.detail, ...winPatterns.items];
+        best.total += winPatterns.total;
+      }
+
+      resultData = { total: best.total, detail: best.detail, handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
       baseResultTotal = best.total;
       baseResultDetail = best.detail;
       bonusState = {};
+      bonusStateByVariant = null;
+      currentVariantIndex = 0;
       renderResult(best.total, best.detail);
       switchTab('result', document.querySelectorAll('.tab')[1]);
       document.getElementById('resultPanel').classList.add('show');
       return;
     }
 
-    resultData = { total: 0, detail: [], handTiles: getAllSelectedTilesForWall() };
+    resultData = { total: 0, detail: [], handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
     baseResultTotal = 0;
     baseResultDetail = [];
     bonusState = {};
+    bonusStateByVariant = null;
+    currentVariantIndex = 0;
     renderResult(0, []);
     switchTab('result', document.querySelectorAll('.tab')[1]);
     document.getElementById('resultPanel').classList.add('show');
@@ -2364,20 +2605,12 @@ function getBonusFanTotal() {
   for (const key in bonusState) {
     if (bonusState[key]) total += bonusState[key];
   }
-  // 特殊取代：自摸雞糊轉鴨糊 → 扣掉雞糊30番
   if (bonusState.duckWu && hasBaseFan('chickenWu')) total -= 30;
-  if (bonusState.kanKanWu && hasBaseFan('pongPongWu')) {
-    // 坎坎糊取代對對糊：扣掉對對糊40番
-    total -= 40;
-  }
-  if (bonusState.halfHelp && hasBaseFan('fullHelp')) {
-    // 半求人取代全求人：扣掉全求人15番
-    total -= 15;
-  }
+  if (bonusState.kanKanWu && hasBaseFan('pongPongWu')) total -= 40;
+  if (bonusState.halfHelp && hasBaseFan('fullHelp')) total -= 15;
   return total;
 }
 
-// 檢查是否已有某個番種（從 baseResultDetail 中找）
 function hasBaseFan(id) {
   const expanded = [];
   baseResultDetail.forEach(f => {
@@ -2388,43 +2621,29 @@ function hasBaseFan(id) {
 }
 
 function toggleBonus(key, fan) {
-  // 特殊規則：自摸
   if (key === 'selfDraw') {
     if (bonusState.selfDraw !== undefined) {
-      // 取消自摸
       delete bonusState.selfDraw;
-      // 同時取消自動轉換
       delete bonusState.duckWu;
       delete bonusState.kanKanWu;
       delete bonusState.halfHelp;
     } else {
-      // 檢查特殊情況
       const hasChickenWu = hasBaseFan('chickenWu');
       const hasPongPong = hasBaseFan('pongPongWu');
       const hasFullHelp = hasBaseFan('fullHelp');
       const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
 
       if (hasChickenWu) {
-        // 自摸雞糊 → 鴨糊 15番，自摸不加1
-        bonusState.selfDraw = 0; // 不額外加番，但標記已按
-        if (!hasBaseFan('duckWu')) {
-          bonusState['duckWu'] = 15;
-        }
+        bonusState.selfDraw = 0;
+        if (!hasBaseFan('duckWu')) bonusState['duckWu'] = 15;
       } else if (hasPongPong && isClosed) {
-        // 門清對對胡自摸 → 坎坎糊 150番，自摸不加1
         bonusState.selfDraw = 0;
-        if (!hasBaseFan('kanKanWu')) {
-          bonusState['kanKanWu'] = 150;
-        }
+        if (!hasBaseFan('kanKanWu')) bonusState['kanKanWu'] = 150;
       } else if (hasFullHelp) {
-        // 自摸全求人 → 半求人 8番，自摸不加1
         bonusState.selfDraw = 0;
-        if (!hasBaseFan('halfHelp')) {
-          bonusState['halfHelp'] = 8;
-        }
+        if (!hasBaseFan('halfHelp')) bonusState['halfHelp'] = 8;
       } else if (isClosed) {
-        // 門清自摸額外 +2（即門清自摸 8 番，取代門清5+自摸1）
-        bonusState.selfDraw = 3; // 自摸1 + 額外2 = 3
+        bonusState.selfDraw = 3;
       } else {
         bonusState.selfDraw = 1;
       }
@@ -2434,24 +2653,18 @@ function toggleBonus(key, fan) {
     return;
   }
 
-  // 叮
   if (key === 'ding') {
     if (bonusState.ding) {
       delete bonusState.ding;
     } else {
       const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
-      if (isClosed) {
-        bonusState.ding = 15; // 門清叮額外+10 → 叮變15
-      } else {
-        bonusState.ding = 5;
-      }
+      bonusState.ding = isClosed ? 15 : 5;
     }
     updateBonusButtons();
     recalcBonus();
     return;
   }
 
-  // 其他按鈕：直接切換
   if (bonusState[key] !== undefined) {
     delete bonusState[key];
   } else {
@@ -2475,11 +2688,17 @@ function updateBonusButtons() {
 function recalcBonus() {
   const bonusTotal = getBonusFanTotal();
   const newTotal = baseResultTotal + bonusTotal;
-  // 更新畫面上的總番數
-  const totalEl = document.querySelector('.result-total .num');
-  if (totalEl) totalEl.textContent = newTotal;
 
-  // 更新按鈕區下方顯示的「目前加番」
+  if (bonusStateByVariant && resultData && resultData.variants) {
+    const chips = document.querySelectorAll('.variant-chip');
+    if (chips[currentVariantIndex]) {
+      chips[currentVariantIndex].textContent = newTotal;
+    }
+  } else {
+    const totalEl = document.querySelector('.result-total .num');
+    if (totalEl) totalEl.textContent = newTotal;
+  }
+
   let bonusInfo = document.getElementById('bonusInfo');
   if (!bonusInfo) {
     bonusInfo = document.createElement('div');
@@ -2495,7 +2714,24 @@ function recalcBonus() {
   }
 }
 
+function switchVariant(idx) {
+  if (!bonusStateByVariant) return;
+  bonusStateByVariant[currentVariantIndex] = bonusState;
+  currentVariantIndex = idx;
+  bonusState = bonusStateByVariant[idx];
+  const active = resultData.variants[idx];
+  baseResultTotal = active.total;
+  baseResultDetail = active.detail;
+  renderResultBody(active.total, active.detail, resultData.variants, idx);
+  recalcBonus();
+  updateBonusButtons();
+}
+
 function renderResult(total, detail) {
+  renderResultBody(total, detail, null, 0);
+}
+
+function renderResultBody(total, detail, variants, activeIdx) {
   const body = document.getElementById('resultBody');
   if (detail.length === 0) {
     body.innerHTML = `
@@ -2524,6 +2760,37 @@ function renderResult(total, detail) {
   const catOrder = ['花摸','槓摸','基本','組合','大牌','額外'];
   const sortedCats = Object.keys(grouped).sort((a,b) => catOrder.indexOf(a) - catOrder.indexOf(b));
 
+  let headerHTML = '';
+  if (variants && variants.length > 1) {
+    const parts = variants.map((v, i) => {
+      const activeCls = (i === activeIdx) ? 'variant-chip active' : 'variant-chip';
+      return `<span class="${activeCls}" onclick="switchVariant(${i})">${v.total}</span>`;
+    }).join('<span class="variant-plus">+</span>');
+    headerHTML = `
+      <div class="result-total">
+        <div class="num" style="font-size:34px;">【${parts}】</div>
+        <div class="label">雙食嚦咕（點擊數字切換查看該副牌番數；花／字只計一次）</div>
+      </div>
+    `;
+  } else {
+    headerHTML = `
+      <div class="result-total">
+        <div class="num">${total}</div>
+        <div class="label">總番數（各分區檢測 + 最高番數優先）</div>
+      </div>
+    `;
+  }
+
+  let winTileHTML = '';
+  const wt = resultData && resultData.winTile;
+  if (wt && TILE_MAP[wt.id]) {
+    const t = TILE_MAP[wt.id];
+    const inner = t.img
+      ? `<img src="${t.img}" alt="${t.label}" style="width:32px;height:44px;object-fit:contain;">`
+      : `<span class="${t.type === 'num' ? 'num' : 'honor'} ${t.color || 'black'}" style="font-size:18px;">${t.label}</span>`;
+    winTileHTML = `<div style="text-align:center;margin-bottom:10px;font-size:12px;color:#aaa;">食胡牌：<span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:46px;background:#f5f5f0;border-radius:5px;border:2px solid #ffd200;vertical-align:middle;">${inner}</span></div>`;
+  }
+
   const bonusHTML = `
     <div class="bonus-section">
       <div class="bonus-title">➕ 加番按鈕（點擊切換）</div>
@@ -2533,8 +2800,7 @@ function renderResult(total, detail) {
         <div class="bonus-btns">
           <button class="bonus-btn" data-bonus="selfDraw" onclick="toggleBonus('selfDraw', 1)">自摸</button>
           <button class="bonus-btn" data-bonus="ding" onclick="toggleBonus('ding', 5)">叮</button>
-          <button class="bonus-btn" data-bonus="pairPong" onclick="toggleBonus('pairPong', 2)">對碰/單吊</button>
-          <button class="bonus-btn" data-bonus="fakeSingle" onclick="toggleBonus('fakeSingle', 1)">假獨</button>
+          <button class="bonus-btn" data-bonus="dingJik" onclick="toggleBonus('dingJik', 5)">叮即</button>
           <button class="bonus-btn" data-bonus="robKong" onclick="toggleBonus('robKong', 5)">搶槓</button>
           <button class="bonus-btn" data-bonus="doubleWin" onclick="toggleBonus('doubleWin', 5)">雙響</button>
           <button class="bonus-btn" data-bonus="tripleWin" onclick="toggleBonus('tripleWin', 10)">三響</button>
@@ -2591,16 +2857,15 @@ function renderResult(total, detail) {
 
       <div class="bonus-hint" style="margin-top:6px;">
         ※ 自摸額外規則自動處理：門清自摸 +2、自摸雞糊轉鴨糊、門清對對胡自摸轉坎坎糊、自摸全求人轉半求人，以上情況自摸不再 +1。<br>
-        ※ 叮額外規則：門清叮額外 +10（即門清時按叮，叮由 +5 變 +15）。
+        ※ 叮額外規則：門清叮額外 +10（即門清時按叮，叮由 +5 變 +15）。<br>
+        ※ 對碰／獨獨／假獨：由程式根據食胡牌自動判斷（對碰 +2、獨獨 +2、假獨 +1），不再手動按。
       </div>
     </div>
   `;
 
   body.innerHTML = `
-    <div class="result-total">
-      <div class="num">${total}</div>
-      <div class="label">總番數（各分區檢測 + 最高番數優先）</div>
-    </div>
+    ${headerHTML}
+    ${winTileHTML}
     ${sortedCats.map(cat => `
       <div style="font-size:12px;color:#f7971e;font-weight:700;padding:8px 4px 4px;">${cat}</div>${grouped[cat].map(f => `
         <div class="result-item highlight">
@@ -2622,11 +2887,14 @@ function renderResult(total, detail) {
       ※ 清龍 / 雜龍 / 老少 可複式；登天唔計平糊<br>
       ※ 三相逢：採複式相乘計算（例如 2索×2萬×1筒 = 4組）<br>
       ※ 全姊妹（30番）：5組順子為 A組×2 + B組×3，達成時不計平糊及姊妹<br>
-      ※ 嚦咕嚦咕（50番）：不計門清；七對一刻或八對半；達成後計算 3-7 連對（複式）及將眼（2/5/8 每對+2番）<br>
+      ※ 嚦咕嚦咕（50番）：不計門清；七對一刻或八對半；連對只計每款剛好 2 隻的對子（3 隻不計、4 隻算 2 對），將眼（2/5/8）同步只計每款剛好 2 隻的對子；並計算五門齊/七門齊（10/15 番）及小三元(15)/小三風(10)/小四喜(30)（每款齊 2 隻即可，番數對半）<br>
+      ※ 雙食嚦咕：若同時組成一般牌型及嚦咕，兩副牌分別計番，顯示【X+Y】，點擊數字可切換查看該副牌番數；花／無花／無字／無字花只由第一副牌計算（第二副一律不計）<br>
       ※ 雞糊（30番）：必須恰好 1 隻花且全牌無任何其他番數，不計花2番直接計雞糊30番<br>
-      ※ 五門齊：大五門(10番) / 小五門(5番)；七門齊：大七門(20番) / 小七門(15番)<br>
+      ※ 五門齊：不分大小一律 10 番；七門齊：不分大小一律 15 番（嚦咕嚕咕下亦計算）<br>
+      ※ 缺一門（5番）一定冇字（有風牌或三元牌即不計）<br>
       ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計全帶幺、對對胡、缺五)<br>
-      ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）
+      ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）<br>
+      ※ 對碰／獨獨／假獨：由程式根據食胡牌自動判斷（對碰 +2、獨獨 +2、假獨 +1），不再手動按。
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button onclick="saveResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">💾 儲存本局</button>
@@ -2652,10 +2920,33 @@ function closeResult() { document.getElementById('resultPanel').classList.remove
 
 function saveResult() {
   if (!resultData) return;
-  const bonusTotal = getBonusFanTotal();
-  const finalTotal = baseResultTotal + bonusTotal;
   const now = new Date();
   const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  if (resultData.variants) {
+    const parts = resultData.variants.map((v, i) => {
+      const bs = bonusStateByVariant[i] || {};
+      let bTotal = 0;
+      for (const k in bs) if (bs[k]) bTotal += bs[k];
+      const finalTotal = v.total + bTotal;
+      return { total: finalTotal, detail: v.detail, label: v.label };
+    });
+    historyData.unshift({
+      total: `【${parts.map(p => p.total).join('+')}】`,
+      details: parts.map(p => `${p.label}：${p.detail.map(f => `${f.name}(${f.fan}番)`).join('、')}`).join(' ｜ '),
+      time: timeStr,
+      tiles: `花(紅:${redFlowerCount},藍:${blueFlowerCount}) | ` + resultData.handTiles.map(id => TILE_MAP[id]?.label || '?').join(' ')
+    });
+    renderHistory();
+    showToast(`已儲存：${parts.map(p => p.total).join('+')}番`);
+    closeResult();
+    resultData = null;
+    bonusStateByVariant = null;
+    return;
+  }
+
+  const bonusTotal = getBonusFanTotal();
+  const finalTotal = baseResultTotal + bonusTotal;
   const bonusDesc = Object.keys(bonusState).filter(k => bonusState[k] > 0).map(k => `${k}(${bonusState[k]}番)`).join('、');
   historyData.unshift({
     total: finalTotal,
