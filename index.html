@@ -81,7 +81,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .result-item .r-fan { font-size:15px; font-weight:800; color:#ffd200; }
 .result-item.highlight { border-left-color:#ffd200; background:#1a2a5a; box-shadow:0 0 8px rgba(255,210,0,0.15); }
 .result-none { text-align:center; color:#666; padding:30px; font-size:14px; }
-.result-note { font-size:11px; color:#888; text-align:center; padding:10px; line-height:1.6; }
 .history-list { padding:12px; }
 .history-item { background:#16213e; border-radius:10px; padding:12px; margin-bottom:8px; border-left:3px solid #f7971e; }
 .history-item .h-total { font-size:18px; font-weight:800; color:#ffd200; }
@@ -119,7 +118,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .bonus-btn { padding:10px 6px; border-radius:8px; border:1px solid #1a4a7a; background:#16213e; color:#ccc; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.15s; text-align:center; }
 .bonus-btn.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; box-shadow:0 0 8px rgba(247,151,30,0.6); }
 .bonus-btn:active { transform:scale(0.95); }
-.bonus-hint { font-size:9px; color:#667; margin-top:4px; line-height:1.4; }
 
 /* 雙食嚦咕 variant chip */
 .variant-chip { display:inline-block; padding:2px 10px; border-radius:8px; background:#0f3460; border:1px solid #f7971e55; cursor:pointer; color:#ffd200; }
@@ -315,12 +313,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
           <button class="bonus-btn" data-bonus="flowerKong6" onclick="cfToggleBonus('flowerKong6', 80)">花槓6</button>
           <button class="bonus-btn" data-bonus="flowerKong7" onclick="cfToggleBonus('flowerKong7', 120)">花槓7</button>
         </div>
-      </div>
-
-      <div class="bonus-hint">
-        ※ 自摸由上方按鈕控制；食胡牌所在面子非自摸時視為「明」，自摸時視為「暗」。<br>
-        ※ 叮額外：一般門清叮 +10；十六不搭／十三幺／嚦咕嚦咕門清叮只 +5。<br>
-        ※ 食胡牌所在面子明／暗不影響門清與門清叮 +10。
       </div>
     </div>
 
@@ -2956,29 +2948,6 @@ function renderResultBody(total, detail, variants, activeIdx) {
         </div>
       `).join('')}
     `).join('')}
-    <div class="result-note">
-      ※ 將眼（2/5/8）僅限數字牌（風字眼不計）<br>
-      ※ 全求人（15番）：全部吃、碰或明槓（無暗槓），暗手牌只有 2 張（單釣將眼）<br>
-      ※ 槓牌自動整合至17張牌型計算中，不再重複獨立計算「槓摸」番數<br>
-      ※ 三色/同色步步高、四步高、登天 分明暗、按分支點條數計算、取最高層級；三色已支援全部 6 種花色排列<br>
-      ※ 雜連刻：三雜連刻(10番)、四雜連刻(20番)、五雜連刻(40番)；相鄰刻子不得同色，且必須包含三雜連刻（萬筒索齊集）<br>
-      ※ 清龍 / 雜龍 / 老少 可複式；登天唔計平糊<br>
-      ※ 三相逢：採複式相乘計算（例如 2索×2萬×1筒 = 4組）<br>
-      ※ 全姊妹（30番）：5組順子為 A組×2 + B組×3，達成時不計平糊及姊妹<br>
-      ※ 嚦咕嚦咕（50番）：不計門清；七對一刻或八對半；連對只計每款剛好 2 隻的對子（3 隻不計、4 隻算 2 對），將眼（2/5/8）同步只計每款剛好 2 隻的對子；並計算五門齊/七門齊（10/15 番）及小三元(15)/小三風(10)/小四喜(30)（每款齊 2 隻即可，番數對半）；另加八飛(10番)，不計對碰／獨獨／假獨<br>
-      ※ 雙食嚦咕：若同時組成一般牌型及嚦咕，兩副牌分別計番，顯示【X+Y】，點擊數字可切換查看該副牌番數；花／無花／無字／無字花只由第一副牌計算（第二副一律不計）<br>
-      ※ 雞糊（30番）：必須恰好 1 隻花且全牌無任何其他番數，不計花2番直接計雞糊30番<br>
-      ※ 五門齊：不分大小一律 10 番；七門齊：不分大小一律 15 番（嚦咕嚕咕下亦計算）<br>
-      ※ 缺一門（5番）一定冇字（有風牌或三元牌即不計）<br>
-      ※ 字牌：大三元(40)、小三元(20)、大四喜(100)、小四喜(60)、大三風(30)、小三風(15)、字一色(150，不計全帶幺、對對胡、缺五)<br>
-      ※ 字牌刻子每組 +2 番（自動計算風牌及三元牌刻子）<br>
-      ※ 十六不搭：計十六不搭(50) + 十六飛(10)，不計對碰／獨獨／假獨<br>
-      ※ 十三幺：計十三幺(100) + 十三飛(10)，不計對碰／獨獨／假獨<br>
-      ※ 混帶X／全帶X：將眼可字可數；數字眼須等於X，字牌眼豁免；數字面子須含X，字牌面子豁免；有字→混帶X(30/個)，無字→全帶X(80/個)；多個X分別計算<br>
-      ※ 對碰／獨獨／假獨：由程式根據食胡牌自動判斷（對碰 +2、獨獨 +2、假獨 +1），不再手動按。<br>
-      ※ 食胡牌所在面子：非自摸時視為「明」（影響暗坎、暗龍、暗三相逢、步步高暗條數），自摸時視為「暗」；不影響門清與門清叮 +10。<br>
-      ※ 叮額外規則：一般門清牌型門清叮 +10；十六不搭／十三幺／嚦咕嚦咕等必須門清牌型門清叮只 +5。
-    </div>
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button onclick="saveResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">💾 儲存本局</button>
       <button onclick="closeResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#16213e;color:#ffd200;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #f7971e55;">返回</button>
