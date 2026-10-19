@@ -777,7 +777,6 @@ function detectWinPatterns(hand, winTile) {
   const items = [];
   let total = 0;
 
-  // ---------- 對碰 ----------
   let pairPong = false;
   if ((beforeCounts[winId] || 0) >= 2) {
     for (const id in beforeCounts) {
@@ -790,7 +789,6 @@ function detectWinPatterns(hand, winTile) {
     total += 2;
   }
 
-  // ---------- 聽牌分析：獨獨 / 假獨 ----------
   const possibleWins = [];
   for (const t of TILE_DEFS) {
     const testCounts = { ...beforeCounts };
@@ -1475,6 +1473,9 @@ function getSequenceMeldCounts(melds, pair) {
 
 const SUIT_NAMES = { wan: '萬', tong: '筒', so: '索' };
 
+/* ============================================================
+   三色步步高 / 三色四步高 / 三色登天（支援全部 6 種花色排列）
+   ============================================================ */
 function detectThreeColorStep(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
   if (sequences.length < 3) return [];
@@ -1486,6 +1487,9 @@ function detectThreeColorStep(melds, pair) {
     ['wan', 'so', 'tong'],
     ['so', 'tong', 'wan'],
     ['tong', 'wan', 'so'],
+    ['wan', 'tong', 'so'],
+    ['tong', 'so', 'wan'],
+    ['so', 'wan', 'tong'],
   ];
 
   const calcMatchCopies = (infos) => {
@@ -2882,7 +2886,7 @@ function renderResultBody(total, detail, variants, activeIdx) {
       ※ 將眼（2/5/8）僅限數字牌（風字眼不計）<br>
       ※ 全求人（15番）：全部吃、碰或明槓（無暗槓），暗手牌只有 2 張（單釣將眼）<br>
       ※ 槓牌自動整合至17張牌型計算中，不再重複獨立計算「槓摸」番數<br>
-      ※ 三色/同色步步高、四步高、登天 分明暗、按分支點條數計算、取最高層級<br>
+      ※ 三色/同色步步高、四步高、登天 分明暗、按分支點條數計算、取最高層級；三色已支援全部 6 種花色排列<br>
       ※ 雜連刻：三雜連刻(10番)、四雜連刻(20番)、五雜連刻(40番)；相鄰刻子不得同色，且必須包含三雜連刻（萬筒索齊集）<br>
       ※ 清龍 / 雜龍 / 老少 可複式；登天唔計平糊<br>
       ※ 三相逢：採複式相乘計算（例如 2索×2萬×1筒 = 4組）<br>
