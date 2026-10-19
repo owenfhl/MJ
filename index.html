@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>多狗計數機v2</title>
+<title>多仔港式台牌 自動算番 2026</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", sans-serif; background:#1a1a2e; color:#eee; min-height:100vh; padding:8px; padding-bottom:190px; user-select:none; }
@@ -509,6 +509,70 @@ const FAN_TABLE = [
 const FAN_MAP = {};
 FAN_TABLE.forEach(f => FAN_MAP[f.id] = f);
 
+/* ============================================================
+   同組「只取最大」規則
+   ============================================================ */
+const MAX_ONLY_GROUPS = [
+  // 聽牌形態：對碰、獨獨、假獨（食胡只計一種）
+  ['pairPong', 'realSingle', 'fakeSingle'],
+  // 門清系列（含升級版本）
+  ['closedHand', 'closedDing', 'closedSelfDraw'],
+  // 平糊系列
+  ['flatWu', 'noWordBigFlat'],
+  // 暗槓累進
+  ['closedKong', 'twoKong', 'threeKong', 'fourKong', 'fiveKong'],
+  // 三元
+  ['smallThreeDragon', 'bigThreeDragon'],
+  // 四喜
+  ['smallFourJoy', 'bigFourJoy'],
+  // 三風
+  ['smallThreeWind', 'bigThreeWind'],
+  // 清龍明暗
+  ['clearDragon1', 'clearDragon2'],
+  // 雜龍明暗
+  ['mixedDragon1', 'mixedDragon2'],
+  // 連刻系列
+  ['chainPong', 'smallThreeChain', 'bigThreeChain'],
+  // 兄弟系列
+  ['brothers', 'smallBrothers', 'bigBrothers'],
+  // 四歸系列
+  ['fourBack1', 'fourBack2', 'fourBack4'],
+  // 步步高/四步高/登天（三色）
+  ['threeColorStep1', 'threeColorStep2', 'threeColorStep4a', 'threeColorStep4b', 'threeColorSky1', 'threeColorSky2'],
+  // 步步高/四步高/登天（同色）
+  ['sameColorStep1', 'sameColorStep2', 'sameColorStep4a', 'sameColorStep4b', 'sameColorSky1', 'sameColorSky2'],
+  // 連對系列
+  ['threePairChain', 'fourPairChain', 'fivePairChain', 'sixPairChain', 'sevenPairChain'],
+  // 對對糊 vs 坎坎糊
+  ['pongPongWu', 'kanKanWu'],
+];
+
+function applyMaxOnlyRule(detail) {
+  if (!Array.isArray(detail) || detail.length === 0) return detail;
+  const removeSet = new Set();
+  MAX_ONLY_GROUPS.forEach(group => {
+    const present = detail.filter(d => d && group.includes(d.id) && !d.items);
+    if (present.length > 1) {
+      let max = -Infinity;
+      present.forEach(d => { if (typeof d.fan === 'number' && d.fan > max) max = d.fan; });
+      present.forEach(d => { if (d.fan < max) removeSet.add(d); });
+    }
+  });
+  if (removeSet.size === 0) return detail;
+  return detail.filter(d => !removeSet.has(d));
+}
+
+/* 若已有「對碰」，則剔除「假獨」，避免疊加 */
+function applyWinPatternsToDetail(baseDetail, winPatterns) {
+  let items = [...winPatterns.items];
+  const hasPairPong = baseDetail.some(d => d.id === 'pairPong' && !d.items);
+  if (hasPairPong) {
+    items = items.filter(it => it.id !== 'fakeSingle');
+  }
+  const total = items.reduce((s, it) => s + it.fan, 0);
+  return { items, total };
+}
+
 let targetSection = 'closed';
 let redFlowerCount = 0;
 let blueFlowerCount = 0;
@@ -831,6 +895,9 @@ function confirmCalc() {
    對碰 / 獨獨 / 假獨 自動判斷
    ============================================================ */
 function isValidWinningHand(counts) {
+  for (const id in counts) {
+    if (counts[id] > 4) return false;
+  }
   const decomps = getAllDecompositions(counts);
   if (decomps.length > 0) return true;
   if (checkLuckyGulu(counts)) return true;
@@ -858,20 +925,10 @@ function detectWinPatterns(hand, winTile) {
   const items = [];
   let total = 0;
 
-  let pairPong = false;
-  if ((beforeCounts[winId] || 0) >= 2) {
-    for (const id in beforeCounts) {
-      if (id === winId) continue;
-      if ((beforeCounts[id] || 0) >= 2) { pairPong = true; break; }
-    }
-  }
-  if (pairPong) {
-    items.push({ id: 'pairPong', name: '對碰', fan: 2, cat: '基本', detail: '食胡牌與手上對子湊成刻子，另一對作將眼' });
-    total += 2;
-  }
-
-  const possibleWins = [];
+  // 替换法计算听牌
+  const possibleWins = [winId];
   for (const t of TILE_DEFS) {
+    if (t.id === winId) continue;
     const testCounts = { ...beforeCounts };
     testCounts[t.id] = (testCounts[t.id] || 0) + 1;
     if (isValidWinningHand(testCounts)) {
@@ -1100,7 +1157,10 @@ function evaluateThirteenOrphan(counts, hand) {
     detail.push({ id: 'twoKong', name: '兩槓', fan: 20, cat: '槓摸' });
   }
 
-  return { total: totalFan, detail };
+  // 同組只取最大
+  const filtered = applyMaxOnlyRule(detail);
+  const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
+  return { total: newTotal, detail: filtered };
 }
 
 function checkSixteenNoMatch(counts) {
@@ -1188,7 +1248,9 @@ function evaluateSixteenNoMatch(counts, hand) {
     detail.push({ id: 'twoKong', name: '兩槓', fan: 20, cat: '槓摸' });
   }
 
-  return { total: totalFan, detail };
+  const filtered = applyMaxOnlyRule(detail);
+  const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
+  return { total: newTotal, detail: filtered };
 }
 
 function checkLuckyGulu(counts) {
@@ -1382,18 +1444,18 @@ function evaluateLuckyGulu(counts, hand) {
     totalFan += 150;
     detail.push({ id: 'wordOneColor', name: '字一色', fan: 150, cat: '大牌' });
   } else {
-    if (isPureOneColor(suits, winds, dragons)) { totalFan += 100; detail.push(FAN_MAP['pureOneColor']); }
-    else if (isMixedOneColor(suits, winds, dragons)) { totalFan += 40; detail.push(FAN_MAP['mixedOneColor']); }
-    if (isPureOld(suits, winds, dragons)) { totalFan += 300; detail.push(FAN_MAP['pureOld']); }
-    if (isNoTerminal(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['noTerminal']); }
-    if (isMissingOne(suits, winds, dragons)) { totalFan += 5; detail.push(FAN_MAP['missingOne']); }
+    if (isPureOneColor(suits, winds, dragons)) { totalFan += 100; detail.push({...FAN_MAP['pureOneColor']}); }
+    else if (isMixedOneColor(suits, winds, dragons)) { totalFan += 40; detail.push({...FAN_MAP['mixedOneColor']}); }
+    if (isPureOld(suits, winds, dragons)) { totalFan += 300; detail.push({...FAN_MAP['pureOld']}); }
+    if (isNoTerminal(suits, winds, dragons)) { totalFan += 5; detail.push({...FAN_MAP['noTerminal']}); }
+    if (isMissingOne(suits, winds, dragons)) { totalFan += 5; detail.push({...FAN_MAP['missingOne']}); }
   }
 
   const isBig = isAllBig(counts, winds, dragons);
   const isSmall = isAllSmall(counts, winds, dragons);
-  if (isBig) { totalFan += 50; detail.push(FAN_MAP['allBig']); }
-  else if (isSmall) { totalFan += 50; detail.push(FAN_MAP['allSmall']); }
-  else if (!isWord && isMissingFive(counts)) { totalFan += 5; detail.push(FAN_MAP['missingFive']); }
+  if (isBig) { totalFan += 50; detail.push({...FAN_MAP['allBig']}); }
+  else if (isSmall) { totalFan += 50; detail.push({...FAN_MAP['allSmall']}); }
+  else if (!isWord && isMissingFive(counts)) { totalFan += 5; detail.push({...FAN_MAP['missingFive']}); }
 
   if (guluMatch.oddCount === 3 && TILE_MAP[guluMatch.oddId]?.type === 'honor') {
     totalFan += 2;
@@ -1414,7 +1476,9 @@ function evaluateLuckyGulu(counts, hand) {
     detail.push({ id: 'noWord', name: '無字', fan: 2, cat: '花摸' });
   }
 
-  return { total: totalFan, detail };
+  const filtered = applyMaxOnlyRule(detail);
+  const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
+  return { total: newTotal, detail: filtered };
 }
 
 function detectMixedChainPongFromMelds(melds) {
@@ -2356,6 +2420,14 @@ function evaluateDecomposition(decomp, hand) {
 
   if (totalFlowers > 0) matchedIds.push('eachFlower');
 
+  // 新增：對碰判定（基於當前分解）
+  if (winTileId && !window.isSelfDraw) {
+    const hasPongWinMeld = melds.some(m => m.type === '刻子' && m.id === winTileId);
+    if (hasPongWinMeld) {
+      matchedIds.push('pairPong');
+    }
+  }
+
   const hasOpenKong = kongSection.some(k => k.type === 'open');
   const hasClosedKong = kongSection.some(k => k.type === 'closed');
   if (openSection.length === 0 && !hasOpenKong && !hasClosedKong) matchedIds.push('closedHand');
@@ -2566,7 +2638,7 @@ function evaluateDecomposition(decomp, hand) {
         detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
       } else {
         total += f.fan; 
-        detail.push(f); 
+        detail.push({ ...f }); 
       }
     }
   });
@@ -2604,7 +2676,10 @@ function evaluateDecomposition(decomp, hand) {
     };
   }
 
-  return { total, detail };
+  // 同組只取最大
+  const filtered = applyMaxOnlyRule(detail);
+  const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
+  return { total: newTotal, detail: filtered };
 }
 
 function calculateSafe() {
@@ -2685,11 +2760,13 @@ function calculateSafe() {
           guluFiltered
         ];
 
+        // 對碰 + 假獨：只取最大
         const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
         if (winPatterns.total > 0) {
           variants.forEach(v => {
-            v.detail = [...v.detail, ...winPatterns.items];
-            v.total += winPatterns.total;
+            const applied = applyWinPatternsToDetail(v.detail, winPatterns);
+            v.detail = [...v.detail, ...applied.items];
+            v.total += applied.total;
           });
         }
 
@@ -2705,10 +2782,12 @@ function calculateSafe() {
         return;
       }
 
+      // 對碰 + 假獨：只取最大
       const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
       if (winPatterns.total > 0) {
-        best.detail = [...best.detail, ...winPatterns.items];
-        best.total += winPatterns.total;
+        const applied = applyWinPatternsToDetail(best.detail, winPatterns);
+        best.detail = [...best.detail, ...applied.items];
+        best.total += applied.total;
       }
 
       resultData = { total: best.total, detail: best.detail, handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
