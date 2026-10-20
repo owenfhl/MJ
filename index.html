@@ -109,7 +109,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .c-btn-yes { background: #e74c3c; color: #fff; }
 .c-btn-no { background: #16213e; color: #ffd200; border: 1px solid #f7971e55 !important; }
 
-/* 加番按鈕區（僅確認畫面使用） */
 .bonus-section { margin-top: 14px; background:#0f3460; border-radius:10px; padding:10px; border:1px solid #1a4a7a; }
 .bonus-title { font-size:12px; font-weight:800; color:#ffd200; margin-bottom:8px; }
 .bonus-group { margin-bottom:10px; }
@@ -119,12 +118,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 .bonus-btn.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; box-shadow:0 0 8px rgba(247,151,30,0.6); }
 .bonus-btn:active { transform:scale(0.95); }
 
-/* 雙食嚦咕 variant chip */
 .variant-chip { display:inline-block; padding:2px 10px; border-radius:8px; background:#0f3460; border:1px solid #f7971e55; cursor:pointer; color:#ffd200; }
 .variant-chip.active { background:#f7971e; color:#1a1a2e; border-color:#ffd200; }
 .variant-plus { color:#f7971e; margin:0 4px; font-weight:900; }
 
-/* 確認視窗：花牌與食胡牌選擇 */
 .confirm-flower { background:#0f3460; border-radius:8px; padding:8px 10px; margin-bottom:10px; border:1px solid #1a4a7a; text-align:left; }
 .confirm-flower .cf-title { font-size:12px; font-weight:800; color:#ffd200; margin-bottom:6px; }
 .confirm-flower .cf-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
@@ -160,7 +157,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 
 <div class="header">
   <h1> 多狗計數機 </h1>
-  <p>2026測試版v1 有問題聯絡Owen </p>
+  <p>2026修正版v3</p>
 </div>
 
 <div class="tabs">
@@ -230,7 +227,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
   </div>
 </div>
 
-<!-- 計算前確認視窗：花牌配置 + 加番 + 食胡牌 -->
 <div class="confirm-overlay" id="calcConfirmOverlay">
   <div class="confirm-box">
     <div class="c-title">確認牌組</div>
@@ -318,7 +314,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans
 
     <div class="confirm-tiles">
       <div class="ct-title">🀫 食胡牌（點選食出嗰張）</div>
-      <div class="ct-hint">可選暗手牌、明手牌或槓區的牌；再按「確認計算」</div>
+      <div class="ct-hint">可選暗手牌或明手牌；再按「確認計算」</div>
       <div class="ct-grid" id="cfTilesGrid"></div>
     </div>
 
@@ -360,13 +356,10 @@ TILE_DEFS.forEach(t => TILE_MAP[t.id] = t);
 
 const FAN_TABLE = [
   { id:'eachFlower', name:'花', fan:2, cat:'花摸' },
-  { id:'properFlower', name:'正/爛花', fan:2, cat:'花摸' },
   { id:'noFlower', name:'無花', fan:2, cat:'花摸' },
   { id:'wordTile', name:'字（每組字刻+2）', fan:2, cat:'花摸' },
   { id:'noWord', name:'無字', fan:2, cat:'花摸' },
   { id:'noWordFlower', name:'無字花', fan:10, cat:'花摸' },
-  { id:'sevenRobOne', name:'七搶一/一搶七', fan:40, cat:'花摸' },
-  { id:'eightImmortal', name:'八仙過海', fan:80, cat:'花摸' },
   { id:'openKong', name:'明槓', fan:1, cat:'槓摸' },
   { id:'closedKong', name:'暗槓', fan:2, cat:'槓摸' },
   { id:'twoKong', name:'兩槓', fan:10, cat:'槓摸' },
@@ -382,12 +375,6 @@ const FAN_TABLE = [
   { id:'robKong', name:'搶槓', fan:5, cat:'基本' },
   { id:'doubleWin', name:'雙響', fan:5, cat:'基本' },
   { id:'tripleWin', name:'三響', fan:10, cat:'基本' },
-  { id:'dealerStreak3', name:'莊家連拉3', fan:3, cat:'基本' },
-  { id:'dealerStreak5', name:'莊家連拉5', fan:5, cat:'基本' },
-  { id:'dealerStreak7', name:'莊家連拉7', fan:7, cat:'基本' },
-  { id:'dealerStreak9', name:'莊家連拉9', fan:9, cat:'基本' },
-  { id:'heavenDing', name:'天叮', fan:60, cat:'基本' },
-  { id:'earthDing', name:'地叮', fan:50, cat:'基本' },
   { id:'eyeTile', name:'將眼（2/5/8）', fan:2, cat:'基本' },
   { id:'pairPong', name:'對碰', fan:2, cat:'基本' },
   { id:'realSingle', name:'獨獨', fan:2, cat:'基本' },
@@ -396,33 +383,27 @@ const FAN_TABLE = [
   { id:'fullHelp', name:'全求人', fan:15, cat:'基本' },
   { id:'riverFish', name:'河底撈月', fan:3, cat:'基本' },
   { id:'seaFish', name:'海底撈月', fan:5, cat:'基本' },
-  { id:'clearSingle', name:'明絕', fan:5, cat:'基本' },
   { id:'missingOne', name:'缺一門', fan:5, cat:'組合' },
   { id:'missingFive', name:'缺五', fan:5, cat:'組合' },
   { id:'noTerminal', name:'斷幺九', fan:5, cat:'組合' },
-  { id:'smallFiveDoor', name:'小五門齊', fan:5, cat:'組合' },
   { id:'bigFiveDoor', name:'五門齊', fan:10, cat:'組合' },
-  { id:'smallSevenDoor', name:'小七門齊', fan:15, cat:'組合' },
   { id:'bigSevenDoor', name:'七門齊', fan:15, cat:'組合' },
-  { id:'threeColorStep1', name:'三色步步高(小)', fan:5, cat:'組合' },
-  { id:'threeColorStep2', name:'三色步步高(大)', fan:10, cat:'組合' },
-  { id:'threeColorStep4a', name:'三色四步高(小)', fan:20, cat:'組合' },
-  { id:'threeColorStep4b', name:'三色四步高(大)', fan:40, cat:'組合' },
-  { id:'threeColorSky1', name:'三色登天(小)', fan:100, cat:'組合' },
-  { id:'threeColorSky2', name:'三色登天(大)', fan:110, cat:'組合' },
-  { id:'sameColorStep1', name:'同色步步高(小)', fan:15, cat:'組合' },
-  { id:'sameColorStep2', name:'同色步步高(大)', fan:20, cat:'組合' },
-  { id:'sameColorStep4a', name:'同色四步高(小)', fan:50, cat:'組合' },
-  { id:'sameColorStep4b', name:'同色四步高(大)', fan:100, cat:'組合' },
-  { id:'sameColorSky1', name:'同色登天(小)', fan:200, cat:'組合' },
-  { id:'sameColorSky2', name:'同色登天(大)', fan:220, cat:'組合' },
-  { id:'fourChild', name:'四子', fan:30, cat:'組合' },
-  { id:'sevenChild', name:'七子', fan:15, cat:'組合' },
-  { id:'tenChild', name:'十子', fan:10, cat:'組合' },
-  { id:'clearDragon1', name:'清龍(小)', fan:10, cat:'組合' },
-  { id:'clearDragon2', name:'清龍(大)', fan:20, cat:'組合' },
-  { id:'mixedDragon1', name:'雜龍(小)', fan:8, cat:'組合' },
-  { id:'mixedDragon2', name:'雜龍(大)', fan:15, cat:'組合' },
+  { id:'threeColorStep1', name:'三色步步高(明)', fan:5, cat:'組合' },
+  { id:'threeColorStep2', name:'三色步步高(暗)', fan:10, cat:'組合' },
+  { id:'threeColorStep4a', name:'三色四步高(明)', fan:20, cat:'組合' },
+  { id:'threeColorStep4b', name:'三色四步高(暗)', fan:40, cat:'組合' },
+  { id:'threeColorSky1', name:'三色登天(明)', fan:100, cat:'組合' },
+  { id:'threeColorSky2', name:'三色登天(暗)', fan:110, cat:'組合' },
+  { id:'sameColorStep1', name:'同色步步高(明)', fan:15, cat:'組合' },
+  { id:'sameColorStep2', name:'同色步步高(暗)', fan:20, cat:'組合' },
+  { id:'sameColorStep4a', name:'同色四步高(明)', fan:50, cat:'組合' },
+  { id:'sameColorStep4b', name:'同色四步高(暗)', fan:100, cat:'組合' },
+  { id:'sameColorSky1', name:'同色登天(明)', fan:200, cat:'組合' },
+  { id:'sameColorSky2', name:'同色登天(暗)', fan:220, cat:'組合' },
+  { id:'clearDragon1', name:'清龍(明)', fan:10, cat:'組合' },
+  { id:'clearDragon2', name:'清龍(暗)', fan:20, cat:'組合' },
+  { id:'mixedDragon1', name:'雜龍(明)', fan:8, cat:'組合' },
+  { id:'mixedDragon2', name:'雜龍(暗)', fan:15, cat:'組合' },
   { id:'fourBack1', name:'四歸一', fan:5, cat:'組合' },
   { id:'fourBack2', name:'四歸二', fan:10, cat:'組合' },
   { id:'fourBack4', name:'四歸四', fan:15, cat:'組合' },
@@ -434,13 +415,16 @@ const FAN_TABLE = [
   { id:'allSisters', name:'全姊妹', fan:30, cat:'組合' },
   { id:'flatWu', name:'平糊', fan:5, cat:'組合' },
   { id:'noWordBigFlat', name:'無字花大平糊', fan:20, cat:'組合' },
-  { id:'doublePairHigh1', name:'雙般高(小)', fan:5, cat:'組合' },
-  { id:'doublePairHigh2', name:'雙般高(大)', fan:10, cat:'組合' },
+  { id:'doublePairHigh1', name:'雙般高', fan:5, cat:'組合' },
   { id:'triplePairHigh', name:'三般高', fan:20, cat:'組合' },
   { id:'quadPairHigh', name:'四般高', fan:100, cat:'組合' },
   { id:'chainPong', name:'連刻', fan:5, cat:'組合' },
-  { id:'smallThreeChain', name:'小三連刻', fan:10, cat:'組合' },
+  { id:'smallThreeChain', name:'三小連刻', fan:10, cat:'組合' },
   { id:'bigThreeChain', name:'大三連刻', fan:20, cat:'組合' },
+  { id:'fourSmallChain', name:'四小連刻', fan:30, cat:'組合' },
+  { id:'bigFourChain', name:'大四連刻', fan:40, cat:'組合' },
+  { id:'fiveSmallChain', name:'五小連刻', fan:50, cat:'組合' },
+  { id:'bigFiveChain', name:'大五連刻', fan:100, cat:'大牌' },
   { id:'mixedThreeChain', name:'三雜連刻', fan:20, cat:'組合' },
   { id:'mixedFourChain', name:'四雜連刻', fan:40, cat:'組合' },
   { id:'mixedFiveChain', name:'五雜連刻', fan:100, cat:'大牌' },
@@ -452,13 +436,9 @@ const FAN_TABLE = [
   { id:'fiveHidden', name:'五暗坎', fan:80, cat:'組合' },
   { id:'pongPongWu', name:'對對糊', fan:40, cat:'大牌' },
   { id:'kanKanWu', name:'坎坎糊', fan:110, cat:'大牌' },
-  { id:'twoNumbers', name:'兩數', fan:120, cat:'大牌' },
-  { id:'threeNumbers', name:'三數', fan:80, cat:'大牌' },
   { id:'mixedOneColor', name:'混一色', fan:40, cat:'大牌' },
   { id:'pureOneColor', name:'清一色', fan:100, cat:'大牌' },
   { id:'wordOneColor', name:'字一色', fan:100, cat:'大牌' },
-  { id:'greenOneColor', name:'綠一色', fan:250, cat:'大牌' },
-  { id:'blueOneColor', name:'藍一色', fan:300, cat:'大牌' },
   { id:'smallThreeWind', name:'小三風', fan:20, cat:'組合' },
   { id:'bigThreeWind', name:'大三風', fan:40, cat:'大牌' },
   { id:'smallThreeDragon', name:'小三元', fan:30, cat:'大牌' },
@@ -471,10 +451,6 @@ const FAN_TABLE = [
   { id:'mixedWithX', name:'混帶X', fan:30, cat:'大牌' },
   { id:'allWithX', name:'全帶X', fan:80, cat:'大牌' },
   { id:'sixteenNoMatch', name:'十六不搭', fan:50, cat:'大牌' },
-  { id:'noMatchThreeOpen', name:'不搭明三相逢', fan:60, cat:'大牌' },
-  { id:'noMatchThreeClosed', name:'不搭暗三相逢', fan:70, cat:'大牌' },
-  { id:'noMatchDragonOpen', name:'不搭明雜龍', fan:70, cat:'大牌' },
-  { id:'noMatchDragonClosed', name:'不搭暗雜龍', fan:80, cat:'大牌' },
   { id:'sixteenFly', name:'十六飛', fan:10, cat:'大牌' },
   { id:'thirteenOrphan', name:'十三幺', fan:100, cat:'大牌' },
   { id:'thirteenFly', name:'十三飛', fan:10, cat:'大牌' },
@@ -487,64 +463,23 @@ const FAN_TABLE = [
   { id:'sevenPairChain', name:'七連對', fan:80, cat:'大牌' },
   { id:'allBig', name:'全大', fan:50, cat:'大牌' },
   { id:'allSmall', name:'全細', fan:50, cat:'大牌' },
-  { id:'karonPongCar', name:'卡窿碰碰車', fan:110, cat:'大牌' },
-  { id:'heavenWu', name:'天糊', fan:120, cat:'大牌' },
-  { id:'earthWu', name:'地糊', fan:100, cat:'大牌' },
-  { id:'manWu', name:'人糊', fan:80, cat:'大牌' },
-  { id:'extraClosedKong', name:'暗槓(收籌)', fan:5, cat:'額外' },
-  { id:'dice', name:'圍骰', fan:5, cat:'額外' },
-  { id:'oneTwoThree', name:'123', fan:5, cat:'額外' },
-  { id:'oneSetFlower', name:'一台花', fan:5, cat:'額外' },
-  { id:'oneSetGrass', name:'一台草', fan:2, cat:'額外' },
-  { id:'chaseFan', name:'追番子', fan:5, cat:'額外' },
-  { id:'chaseOther', name:'追其他', fan:10, cat:'額外' },
-  { id:'threeChase1', name:'三追(小)', fan:2, cat:'額外' },
-  { id:'threeChase2', name:'三追(大)', fan:4, cat:'額外' },
-  { id:'noOpenClosed', name:'無開暗槓', fan:5, cat:'額外' },
-  { id:'callNotCall', name:'叫碰不碰', fan:5, cat:'額外' },
-  { id:'fakeWu', name:'詐糊', fan:30, cat:'額外' },
-  { id:'jackpot', name:'Jackpot', fan:10, cat:'額外' },
 ];
 
 const FAN_MAP = {};
 FAN_TABLE.forEach(f => FAN_MAP[f.id] = f);
 
-/* ============================================================
-   同組「只取最大」規則
-   ============================================================ */
 const MAX_ONLY_GROUPS = [
-  // 聽牌形態：對碰、獨獨、假獨（食胡只計一種）
   ['pairPong', 'realSingle', 'fakeSingle'],
-  // 門清系列（含升級版本）
   ['closedHand', 'closedDing', 'closedSelfDraw'],
-  // 平糊系列
   ['flatWu', 'noWordBigFlat'],
-  // 暗槓累進
-  ['closedKong', 'twoKong', 'threeKong', 'fourKong', 'fiveKong'],
-  // 三元
+  ['openKong', 'closedKong', 'twoKong', 'threeKong', 'fourKong', 'fiveKong'],
   ['smallThreeDragon', 'bigThreeDragon'],
-  // 四喜
   ['smallFourJoy', 'bigFourJoy'],
-  // 三風
   ['smallThreeWind', 'bigThreeWind'],
-  // 清龍明暗
-  ['clearDragon1', 'clearDragon2'],
-  // 雜龍明暗
-  ['mixedDragon1', 'mixedDragon2'],
-  // 連刻系列
-  ['chainPong', 'smallThreeChain', 'bigThreeChain'],
-  // 兄弟系列
-  ['brothers', 'smallBrothers', 'bigBrothers'],
-  // 四歸系列
-  ['fourBack1', 'fourBack2', 'fourBack4'],
-  // 步步高/四步高/登天（三色）
-  ['threeColorStep1', 'threeColorStep2', 'threeColorStep4a', 'threeColorStep4b', 'threeColorSky1', 'threeColorSky2'],
-  // 步步高/四步高/登天（同色）
-  ['sameColorStep1', 'sameColorStep2', 'sameColorStep4a', 'sameColorStep4b', 'sameColorSky1', 'sameColorSky2'],
-  // 連對系列
   ['threePairChain', 'fourPairChain', 'fivePairChain', 'sixPairChain', 'sevenPairChain'],
-  // 對對糊 vs 坎坎糊
   ['pongPongWu', 'kanKanWu'],
+  ['chickenWu', 'duckWu'],
+  ['halfHelp', 'fullHelp']
 ];
 
 function applyMaxOnlyRule(detail) {
@@ -562,17 +497,6 @@ function applyMaxOnlyRule(detail) {
   return detail.filter(d => !removeSet.has(d));
 }
 
-/* 若已有「對碰」，則剔除「假獨」，避免疊加 */
-function applyWinPatternsToDetail(baseDetail, winPatterns) {
-  let items = [...winPatterns.items];
-  const hasPairPong = baseDetail.some(d => d.id === 'pairPong' && !d.items);
-  if (hasPairPong) {
-    items = items.filter(it => it.id !== 'fakeSingle');
-  }
-  const total = items.reduce((s, it) => s + it.fan, 0);
-  return { items, total };
-}
-
 let targetSection = 'closed';
 let redFlowerCount = 0;
 let blueFlowerCount = 0;
@@ -583,16 +507,13 @@ let kongSection = [];
 let historyData = [];
 let resultData = null;
 
-// 結算加番狀態
 let bonusState = {};
 let baseResultTotal = 0;
 let baseResultDetail = [];
 
-// 雙食嚦咕
 let bonusStateByVariant = null;
 let currentVariantIndex = 0;
 
-// 確認視窗暫存
 let cfRed = 0;
 let cfBlue = 0;
 let cfSelectedTile = null;
@@ -684,6 +605,17 @@ function renderTileHTML(t) {
 function addTileToTarget(id) {
   const allTiles = getAllSelectedTilesForWall();
   const count = allTiles.filter(x => x === id).length;
+  
+  if (targetSection === 'kong') {
+    if (count > 0) {
+      showToast('槓牌必須為完整 4 隻，不可與手牌混用或超過上限');
+      return;
+    }
+    kongSection.push({ id: id, type: currentKongType });
+    refreshUI();
+    return;
+  }
+
   if (count >= 4) {
     showToast('每張牌最多 4 隻');
     return;
@@ -691,8 +623,6 @@ function addTileToTarget(id) {
 
   if (targetSection === 'open') {
     openSection.push(id);
-  } else if (targetSection === 'kong') {
-    kongSection.push({ id: id, type: currentKongType });
   } else {
     closedSection.push(id);
   }
@@ -780,9 +710,6 @@ function switchTab(tab, el) {
   else document.getElementById('resultSection').classList.add('active');
 }
 
-/* ============================================================
-   確認視窗：花牌 + 加番 + 食胡牌
-   ============================================================ */
 function openCalcConfirm() {
   const totalTilesCount = openSection.length + closedSection.length + (kongSection.length * 3);
   if (totalTilesCount !== 17) {
@@ -833,7 +760,6 @@ function renderCfTiles() {
   const items = [];
   closedSection.forEach((id, i) => items.push({ sec:'closed', index:i, id, tag:'暗' }));
   openSection.forEach((id, i) => items.push({ sec:'open', index:i, id, tag:'明' }));
-  kongSection.forEach((k, i) => items.push({ sec:'kong', index:i, id:k.id, tag: k.type === 'closed' ? '暗槓' : '明槓' }));
 
   grid.innerHTML = items.map(it => {
     const t = TILE_MAP[it.id];
@@ -886,14 +812,12 @@ function confirmCalc() {
   blueFlowerCount = cfBlue;
   window.selectedWinTile = { ...cfSelectedTile };
   window.isSelfDraw = cfBonusState.selfDraw !== undefined;
+  window.pendingCfBonus = { ...cfBonusState };
 
   closeCalcConfirm();
   calculateSafe();
 }
 
-/* ============================================================
-   對碰 / 獨獨 / 假獨 自動判斷
-   ============================================================ */
 function isValidWinningHand(counts) {
   for (const id in counts) {
     if (counts[id] > 4) return false;
@@ -906,7 +830,7 @@ function isValidWinningHand(counts) {
   return false;
 }
 
-function detectWinPatterns(hand, winTile) {
+function detectWinPatterns(hand, winTile, bestDecomp) {
   if (!winTile) return { items: [], total: 0 };
   const counts = { ...hand.counts };
 
@@ -915,44 +839,134 @@ function detectWinPatterns(hand, winTile) {
   }
 
   const winId = winTile.id;
-  const winCount = counts[winId] || 0;
-  if (winCount <= 0) return { items: [], total: 0 };
+  
+  const closedCounts = {};
+  closedSection.forEach(id => closedCounts[id] = (closedCounts[id] || 0) + 1);
 
-  const beforeCounts = { ...counts };
+  if ((closedCounts[winId] || 0) <= 0) return { items: [], total: 0 };
+
+  const beforeCounts = { ...closedCounts };
   beforeCounts[winId] -= 1;
   if (beforeCounts[winId] <= 0) delete beforeCounts[winId];
 
-  const items = [];
-  let total = 0;
+  let remainingClosedCount = 0;
+  for (const k in beforeCounts) remainingClosedCount += beforeCounts[k];
+  
+  const targetClosedMeldsCount = Math.floor((remainingClosedCount - 1) / 3);
 
-  // 替换法计算听牌
+  let canSingleEye = false;
+  let canMiddleHole = false;
+  let canEdgeTile = false;
+  let canTwoSided = false;
+
+  if ((beforeCounts[winId] || 0) >= 1) {
+    const testRem = { ...beforeCounts };
+    testRem[winId] -= 1;
+    if (testRem[winId] <= 0) delete testRem[winId];
+    const testMelds = [];
+    searchMeldsStrict(testRem, targetClosedMeldsCount, [], testMelds);
+    if (testMelds.length > 0) canSingleEye = true;
+  }
+
+  const tWin = TILE_MAP[winId];
+  if (tWin && tWin.type === 'num') {
+    const s = tWin.suit;
+    const n = tWin.num;
+
+    if (n >= 2 && n <= 8) {
+      const prevId = `${s}${n - 1}`;
+      const nextId = `${s}${n + 1}`;
+      if ((beforeCounts[prevId] || 0) >= 1 && (beforeCounts[nextId] || 0) >= 1) {
+        const testRem = { ...beforeCounts };
+        testRem[prevId] -= 1;
+        testRem[nextId] -= 1;
+        const testDecomps = getAllDecompositions(testRem);
+        if (testDecomps.length > 0) canMiddleHole = true;
+      }
+    }
+
+    if (n === 3) {
+      const id1 = `${s}1`;
+      const id2 = `${s}2`;
+      if ((beforeCounts[id1] || 0) >= 1 && (beforeCounts[id2] || 0) >= 1) {
+        const testRem = { ...beforeCounts };
+        testRem[id1] -= 1;
+        testRem[id2] -= 1;
+        const testDecomps = getAllDecompositions(testRem);
+        if (testDecomps.length > 0) canEdgeTile = true;
+      }
+    }
+    if (n === 7) {
+      const id8 = `${s}8`;
+      const id9 = `${s}9`;
+      if ((beforeCounts[id8] || 0) >= 1 && (beforeCounts[id9] || 0) >= 1) {
+        const testRem = { ...beforeCounts };
+        testRem[id8] -= 1;
+        testRem[id9] -= 1;
+        const testDecomps = getAllDecompositions(testRem);
+        if (testDecomps.length > 0) canEdgeTile = true;
+      }
+    }
+
+    if (n >= 4) {
+      const idPrev1 = `${s}${n - 1}`;
+      const idPrev2 = `${s}${n - 2}`;
+      if ((beforeCounts[idPrev1] || 0) >= 1 && (beforeCounts[idPrev2] || 0) >= 1) {
+        const testRem = { ...beforeCounts };
+        testRem[idPrev1] -= 1;
+        testRem[idPrev2] -= 1;
+        const testDecomps = getAllDecompositions(testRem);
+        if (testDecomps.length > 0) canTwoSided = true;
+      }
+    }
+    if (n <= 6) {
+      const idNext1 = `${s}${n + 1}`;
+      const idNext2 = `${s}${n + 2}`;
+      if ((beforeCounts[idNext1] || 0) >= 1 && (beforeCounts[idNext2] || 0) >= 1) {
+        const testRem = { ...beforeCounts };
+        testRem[idNext1] -= 1;
+        testRem[idNext2] -= 1;
+        const testDecomps = getAllDecompositions(testRem);
+        if (testDecomps.length > 0) canTwoSided = true;
+      }
+    }
+  }
+
+  if (canTwoSided) {
+    return { items: [], total: 0 };
+  }
+
+  const isStrictSinglePattern = canSingleEye || canMiddleHole || canEdgeTile;
+  if (!isStrictSinglePattern) {
+    return { items: [], total: 0 };
+  }
+
   const possibleWins = [winId];
   for (const t of TILE_DEFS) {
     if (t.id === winId) continue;
     const testCounts = { ...beforeCounts };
     testCounts[t.id] = (testCounts[t.id] || 0) + 1;
-    if (isValidWinningHand(testCounts)) {
+    const testDecomps = getAllDecompositions(testCounts);
+    if (testDecomps.length > 0) {
       possibleWins.push(t.id);
     }
   }
 
   const uniqueWins = [...new Set(possibleWins)];
-  const isOnlyWin = uniqueWins.length === 1 && uniqueWins[0] === winId;
+  const items = [];
+  let total = 0;
 
-  if (isOnlyWin) {
-    items.push({ id: 'realSingle', name: '獨獨', fan: 2, cat: '基本', detail: '全場只聽食胡呢一張牌' });
+  if (uniqueWins.length === 1 && uniqueWins[0] === winId) {
+    items.push({ id: 'realSingle', name: '獨獨', fan: 2, cat: '基本', detail: '全場只聽食胡呢一張牌（單吊/卡窿/邊張獨聽）' });
     total += 2;
-  } else if (uniqueWins.includes(winId) && uniqueWins.length > 1) {
-    items.push({ id: 'fakeSingle', name: '假獨', fan: 1, cat: '基本', detail: '食胡牌看似獨聽，實際多面聽' });
+  } else if (uniqueWins.length > 1) {
+    items.push({ id: 'fakeSingle', name: '假獨', fan: 1, cat: '基本', detail: '牌型原為單吊/卡窿/邊張，但因牌組產生多面聽' });
     total += 1;
   }
 
   return { items, total };
 }
 
-/* ============================================================
-   計番邏輯
-   ============================================================ */
 function analyzeHand() {
   const counts = {};
   const calcTiles = getTilesForCalculation();
@@ -973,10 +987,17 @@ function analyzeHand() {
   return { counts, suits, winds, dragons, redFlowers: redFlowerCount, blueFlowers: blueFlowerCount };
 }
 
+// 修正 #4-C：深拷貝每個面子物件，避免不同拆牌組合共用記憶體參考導致 isWinMeld 殘留污染
 function searchMeldsStrict(remCounts, targetNeed, currentMelds, allMelds) {
   if (currentMelds.length === targetNeed) {
     const hasRemaining = Object.values(remCounts).some(c => c > 0);
-    if (!hasRemaining) allMelds.push([...currentMelds]);
+    if (!hasRemaining) {
+      allMelds.push(currentMelds.map(m => ({
+        ...m,
+        nums: [...m.nums],
+        ids: m.ids ? [...m.ids] : undefined
+      })));
+    }
     return;
   }
 
@@ -1035,66 +1056,53 @@ function getAllDecompositions(counts) {
 }
 
 function checkThirteenOrphan(counts) {
+  if (openSection.length > 0 || kongSection.length > 0) return null;
+
   const orphanIds = [
     'east', 'south', 'west', 'north', 'chung', 'fat', 'bak',
     'wan1', 'wan9', 'tong1', 'tong9', 'so1', 'so9'
   ];
 
-  let pairId = null;
-  let singleCount = 0;
-
   for (const id of orphanIds) {
-    const c = counts[id] || 0;
-    if (c === 2) {
-      if (pairId !== null) return null;
-      pairId = id;
-    } else if (c >= 3) {
-      return null;
-    } else if (c === 1) {
-      singleCount++;
-    }
+    if ((counts[id] || 0) < 1) return null;
   }
 
-  if (pairId === null || singleCount !== 12) return null;
+  for (const pairId of orphanIds) {
+    if ((counts[pairId] || 0) >= 2) {
+      const rem = { ...counts };
+      orphanIds.forEach(id => rem[id] -= 1);
+      rem[pairId] -= 1;
 
-  const remCounts = { ...counts };
-  remCounts[pairId] -= 2;
-  orphanIds.forEach(id => {
-    if (id !== pairId) remCounts[id] -= 1;
-  });
+      const remTileIds = [];
+      for (const id in rem) {
+        for (let i = 0; i < rem[id]; i++) remTileIds.push(id);
+      }
 
-  let totalRem = 0;
-  for (const id in remCounts) {
-    if (remCounts[id] < 0) return null;
-    totalRem += remCounts[id];
-  }
+      if (remTileIds.length !== 3) continue;
 
-  if (totalRem !== 3) return null;
+      let extraMeld = null;
+      if (remTileIds[0] === remTileIds[1] && remTileIds[1] === remTileIds[2]) {
+        const t = TILE_MAP[remTileIds[0]];
+        extraMeld = { type: '刻子', suit: (t.type === 'honor' ? 'honor' : t.suit), num: t.num, id: remTileIds[0] };
+      } else {
+        const t1 = TILE_MAP[remTileIds[0]];
+        const t2 = TILE_MAP[remTileIds[1]];
+        const t3 = TILE_MAP[remTileIds[2]];
+        if (t1 && t2 && t3 && t1.suit === t2.suit && t2.suit === t3.suit && t1.type === 'num') {
+          const sortedNums = [t1.num, t2.num, t3.num].sort((a,b)=>a-b);
+          if (sortedNums[1] === sortedNums[0] + 1 && sortedNums[2] === sortedNums[0] + 2) {
+            extraMeld = { type: '順子', suit: t1.suit, nums: sortedNums };
+          }
+        }
+      }
 
-  const remTileIds = [];
-  for (const id in remCounts) {
-    for (let i = 0; i < remCounts[id]; i++) remTileIds.push(id);
-  }
-
-  let extraMeld = null;
-  if (remTileIds[0] === remTileIds[1] && remTileIds[1] === remTileIds[2]) {
-    const t = TILE_MAP[remTileIds[0]];
-    extraMeld = { type: '刻子', suit: t.suit, num: t.num, id: remTileIds[0] };
-  } else {
-    const t1 = TILE_MAP[remTileIds[0]];
-    const t2 = TILE_MAP[remTileIds[1]];
-    const t3 = TILE_MAP[remTileIds[2]];
-    if (t1 && t2 && t3 && t1.suit === t2.suit && t2.suit === t3.suit && t1.type === 'num' && t2.type === 'num' && t3.type === 'num') {
-      const sortedNums = [t1.num, t2.num, t3.num].sort((a,b)=>a-b);
-      if (sortedNums[1] === sortedNums[0] + 1 && sortedNums[2] === sortedNums[0] + 2) {
-        extraMeld = { type: '順子', suit: t1.suit, nums: sortedNums };
+      if (extraMeld) {
+        return { pairId, extraMeld };
       }
     }
   }
 
-  if (!extraMeld) return null;
-
-  return { pairId, extraMeld };
+  return null;
 }
 
 function evaluateThirteenOrphan(counts, hand) {
@@ -1120,13 +1128,17 @@ function evaluateThirteenOrphan(counts, hand) {
   if (extraMeld.type === '刻子') {
     const t = TILE_MAP[extraMeld.id];
     if (t && (t.num === 1 || t.num === 9 || t.type === 'honor')) isMeldTerminal = true;
+    if (t && t.type === 'honor') {
+      totalFan += 2;
+      detail.push({ id: 'wordTile', name: '字（每組字刻+2）', fan: 2, cat: '花摸', detail: '額外字牌刻子 +2 番' });
+    }
   } else if (extraMeld.type === '順子') {
     if (extraMeld.nums.some(n => n === 1 || n === 9)) isMeldTerminal = true;
   }
 
   if (isMeldTerminal && (winds.length > 0 || dragons.length > 0)) {
     totalFan += 30;
-    detail.push({ id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '額外多加嘅 1 坎帶幺且有字牌' });
+    detail.push({ id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '額外面子帶幺且有字牌' });
   }
 
   const totalFlowers = redFlowers + blueFlowers;
@@ -1139,34 +1151,18 @@ function evaluateThirteenOrphan(counts, hand) {
     detail.push({ id: 'noFlower', name: '無花', fan: 2, cat: '花摸' });
   }
 
-  let openKongCount = 0;
-  let closedKongCount = 0;
-  kongSection.forEach(k => {
-    if (k.type === 'open') openKongCount++;
-    else closedKongCount++;
-  });
-  for (let i = 0; i < openKongCount; i++) {
-    totalFan += 1;
-    detail.push({ id: 'openKong', name: '明槓', fan: 1, cat: '槓摸' });
-  }
-  if (closedKongCount === 1) {
-    totalFan += 2;
-    detail.push({ id: 'closedKong', name: '暗槓', fan: 2, cat: '槓摸' });
-  } else if (closedKongCount === 2) {
-    totalFan += 20;
-    detail.push({ id: 'twoKong', name: '兩槓', fan: 20, cat: '槓摸' });
-  }
-
-  // 同組只取最大
   const filtered = applyMaxOnlyRule(detail);
   const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
   return { total: newTotal, detail: filtered };
 }
 
 function checkSixteenNoMatch(counts) {
+  if (openSection.length > 0 || kongSection.length > 0) return false;
+
   const honorIds = ['east', 'south', 'west', 'north', 'chung', 'fat', 'bak'];
   for (const id of honorIds) {
-    if ((counts[id] || 0) !== 1) return false;
+    const c = counts[id] || 0;
+    if (c < 1 || c > 2) return false;
   }
 
   const suitIds = ['wan', 'tong', 'so'];
@@ -1230,24 +1226,6 @@ function evaluateSixteenNoMatch(counts, hand) {
     detail.push({ id: 'noFlower', name: '無花', fan: 2, cat: '花摸' });
   }
 
-  let openKongCount = 0;
-  let closedKongCount = 0;
-  kongSection.forEach(k => {
-    if (k.type === 'open') openKongCount++;
-    else closedKongCount++;
-  });
-  for (let i = 0; i < openKongCount; i++) {
-    totalFan += 1;
-    detail.push({ id: 'openKong', name: '明槓', fan: 1, cat: '槓摸' });
-  }
-  if (closedKongCount === 1) {
-    totalFan += 2;
-    detail.push({ id: 'closedKong', name: '暗槓', fan: 2, cat: '槓摸' });
-  } else if (closedKongCount === 2) {
-    totalFan += 20;
-    detail.push({ id: 'twoKong', name: '兩槓', fan: 20, cat: '槓摸' });
-  }
-
   const filtered = applyMaxOnlyRule(detail);
   const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
   return { total: newTotal, detail: filtered };
@@ -1266,7 +1244,7 @@ function checkLuckyGulu(counts) {
 
   const oddId = oddTiles[0];
   const oddCount = counts[oddId];
-  if (oddCount !== 1 && oddCount !== 3) return null;
+  if (oddCount !== 3) return null;
 
   for (const id of tileIds) {
     if (id !== oddId) {
@@ -1315,24 +1293,6 @@ function detectLuckyGuluPairChains(counts) {
                   detail: `${copies}組 ${start}~${end}${suitNames[suit]} 連對，每組 +${chainInfo.fan} 番`
                 });
               }
-            } else {
-              for (let s = start; s <= end - 6; s++) {
-                const e = s + 6;
-                let copies = 1;
-                for (let k = s; k <= e; k++) {
-                  copies *= pairCounts[k];
-                }
-                const chainInfo = getChainTierInfo(7);
-                if (chainInfo && copies > 0) {
-                  results.push({
-                    id: chainInfo.id,
-                    name: `${chainInfo.name}（${s}~${e}${suitNames[suit]}）×${copies}組`,
-                    fan: chainInfo.fan * copies,
-                    cat: '大牌',
-                    detail: `${copies}組 ${s}~${e}${suitNames[suit]} 連對，每組 +${chainInfo.fan} 番`
-                  });
-                }
-              }
             }
           }
           start = null;
@@ -1364,7 +1324,7 @@ function evaluateLuckyGulu(counts, hand) {
     name: '嚦咕嚦咕',
     fan: 50,
     cat: '大牌',
-    detail: guluMatch.oddCount === 3 ? '七對一刻（八對半，不計門清）' : '八對一單張（八對半，不計門清）'
+    detail: '七對一刻（不計門清）'
   });
 
   totalFan += 10;
@@ -1417,10 +1377,10 @@ function evaluateLuckyGulu(counts, hand) {
     const hasBothFlowers = redFlowers > 0 && blueFlowers > 0;
     if (hasBothFlowers) {
       totalFan += 15;
-      detail.push({ id: 'bigSevenDoor', name: '七門齊（嚦咕）', fan: 15, cat: '組合', detail: '五門齊 + 紅藍花齊，不分大小計 15 番' });
+      detail.push({ id: 'bigSevenDoor', name: '七門齊', fan: 15, cat: '組合', detail: '萬筒索風三元五門齊 + 紅藍花齊，計 15 番' });
     } else {
       totalFan += 10;
-      detail.push({ id: 'bigFiveDoor', name: '五門齊（嚦咕）', fan: 10, cat: '組合', detail: '萬筒索風三元五門齊，不分大小計 10 番' });
+      detail.push({ id: 'bigFiveDoor', name: '五門齊', fan: 10, cat: '組合', detail: '萬筒索風三元五門齊，計 10 番' });
     }
   }
 
@@ -1441,8 +1401,8 @@ function evaluateLuckyGulu(counts, hand) {
   }
 
   if (isWord) {
-    totalFan += 150;
-    detail.push({ id: 'wordOneColor', name: '字一色', fan: 150, cat: '大牌' });
+    totalFan += 100;
+    detail.push({ id: 'wordOneColor', name: '字一色', fan: 100, cat: '大牌' });
   } else {
     if (isPureOneColor(suits, winds, dragons)) { totalFan += 100; detail.push({...FAN_MAP['pureOneColor']}); }
     else if (isMixedOneColor(suits, winds, dragons)) { totalFan += 40; detail.push({...FAN_MAP['mixedOneColor']}); }
@@ -1462,18 +1422,23 @@ function evaluateLuckyGulu(counts, hand) {
     detail.push({ id: 'wordTile', name: '字（每組字刻+2）×1組', fan: 2, cat: '花摸', detail: '字牌刻子 +2 番' });
   }
 
-  if (totalFlowers > 0) {
-    const flowerFan = totalFlowers * 2;
-    totalFan += flowerFan;
-    detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
+  if (totalFlowers === 0 && winds.length === 0 && dragons.length === 0) {
+    totalFan += 10;
+    detail.push({ id: 'noWordFlower', name: '無字花', fan: 10, cat: '花摸' });
   } else {
-    totalFan += 2;
-    detail.push({ id: 'noFlower', name: '無花', fan: 2, cat: '花摸' });
-  }
+    if (totalFlowers > 0) {
+      const flowerFan = totalFlowers * 2;
+      totalFan += flowerFan;
+      detail.push({ id: 'eachFlower', name: `花 (紅:${redFlowers}, 藍:${blueFlowers}) ×${totalFlowers}`, fan: flowerFan, cat: '花摸' });
+    } else {
+      totalFan += 2;
+      detail.push({ id: 'noFlower', name: '無花', fan: 2, cat: '花摸' });
+    }
 
-  if (winds.length === 0 && dragons.length === 0) {
-    totalFan += 2;
-    detail.push({ id: 'noWord', name: '無字', fan: 2, cat: '花摸' });
+    if (winds.length === 0 && dragons.length === 0) {
+      totalFan += 2;
+      detail.push({ id: 'noWord', name: '無字', fan: 2, cat: '花摸' });
+    }
   }
 
   const filtered = applyMaxOnlyRule(detail);
@@ -1527,7 +1492,7 @@ function detectMixedChainPongFromMelds(melds) {
   if (validChains.length === 0) return [];
 
   validChains.sort((a, b) => b.length - a.length);
-  const maxLen = validChains[0].length;
+  const maxLen = validChains.length > 0 ? validChains[0].length : 0;
   const bestChains = validChains.filter(c => c.length === maxLen);
 
   const seen = new Set();
@@ -1550,7 +1515,7 @@ function detectMixedChainPongFromMelds(melds) {
       results.push({
         id: 'mixedFiveChain',
         name: `五雜連刻（${pathStr}）`,
-        fan: 40,
+        fan: 100,
         cat: '大牌',
         detail: `五組相連數字刻子，相鄰不同門且包含三雜連刻`
       });
@@ -1558,7 +1523,7 @@ function detectMixedChainPongFromMelds(melds) {
       results.push({
         id: 'mixedFourChain',
         name: `四雜連刻（${pathStr}）`,
-        fan: 20,
+        fan: 40,
         cat: '組合',
         detail: `四組相連數字刻子，相鄰不同門且包含三雜連刻`
       });
@@ -1566,7 +1531,7 @@ function detectMixedChainPongFromMelds(melds) {
       results.push({
         id: 'mixedThreeChain',
         name: `三雜連刻（${pathStr}）`,
-        fan: 10,
+        fan: 20,
         cat: '組合',
         detail: `三組相連數字刻子（萬、筒、索各一）`
       });
@@ -1576,15 +1541,17 @@ function detectMixedChainPongFromMelds(melds) {
   return results;
 }
 
+// 修正 #4-A：修正暗手牌池扣除順序，避免單吊將眼或食胡順子時重複扣除 remClosed[winTileId]，確保暗順不被誤降為明順
 function getSequenceMeldCounts(melds, pair) {
   const remClosed = {};
   closedSection.forEach(id => remClosed[id] = (remClosed[id] || 0) + 1);
+
   if (pair && remClosed[pair.id]) {
     remClosed[pair.id] = Math.max(0, remClosed[pair.id] - 2);
   }
 
   melds.forEach(m => {
-    if (m.type === '刻子' && m.id) {
+    if (m.type === '刻子' && m.id && !m.isKong) {
       if ((remClosed[m.id] || 0) >= 3) {
         remClosed[m.id] -= 3;
       }
@@ -1612,11 +1579,25 @@ function getSequenceMeldCounts(melds, pair) {
     const id1 = `${suit}${start}`;
     const id2 = `${suit}${start + 1}`;
     const id3 = `${suit}${start + 2}`;
-    if (!m.isWinMeld && (remClosed[id1] || 0) > 0 && (remClosed[id2] || 0) > 0 && (remClosed[id3] || 0) > 0) {
-      seqCopyCount[key].closedCopies++;
+
+    if (m.isWinMeld) {
+      if ((remClosed[id1] || 0) > 0) remClosed[id1]--;
+      if ((remClosed[id2] || 0) > 0) remClosed[id2]--;
+      if ((remClosed[id3] || 0) > 0) remClosed[id3]--;
+      seqCopyCount[key].openCopies++;
+      return;
+    }
+
+    const canCloseAll =
+      (remClosed[id1] || 0) > 0 &&
+      (remClosed[id2] || 0) > 0 &&
+      (remClosed[id3] || 0) > 0;
+
+    if (canCloseAll) {
       remClosed[id1]--;
       remClosed[id2]--;
       remClosed[id3]--;
+      seqCopyCount[key].closedCopies++;
     } else {
       seqCopyCount[key].openCopies++;
     }
@@ -1812,12 +1793,6 @@ function detectThreeColorStep(melds, pair) {
     keys.forEach(k => usedMeldKeys.add(k));
   }
 
-  results.sort((a, b) => {
-    const la = a.name.includes('三色登天') ? 3 : a.name.includes('三色四步高') ? 2 : 1;
-    const lb = b.name.includes('三色登天') ? 3 : b.name.includes('三色四步高') ? 2 : 1;
-    return lb - la;
-  });
-
   return results;
 }
 
@@ -1842,50 +1817,27 @@ function detectSameColorStep(melds, pair) {
       const c = suitSeqs.find(x => x.start === a.start + 2);
       const d = suitSeqs.find(x => x.start === a.start + 3);
       const e = suitSeqs.find(x => x.start === a.start + 4);
-      if (b && c && d && e) {
-        skyMatches.push({ infos: [a, b, c, d, e] });
-      }
+      if (b && c && d && e) skyMatches.push({ infos: [a, b, c, d, e] });
     }
 
     for (const a of suitSeqs) {
       const b = suitSeqs.find(x => x.start === a.start + 1);
       const c = suitSeqs.find(x => x.start === a.start + 2);
       const d = suitSeqs.find(x => x.start === a.start + 3);
-      if (b && c && d) {
-        step4Matches.push({ infos: [a, b, c, d] });
-      }
+      if (b && c && d) step4Matches.push({ infos: [a, b, c, d] });
     }
 
     for (const a of suitSeqs) {
       const b = suitSeqs.find(x => x.start === a.start + 1);
       const c = suitSeqs.find(x => x.start === a.start + 2);
-      if (b && c) {
-        stepMatches.push({ infos: [a, b, c] });
-      }
+      if (b && c) stepMatches.push({ infos: [a, b, c] });
     }
 
     const calcMatchCopies = (infos) => {
-      const minTotal = Math.min(...infos.map(x => x.totalCopies));
-      if (minTotal <= 0) return { allClosedCopies: 0, openCopies: 0 };
-
-      const totalCopies = Math.max(...infos.map(x => x.totalCopies));
-      const hasAnyNonClosed = infos.some(x => x.closedCopies === 0);
-
-      let allClosedCopies = 0;
-      if (!hasAnyNonClosed) {
-        const hasAnyOpen = infos.some(x => x.openCopies > 0);
-        if (!hasAnyOpen) {
-          allClosedCopies = totalCopies;
-        } else {
-          const branchSeq = infos.find(x => x.totalCopies > 1 && x.openCopies > 0);
-          if (branchSeq) {
-            allClosedCopies = Math.min(branchSeq.closedCopies, totalCopies);
-          } else {
-            allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
-          }
-        }
-      }
-      const openCopies = totalCopies - allClosedCopies;
+      const minCopies = Math.min(...infos.map(x => x.totalCopies));
+      if (minCopies <= 0) return { allClosedCopies: 0, openCopies: 0 };
+      const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
+      const openCopies = minCopies - allClosedCopies;
       return { allClosedCopies, openCopies };
     };
 
@@ -1994,9 +1946,8 @@ function detectDragonsFromMelds(melds, pair) {
     if (!s123 || !s456 || !s789) continue;
 
     const infos = [s123, s456, s789];
-    const minCopies = Math.min(...infos.map(x => x.totalCopies));
-    if (minCopies <= 0) continue;
-    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const totalCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (totalCopies <= 0) continue;
     const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
@@ -2038,9 +1989,8 @@ function detectDragonsFromMelds(melds, pair) {
     if (!sA || !sB || !sC) continue;
 
     const infos = [sA, sB, sC];
-    const minCopies = Math.min(...infos.map(x => x.totalCopies));
-    if (minCopies <= 0) continue;
-    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const totalCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (totalCopies <= 0) continue;
     const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
@@ -2072,9 +2022,8 @@ function detectDragonsFromMelds(melds, pair) {
     if (s456) continue;
 
     const infos = [s123, s789];
-    const minCopies = Math.min(...infos.map(x => x.totalCopies));
-    if (minCopies <= 0) continue;
-    const totalCopies = Math.max(...infos.map(x => x.totalCopies));
+    const totalCopies = Math.min(...infos.map(x => x.totalCopies));
+    if (totalCopies <= 0) continue;
     const allClosedCopies = Math.min(...infos.map(x => x.closedCopies));
     const openCopies = totalCopies - allClosedCopies;
 
@@ -2101,9 +2050,28 @@ function detectDragonsFromMelds(melds, pair) {
   return results;
 }
 
+function detectOldYoungPongFromMelds(melds) {
+  const results = [];
+  const suitNames = { wan:'萬', tong:'筒', so:'索' };
+  for (const suit of ['wan', 'tong', 'so']) {
+    const has111 = melds.some(m => m.type === '刻子' && m.suit === suit && m.nums[0] === 1);
+    const has999 = melds.some(m => m.type === '刻子' && m.suit === suit && m.nums[0] === 9);
+    if (has111 && has999) {
+      results.push({
+        id: 'oldYoungPong',
+        name: `老少碰（${suitNames[suit]}111+999）`,
+        fan: 5,
+        cat: '組合',
+        detail: `同色 111 及 999 刻子`
+      });
+    }
+  }
+  return results;
+}
+
 function detectThreeMeetFromMelds(melds, pair) {
   const sequences = melds.filter(m => m.type === '順子');
-  if (sequences.length < 3) return null;
+  if (sequences.length < 3) return { results: [], threeMeetKeys: new Set() };
 
   const seqCopyCount = getSequenceMeldCounts(melds, pair);
 
@@ -2139,11 +2107,9 @@ function detectThreeMeetFromMelds(melds, pair) {
     }
   }
 
-  if (closedTotal === 0 && openTotal === 0) return null;
-
-  const items = [];
+  const results = [];
   if (closedTotal > 0) {
-    items.push({
+    results.push({
       id: 'threeMeet2',
       name: `暗三相逢 ×${closedTotal}組`,
       fan: 20 * closedTotal,
@@ -2152,7 +2118,7 @@ function detectThreeMeetFromMelds(melds, pair) {
     });
   }
   if (openTotal > 0) {
-    items.push({
+    results.push({
       id: 'threeMeet1',
       name: `明三相逢 ×${openTotal}組`,
       fan: 10 * openTotal,
@@ -2161,15 +2127,7 @@ function detectThreeMeetFromMelds(melds, pair) {
     });
   }
 
-  return {
-    id: 'threeMeet',
-    name: '三相逢',
-    fan: 0,
-    cat: '組合',
-    detail: '',
-    items: items,
-    threeMeetKeys
-  };
+  return { results, threeMeetKeys };
 }
 
 function detectSistersFromMelds(melds, threeMeetKeys) {
@@ -2205,27 +2163,96 @@ function detectChainPongFromMelds(melds, pair) {
   const suitNames = { wan:'萬', tong:'筒', so:'索' };
 
   for (const suit in suitMap) {
-    const nums = suitMap[suit].sort((a, b) => a - b);
+    const nums = [...new Set(suitMap[suit])].sort((a, b) => a - b);
     const sName = suitNames[suit];
-    let consecutiveGroups = [];
-    let currentGroup = [nums[0]];
-    for (let i = 1; i < nums.length; i++) {
-      if (nums[i] === nums[i - 1] + 1) currentGroup.push(nums[i]);
-      else { if (currentGroup.length >= 2) consecutiveGroups.push([...currentGroup]); currentGroup = [nums[i]]; }
+    const hasValidEye = Boolean(pair && pair.suit === suit && !nums.includes(pair.num));
+
+    const combinedNums = hasValidEye ? [...nums, pair.num].sort((a, b) => a - b) : [...nums];
+    if (combinedNums.length < 2) continue;
+
+    const consecutiveGroups = [];
+    let currentGroup = [combinedNums[0]];
+    for (let i = 1; i < combinedNums.length; i++) {
+      if (combinedNums[i] === combinedNums[i - 1] + 1) {
+        currentGroup.push(combinedNums[i]);
+      } else {
+        if (currentGroup.length >= 2) consecutiveGroups.push([...currentGroup]);
+        currentGroup = [combinedNums[i]];
+      }
     }
     if (currentGroup.length >= 2) consecutiveGroups.push([...currentGroup]);
 
     for (const group of consecutiveGroups) {
-      const len = group.length;
-      const minN = group[0], maxN = group[group.length - 1];
-      let isSmallChain = (pair && pair.suit === suit && (pair.num === minN - 1 || pair.num === maxN + 1));
+      const tripletNumsInGroup = group.filter(n => nums.includes(n));
+      const tLen = tripletNumsInGroup.length;
+      if (tLen < 2) continue;
 
-      if (len >= 3 && !isSmallChain) {
-        results.push({ id: 'bigThreeChain', name: `大三連刻（${minN}~${maxN}${sName}）`, fan: 20, cat: '組合', detail: `${len}組相連刻子` });
-      } else if (len === 2 && isSmallChain) {
-        results.push({ id: 'smallThreeChain', name: `小三連刻（${minN}~${maxN}刻 + ${pair.num}${sName}眼）`, fan: 10, cat: '組合', detail: `2組相連刻子 + 相鄰將眼` });
-      } else if (len >= 2) {
-        results.push({ id: 'chainPong', name: `連刻（${minN}~${maxN}${sName}）`, fan: 5, cat: '組合', detail: `${len}組相連刻子` });
+      const hasEyeInGroup = hasValidEye && group.includes(pair.num);
+      const minT = tripletNumsInGroup[0];
+      const maxT = tripletNumsInGroup[tLen - 1];
+
+      if (tLen >= 5) {
+        results.push({
+          id: 'bigFiveChain',
+          name: `大五連刻（${minT}~${maxT}${sName}）`,
+          fan: 100,
+          cat: '大牌',
+          detail: `5組同色相連刻子`
+        });
+      } else if (tLen === 4) {
+        if (hasEyeInGroup) {
+          results.push({
+            id: 'fiveSmallChain',
+            name: `五小連刻（${tripletNumsInGroup.join(',')}刻 + ${pair.num}${sName}眼）`,
+            fan: 50,
+            cat: '組合',
+            detail: `4組相連刻子 + 相連將眼`
+          });
+        } else {
+          results.push({
+            id: 'bigFourChain',
+            name: `大四連刻（${minT}~${maxT}${sName}）`,
+            fan: 40,
+            cat: '組合',
+            detail: `4組同色相連刻子`
+          });
+        }
+      } else if (tLen === 3) {
+        if (hasEyeInGroup) {
+          results.push({
+            id: 'fourSmallChain',
+            name: `四小連刻（${tripletNumsInGroup.join(',')}刻 + ${pair.num}${sName}眼）`,
+            fan: 30,
+            cat: '組合',
+            detail: `3組相連刻子 + 相連將眼`
+          });
+        } else {
+          results.push({
+            id: 'bigThreeChain',
+            name: `大三連刻（${minT}~${maxT}${sName}）`,
+            fan: 20,
+            cat: '組合',
+            detail: `3組同色相連刻子`
+          });
+        }
+      } else if (tLen === 2) {
+        if (hasEyeInGroup) {
+          results.push({
+            id: 'smallThreeChain',
+            name: `三小連刻（${tripletNumsInGroup.join(',')}刻 + ${pair.num}${sName}眼）`,
+            fan: 10,
+            cat: '組合',
+            detail: `2組相連刻子 + 相連將眼`
+          });
+        } else {
+          results.push({
+            id: 'chainPong',
+            name: `連刻（${minT}~${maxT}${sName}）`,
+            fan: 5,
+            cat: '組合',
+            detail: `2組同色相連刻子`
+          });
+        }
       }
     }
   }
@@ -2272,37 +2299,20 @@ function detectFourBackFromMelds(melds, pair, counts) {
       const seqMeldsCount = melds.filter(m => m.type === '順子' && m.suit === t.suit && m.nums.includes(t.num)).length;
       const tripletMeldsCount = melds.filter(m => m.type === '刻子' && m.id === id).length;
       const displayLabel = `${t.label}${suitNames[t.suit]||''}`;
+      const isOpen = openSection.includes(id) 
+        || kongSection.some(k => k.id === id && k.type === 'open')
+        || (!window.isSelfDraw && window.selectedWinTile && window.selectedWinTile.id === id);
+      const openTag = isOpen ? '明' : '暗';
 
       if (seqMeldsCount === 4) {
-        results.push({ id: 'fourBack4', name: `四歸四（${displayLabel}）`, fan: 60, cat: '組合', detail: `4張${displayLabel}完全拆入4個順子之中` });
+        const fan = isOpen ? 15 : 20;
+        results.push({ id: 'fourBack4', name: `四歸四(${openTag})（${displayLabel}）`, fan, cat: '組合', detail: `4張${displayLabel}拆入4個順子之中` });
       } else if (isPair) {
-        results.push({ id: 'fourBack2', name: `四歸二（${displayLabel}）`, fan: 30, cat: '組合', detail: `4張${displayLabel}用盡，其中2張作為將眼` });
+        const fan = isOpen ? 10 : 15;
+        results.push({ id: 'fourBack2', name: `四歸二(${openTag})（${displayLabel}）`, fan, cat: '組合', detail: `4張${displayLabel}用盡，其中2張作為將眼` });
       } else if (seqMeldsCount >= 1 || tripletMeldsCount >= 1) {
-        results.push({ id: 'fourBack1', name: `四歸一（${displayLabel}）`, fan: 15, cat: '組合', detail: `4張${displayLabel}用盡於面子之中` });
-      }
-    }
-  }
-  return results;
-}
-
-function detectBrothersFromMelds(melds, pair) {
-  const triplets = melds.filter(m => m.type === '刻子' && m.suit !== 'honor');
-  const numMap = {};
-  triplets.forEach(t => { if (!numMap[t.nums[0]]) numMap[t.nums[0]] = new Set(); numMap[t.nums[0]].add(t.suit); });
-  const results = [];
-  const suitNames = { wan:'萬', tong:'筒', so:'索' };
-
-  for (const num in numMap) {
-    const suitsArr = [...numMap[num]];
-    const n = Number(num);
-    if (suitsArr.length === 3) {
-      results.push({ id: 'bigBrothers', name: `大兄弟（${n}萬筒索）`, fan: 30, cat: '組合', detail: `${n}萬、${n}筒、${n}索 三組刻子` });
-    } else if (suitsArr.length === 2) {
-      const s1 = suitNames[suitsArr[0]], s2 = suitNames[suitsArr[1]];
-      if (pair && pair.suit !== 'honor' && pair.num === n && !suitsArr.includes(pair.suit)) {
-        results.push({ id: 'smallBrothers', name: `小兄弟（${n}${s1}&${s2} + ${n}${suitNames[pair.suit]}眼）`, fan: 15, cat: '組合', detail: `兩組刻子 + 一對相同數字眼` });
-      } else {
-        results.push({ id: 'brothers', name: `兄弟（${n}${s1}&${s2}）`, fan: 5, cat: '組合', detail: `兩組相同數字不同花色刻子` });
+        const fan = isOpen ? 5 : 10;
+        results.push({ id: 'fourBack1', name: `四歸一(${openTag})（${displayLabel}）`, fan, cat: '組合', detail: `4張${displayLabel}用盡於面子之中` });
       }
     }
   }
@@ -2325,23 +2335,19 @@ function detectPairHighFromMelds(melds) {
   return results;
 }
 
-/* ============================================================
-   混帶X / 全帶X
-   ============================================================ */
 function detectMixedWithXFromMelds(melds, tiles, hand, pair) {
-  if (!hand) return [];
+  if (!hand || !pair) return [];
+  const numMelds = melds.filter(m => m.suit !== 'honor');
+  if (numMelds.length < 2) return [];
+
   const hasWord = hand.winds.length > 0 || hand.dragons.length > 0;
   const results = [];
-
-  if (!pair) return [];
 
   for (let x = 1; x <= 9; x++) {
     if (pair.suit !== 'honor' && pair.num !== x) continue;
 
     let allMatch = true;
-
-    for (const m of melds) {
-      if (m.suit === 'honor') continue;
+    for (const m of numMelds) {
       if (!m.nums.includes(x)) { allMatch = false; break; }
     }
 
@@ -2350,7 +2356,7 @@ function detectMixedWithXFromMelds(melds, tiles, hand, pair) {
     const fan = hasWord ? 30 : 80;
     const name = hasWord ? `混帶X（混${x}）` : `全帶X（全${x}）`;
     const detail = hasWord
-      ? `每組數字面子及將眼都含 ${x}（字牌面子／字牌眼豁免），且有字牌`
+      ? `每組數字面子及將眼都含 ${x}，且有字牌`
       : `每組數字面子及將眼都含 ${x}（無字牌）`;
 
     results.push({
@@ -2365,12 +2371,32 @@ function detectMixedWithXFromMelds(melds, tiles, hand, pair) {
   return results;
 }
 
-function detectMixedTerminalFromMelds(melds, hand) {
+function detectMixedTerminalFromMelds(melds, hand, pair) {
   const { winds, dragons } = hand;
   if (winds.length === 0 && dragons.length === 0) return null;
-  if (melds.length === 0) return null;
-  if (!melds.every(m => m.nums.some(n => n === 1 || n === 9))) return null;
-  return { id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '有字牌且所有面子都包含幺（1或9）' };
+  if (melds.length === 0 || !pair) return null;
+
+  if (pair.suit !== 'honor' && pair.num !== 1 && pair.num !== 9) return null;
+
+  const numMelds = melds.filter(m => m.suit !== 'honor');
+  if (numMelds.length === 0) return null;
+  if (!numMelds.every(m => m.nums.some(n => n === 1 || n === 9))) return null;
+
+  return { id: 'mixedTerminal', name: '混帶幺', fan: 30, cat: '大牌', detail: '有字牌，且所有數字面子與將眼都包含么九（1或9）' };
+}
+
+function detectAllTerminalFromMelds(melds, hand, pair) {
+  const { winds, dragons } = hand;
+  if (winds.length > 0 || dragons.length > 0) return null;
+  if (melds.length === 0 || !pair) return null;
+
+  if (pair.num !== 1 && pair.num !== 9) return null;
+
+  const numMelds = melds.filter(m => m.suit !== 'honor');
+  if (numMelds.length !== 5) return null;
+  if (!numMelds.every(m => m.nums.some(n => n === 1 || n === 9))) return null;
+
+  return { id: 'allTerminal', name: '全帶幺', fan: 60, cat: '大牌', detail: '無字牌，所有面子與將眼均帶么九（1或9）' };
 }
 
 function isMissingOne(suits, winds, dragons) { if (winds.length > 0 || dragons.length > 0) return false; return [suits.wan.length>0, suits.tong.length>0, suits.so.length>0].filter(Boolean).length === 2; }
@@ -2388,26 +2414,22 @@ function isPureOld(suits, winds, dragons) {
   for (const s of ['wan','tong','so']) for (const t of suits[s]) { hasTile = true; if (t.num !== 1 && t.num !== 9) return false; }
   return hasTile;
 }
-function isAllTerminal(suits, winds, dragons) {
-  for (const s of ['wan','tong','so']) for (const t of suits[s]) if (t.num !== 1 && t.num !== 9) return false;
-  return winds.length>0 || dragons.length>0 || suits.wan.length+suits.tong.length+suits.so.length>0;
-}
 
 function evaluateDecomposition(decomp, hand) {
   const { melds, pair } = decomp;
 
-  // 只標記第一組包含食胡牌的面子
+  // 修正 #4-B：支援由外部指定出銃牌歸屬（將眼 / 刻子 / 順子），若未指定則按預設順序標記
   const winTileId = window.selectedWinTile ? window.selectedWinTile.id : null;
-  if (!window.isSelfDraw && winTileId) {
-    let marked = false;
-    for (const m of melds) {
-      if (marked) break;
-      if (m.ids && m.ids.includes(winTileId)) {
-        m.isWinMeld = true;
-        marked = true;
-      } else if (m.type === '刻子' && m.id === winTileId) {
-        m.isWinMeld = true;
-        marked = true;
+  if (!window.isSelfDraw && winTileId && !decomp._winAssigned) {
+    const pongCandidate = melds.find(m => m.type === '刻子' && m.id === winTileId && !m.isKong);
+    if (pongCandidate) {
+      pongCandidate.isWinMeld = true;
+    } else {
+      const seqCandidate = melds.find(m => m.type === '順子' && m.ids && m.ids.includes(winTileId));
+      if (seqCandidate) {
+        seqCandidate.isWinMeld = true;
+      } else if (pair && pair.id === winTileId) {
+        pair.isWinPair = true;
       }
     }
   }
@@ -2420,21 +2442,16 @@ function evaluateDecomposition(decomp, hand) {
 
   if (totalFlowers > 0) matchedIds.push('eachFlower');
 
-  // 新增：對碰判定（基於當前分解）
   if (winTileId && !window.isSelfDraw) {
-    const hasPongWinMeld = melds.some(m => m.type === '刻子' && m.id === winTileId);
-    if (hasPongWinMeld) {
+    const hasPongWinMeld = melds.some(m => m.type === '刻子' && m.id === winTileId && m.isWinMeld);
+    if (hasPongWinMeld && !(pair && pair.isWinPair)) {
       matchedIds.push('pairPong');
     }
   }
 
   const hasOpenKong = kongSection.some(k => k.type === 'open');
   const hasClosedKong = kongSection.some(k => k.type === 'closed');
-  if (openSection.length === 0 && !hasOpenKong && !hasClosedKong) matchedIds.push('closedHand');
-
-  if (!hasClosedKong && closedSection.length === 2 && pair && closedSection.filter(id => id === pair.id).length === 2) {
-    matchedIds.push('fullHelp');
-  }
+  if (openSection.length === 0 && !hasOpenKong) matchedIds.push('closedHand');
 
   let openKongCount = 0;
   let closedKongCount = 0;
@@ -2443,11 +2460,21 @@ function evaluateDecomposition(decomp, hand) {
     else closedKongCount++;
   });
 
-  for (let i = 0; i < openKongCount; i++) matchedIds.push('openKong');
-  if (closedKongCount === 1) matchedIds.push('closedKong');
-  else if (closedKongCount === 2) matchedIds.push('twoKong');
-  else if (closedKongCount === 3) matchedIds.push('threeKong');
-  else if (closedKongCount >= 4) matchedIds.push('fourKong');
+  const openMeldCount = Math.floor(openSection.length / 3) + openKongCount;
+  const isFullHelp = !hasClosedKong && closedSection.length === 2 && pair && closedSection.filter(id => id === pair.id).length === 2 && openMeldCount === 5;
+  if (isFullHelp) {
+    if (window.isSelfDraw) matchedIds.push('halfHelp');
+    else matchedIds.push('fullHelp');
+  }
+
+  const totalKongs = openKongCount + closedKongCount;
+  if (totalKongs === 1) {
+    if (closedKongCount === 1) matchedIds.push('closedKong');
+    else matchedIds.push('openKong');
+  } else if (totalKongs === 2) matchedIds.push('twoKong');
+  else if (totalKongs === 3) matchedIds.push('threeKong');
+  else if (totalKongs === 4) matchedIds.push('fourKong');
+  else if (totalKongs >= 5) matchedIds.push('fiveKong');
 
   let closedTripletsCount = closedKongCount;
   const closedCounts = {};
@@ -2478,16 +2505,18 @@ function evaluateDecomposition(decomp, hand) {
   if (hasSky || hasSameSky) flatWu = false;
 
   let isAllSisters = false;
-  const seqKeyCounts = {};
+  let allSistersDetailStr = '';
   if (meldListsIsFlat(melds) && melds.length === 5) {
+    const numCounts = {};
     melds.forEach(m => {
-      const key = m.nums.join('');
-      seqKeyCounts[key] = (seqKeyCounts[key] || 0) + 1;
+      const key = `${m.nums[0]}${m.nums[1]}${m.nums[2]}`;
+      numCounts[key] = (numCounts[key] || 0) + 1;
     });
-    const gCounts = Object.values(seqKeyCounts).sort((a, b) => a - b);
-    if (gCounts.length === 2 && gCounts[0] === 2 && gCounts[1] === 3) {
+    const cVals = Object.values(numCounts).sort((a,b)=>a-b);
+    if (cVals.length === 2 && cVals[0] === 2 && cVals[1] === 3) {
       isAllSisters = true;
       flatWu = false;
+      allSistersDetailStr = Object.keys(numCounts).map(k => `${k}×${numCounts[k]}組`).join('、');
     }
   }
 
@@ -2514,7 +2543,6 @@ function evaluateDecomposition(decomp, hand) {
   }
 
   const isWord = isWordOneColor(suits);
-
   const isBig = isAllBig(counts, winds, dragons);
   const isSmall = isAllSmall(counts, winds, dragons);
 
@@ -2531,12 +2559,17 @@ function evaluateDecomposition(decomp, hand) {
     if (isMixedOneColor(suits, winds, dragons)) matchedIds.push('mixedOneColor');
     if (isPureOld(suits, winds, dragons)) matchedIds.push('pureOld');
     if (isNoTerminal(suits, winds, dragons)) matchedIds.push('noTerminal');
-    if (isAllTerminal(suits, winds, dragons)) matchedIds.push('allTerminal');
     if (isMissingOne(suits, winds, dragons)) matchedIds.push('missingOne');
   }
 
-  if (!isWord && melds.every(m => m.type === '刻子') && openSection.length === 0 && openKongCount === 0) {
-    matchedIds.push('pongPongWu');
+  const isAllTriplets = !isWord && melds.every(m => m.type === '刻子');
+  if (isAllTriplets) {
+    const isClosedPong = (openSection.length === 0 && !hasOpenKong);
+    if (window.isSelfDraw && isClosedPong) {
+      matchedIds.push('kanKanWu');
+    } else {
+      matchedIds.push('pongPongWu');
+    }
   }
 
   const getMeldDoor = (m) => {
@@ -2544,7 +2577,6 @@ function evaluateDecomposition(decomp, hand) {
     if (m.id && TILE_MAP[m.id]) return TILE_MAP[m.id].suit;
     return null;
   };
-
   const getPairDoor = (p) => {
     if (!p) return null;
     if (p.suit === 'wan' || p.suit === 'tong' || p.suit === 'so') return p.suit;
@@ -2590,38 +2622,44 @@ function evaluateDecomposition(decomp, hand) {
 
   detectChainPongFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
   detectMixedChainPongFromMelds(melds).forEach(r => dynamicDetails.push(r));
-  detectBrothersFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
+  detectOldYoungPongFromMelds(melds).forEach(r => dynamicDetails.push(r));
   detectFourBackFromMelds(melds, pair, counts).forEach(r => dynamicDetails.push(r));
 
   if (isAllSisters) {
-    const detailStr = Object.keys(seqKeyCounts).map(k => `${k}×${seqKeyCounts[k]}`).join('、');
     dynamicDetails.push({
       id: 'allSisters',
       name: '全姊妹',
       fan: 30,
       cat: '組合',
-      detail: `5組順子為 ${detailStr}（不計平糊、姊妹）`
+      detail: `5組順子為 ${allSistersDetailStr}（AAAx2 + BBBx3）`
     });
   }
 
-  const threeMeetResult = detectThreeMeetFromMelds(melds, pair);
-  const threeMeetKeys = threeMeetResult ? threeMeetResult.threeMeetKeys : new Set();
-  if (threeMeetResult) dynamicDetails.push(threeMeetResult);
+  const threeMeetData = detectThreeMeetFromMelds(melds, pair);
+  const threeMeetKeys = threeMeetData.threeMeetKeys;
+  threeMeetData.results.forEach(r => dynamicDetails.push(r));
 
   const sistersResult = detectSistersFromMelds(melds, threeMeetKeys);
-  if (sistersResult && !isAllSisters) dynamicDetails.push(sistersResult);
+  if (sistersResult) dynamicDetails.push(sistersResult);
 
   detectPairHighFromMelds(melds).forEach(r => dynamicDetails.push(r));
-
   detectDragonsFromMelds(melds, pair).forEach(r => dynamicDetails.push(r));
   sameStepResults.forEach(r => dynamicDetails.push(r));
   stepResults.forEach(r => dynamicDetails.push(r));
 
-  const mixedTerminalResult = !isWord ? detectMixedTerminalFromMelds(melds, hand) : null;
+  const mixedTerminalResult = !isWord ? detectMixedTerminalFromMelds(melds, hand, pair) : null;
   if (mixedTerminalResult) dynamicDetails.push(mixedTerminalResult);
+
+  const allTerminalResult = !isWord ? detectAllTerminalFromMelds(melds, hand, pair) : null;
+  if (allTerminalResult) dynamicDetails.push(allTerminalResult);
 
   if (!isWord) {
     detectMixedWithXFromMelds(melds, allTiles, hand, pair).forEach(r => dynamicDetails.push(r));
+  }
+
+  const winPatterns = detectWinPatterns(hand, window.selectedWinTile, decomp);
+  if (winPatterns.items.length > 0) {
+    winPatterns.items.forEach(item => dynamicDetails.push(item));
   }
 
   const uniqueMatchedIds = [...new Set(matchedIds)];
@@ -2663,23 +2701,117 @@ function evaluateDecomposition(decomp, hand) {
   });
 
   const nonFlowerItems = detail.filter(item => item.id !== 'eachFlower');
-  if (totalFlowers === 1 && nonFlowerItems.length === 0) {
-    return {
-      total: 30,
-      detail: [{
-        id: 'chickenWu',
-        name: '雞糊',
-        fan: 30,
-        cat: '組合',
-        detail: '只有 1 隻花且全牌無任何其他番數（不計花2番，直計雞糊30番）'
-      }]
-    };
+  const pendingBonusKeys = window.pendingCfBonus ? Object.keys(window.pendingCfBonus) : [];
+  const hasNonSelfDrawBonus = pendingBonusKeys.some(k => k !== 'selfDraw');
+
+  if (totalFlowers === 1 && nonFlowerItems.length === 0 && !hasNonSelfDrawBonus) {
+    if (window.isSelfDraw) {
+      return {
+        total: 15,
+        detail: [{
+          id: 'duckWu',
+          name: '鴨糊',
+          fan: 15,
+          cat: '組合',
+          detail: '自摸只有 1 隻花且全牌無任何其他番數（直計鴨糊15番，不另計自摸）'
+        }],
+        decomp
+      };
+    } else {
+      return {
+        total: 30,
+        detail: [{
+          id: 'chickenWu',
+          name: '雞糊',
+          fan: 30,
+          cat: '組合',
+          detail: '只有 1 隻花且全牌無任何其他番數（直計雞糊30番）'
+        }],
+        decomp
+      };
+    }
   }
 
-  // 同組只取最大
   const filtered = applyMaxOnlyRule(detail);
   const newTotal = filtered.reduce((s, d) => s + (d.fan || 0), 0);
-  return { total: newTotal, detail: filtered };
+  return { total: newTotal, detail: filtered, decomp };
+}
+
+function checkFanInDetail(detailList, id) {
+  if (!detailList) return false;
+  const expanded = [];
+  detailList.forEach(f => {
+    if (f.items && Array.isArray(f.items)) f.items.forEach(i => expanded.push(i));
+    else expanded.push(f);
+  });
+  return expanded.some(f => f.id === id);
+}
+
+function applyToggleBonusLogic(key, targetDetail = baseResultDetail) {
+  if (key === 'selfDraw') {
+    if (checkFanInDetail(targetDetail, 'duckWu')) {
+      delete bonusState.selfDraw;
+      return;
+    }
+    if (bonusState.selfDraw !== undefined) {
+      delete bonusState.selfDraw;
+    } else {
+      const isClosed = checkFanInDetail(targetDetail, 'closedHand') || checkFanInDetail(targetDetail, 'closedSelfDraw');
+      bonusState.selfDraw = isClosed ? 3 : 1;
+    }
+    return;
+  }
+
+  if (key === 'ding') {
+    if (bonusState.ding !== undefined) {
+      delete bonusState.ding;
+    } else {
+      const isMustClosed = checkFanInDetail(targetDetail, 'sixteenNoMatch') || checkFanInDetail(targetDetail, 'thirteenOrphan') || checkFanInDetail(targetDetail, 'luckyGulu');
+      if (isMustClosed) {
+        bonusState.ding = 5;
+      } else {
+        const isClosed = checkFanInDetail(targetDetail, 'closedHand') || checkFanInDetail(targetDetail, 'closedSelfDraw');
+        bonusState.ding = isClosed ? 10 : 5;
+      }
+    }
+    return;
+  }
+
+  const fanMap = {
+    dingJik: 5, robKong: 5, doubleWin: 5, tripleWin: 10,
+    seaFish: 5, riverFish: 3,
+    flower1: 1, flower2: 5, flower3: 10, flower4: 20, flower5: 40, flower6: 70, flower7: 100, flower8: 140,
+    kong1: 1, kong2: 5, kong3: 10, kong4: 25, kong5: 50,
+    flowerKong1: 8, flowerKong3: 15, flowerKong4: 25, flowerKong5: 50, flowerKong6: 80, flowerKong7: 120
+  };
+  if (fanMap[key] !== undefined) {
+    if (bonusState[key] !== undefined) delete bonusState[key];
+    else bonusState[key] = fanMap[key];
+  }
+}
+
+function applyPendingCfBonus() {
+  if (!window.pendingCfBonus) return;
+  const pending = window.pendingCfBonus;
+  window.pendingCfBonus = null;
+
+  if (bonusStateByVariant && resultData && resultData.variants) {
+    bonusStateByVariant.forEach((bs, idx) => {
+      currentVariantIndex = idx;
+      bonusState = bs;
+      const vDetail = resultData.variants[idx].detail;
+      for (const key in pending) {
+        applyToggleBonusLogic(key, vDetail);
+      }
+    });
+    currentVariantIndex = 0;
+    bonusState = bonusStateByVariant[0];
+  } else {
+    bonusState = {};
+    for (const key in pending) {
+      applyToggleBonusLogic(key, baseResultDetail);
+    }
+  }
 }
 
 function calculateSafe() {
@@ -2694,18 +2826,52 @@ function calculateSafe() {
     const counts = hand.counts;
 
     const hiddenAndOpenTiles = [...openSection, ...closedSection];
-    kongSection.forEach(k => hiddenAndOpenTiles.push(k.id, k.id, k.id));
-
     const countsForDecomp = {};
     hiddenAndOpenTiles.forEach(id => countsForDecomp[id] = (countsForDecomp[id]||0)+1);
 
     const candidates = [];
 
+    // 修正 #4-D：展開出銃食胡牌在「將眼 / 刻子 / 順子」的所有可能歸屬並取最高番數
     const decompositions = getAllDecompositions(countsForDecomp);
     if (decompositions.length > 0) {
       let bestResult = { total: -1, detail: [] };
+      const winTileId = window.selectedWinTile ? window.selectedWinTile.id : null;
+
       for (const decomp of decompositions) {
-        const res = evaluateDecomposition(decomp, hand);
+        const baseMelds = decomp.melds.map(m => ({ ...m, nums: [...m.nums], ids: m.ids ? [...m.ids] : undefined }));
+        kongSection.forEach(k => {
+          const t = TILE_MAP[k.id];
+          const mSuit = (t.type === 'honor') ? 'honor' : t.suit;
+          baseMelds.push({ type: '刻子', nums: [t.num, t.num, t.num], suit: mSuit, id: k.id, isKong: true });
+        });
+
+        if (!window.isSelfDraw && winTileId && window.selectedWinTile?.sec === 'closed') {
+          const targets = [];
+          if (decomp.pair && decomp.pair.id === winTileId) {
+            targets.push({ type: 'pair' });
+          }
+          baseMelds.forEach((m, idx) => {
+            if (m.isKong) return;
+            if (m.type === '刻子' && m.id === winTileId) targets.push({ type: 'meld', idx });
+            else if (m.type === '順子' && m.ids && m.ids.includes(winTileId)) targets.push({ type: 'meld', idx });
+          });
+
+          if (targets.length > 0) {
+            for (const target of targets) {
+              const clonedMelds = baseMelds.map(m => ({ ...m, nums: [...m.nums], ids: m.ids ? [...m.ids] : undefined }));
+              const clonedPair = { ...decomp.pair };
+              if (target.type === 'pair') clonedPair.isWinPair = true;
+              else clonedMelds[target.idx].isWinMeld = true;
+
+              const res = evaluateDecomposition({ pair: clonedPair, melds: clonedMelds, _winAssigned: true }, hand);
+              if (res.total > bestResult.total) bestResult = res;
+            }
+            continue;
+          }
+        }
+
+        const fullDecomp = { pair: { ...decomp.pair }, melds: baseMelds };
+        const res = evaluateDecomposition(fullDecomp, hand);
         if (res.total > bestResult.total) bestResult = res;
       }
       candidates.push(bestResult);
@@ -2738,7 +2904,7 @@ function calculateSafe() {
       const normalCand = candidates.find(c => !c.detail.some(d => d.id === 'luckyGulu' || d.id === 'sixteenNoMatch' || d.id === 'thirteenOrphan'));
 
       if (guluCand && normalCand) {
-        const sharedIds = ['eachFlower', 'noFlower', 'noWord', 'noWordFlower'];
+        const sharedIds = ['eachFlower', 'noFlower', 'noWord', 'noWordFlower', 'wordTile', 'realSingle', 'fakeSingle'];
         const guluFilteredDetail = [];
         let guluDeduct = 0;
         guluCand.detail.forEach(d => {
@@ -2756,19 +2922,9 @@ function calculateSafe() {
         };
 
         const variants = [
-          { total: normalCand.total, detail: normalCand.detail, label: '一般牌型' },
+          { total: normalCand.total, detail: normalCand.detail, label: '一般牌型', decomp: normalCand.decomp },
           guluFiltered
         ];
-
-        // 對碰 + 假獨：只取最大
-        const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
-        if (winPatterns.total > 0) {
-          variants.forEach(v => {
-            const applied = applyWinPatternsToDetail(v.detail, winPatterns);
-            v.detail = [...v.detail, ...applied.items];
-            v.total += applied.total;
-          });
-        }
 
         resultData = { variants, handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
         baseResultTotal = variants[0].total;
@@ -2776,18 +2932,11 @@ function calculateSafe() {
         bonusStateByVariant = variants.map(() => ({}));
         currentVariantIndex = 0;
         bonusState = bonusStateByVariant[0];
+        applyPendingCfBonus();
         renderResultBody(variants[0].total, variants[0].detail, variants, 0);
         switchTab('result', document.querySelectorAll('.tab')[1]);
         document.getElementById('resultPanel').classList.add('show');
         return;
-      }
-
-      // 對碰 + 假獨：只取最大
-      const winPatterns = detectWinPatterns(hand, window.selectedWinTile);
-      if (winPatterns.total > 0) {
-        const applied = applyWinPatternsToDetail(best.detail, winPatterns);
-        best.detail = [...best.detail, ...applied.items];
-        best.total += applied.total;
       }
 
       resultData = { total: best.total, detail: best.detail, handTiles: getAllSelectedTilesForWall(), winTile: window.selectedWinTile || null };
@@ -2796,6 +2945,7 @@ function calculateSafe() {
       bonusState = {};
       bonusStateByVariant = null;
       currentVariantIndex = 0;
+      applyPendingCfBonus();
       renderResult(best.total, best.detail);
       switchTab('result', document.querySelectorAll('.tab')[1]);
       document.getElementById('resultPanel').classList.add('show');
@@ -2822,76 +2972,15 @@ function getBonusFanTotal() {
   for (const key in bonusState) {
     if (bonusState[key]) total += bonusState[key];
   }
-  if (bonusState.duckWu && hasBaseFan('chickenWu')) total -= 30;
-  if (bonusState.kanKanWu && hasBaseFan('pongPongWu')) total -= 40;
-  if (bonusState.halfHelp && hasBaseFan('fullHelp')) total -= 15;
   return total;
 }
 
 function hasBaseFan(id) {
-  const expanded = [];
-  baseResultDetail.forEach(f => {
-    if (f.items && Array.isArray(f.items)) f.items.forEach(i => expanded.push(i));
-    else expanded.push(f);
-  });
-  return expanded.some(f => f.id === id);
+  return checkFanInDetail(baseResultDetail, id);
 }
 
 function toggleBonus(key, fan) {
-  if (key === 'selfDraw') {
-    if (bonusState.selfDraw !== undefined) {
-      delete bonusState.selfDraw;
-      delete bonusState.duckWu;
-      delete bonusState.kanKanWu;
-      delete bonusState.halfHelp;
-    } else {
-      const hasChickenWu = hasBaseFan('chickenWu');
-      const hasPongPong = hasBaseFan('pongPongWu');
-      const hasFullHelp = hasBaseFan('fullHelp');
-      const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
-
-      if (hasChickenWu) {
-        bonusState.selfDraw = 0;
-        if (!hasBaseFan('duckWu')) bonusState['duckWu'] = 15;
-      } else if (hasPongPong && isClosed) {
-        bonusState.selfDraw = 0;
-        if (!hasBaseFan('kanKanWu')) bonusState['kanKanWu'] = 150;
-      } else if (hasFullHelp) {
-        bonusState.selfDraw = 0;
-        if (!hasBaseFan('halfHelp')) bonusState['halfHelp'] = 8;
-      } else if (isClosed) {
-        bonusState.selfDraw = 3;
-      } else {
-        bonusState.selfDraw = 1;
-      }
-    }
-    updateBonusButtons();
-    recalcBonus();
-    return;
-  }
-
-  if (key === 'ding') {
-    if (bonusState.ding) {
-      delete bonusState.ding;
-    } else {
-      const isMustClosed = hasBaseFan('sixteenNoMatch') || hasBaseFan('thirteenOrphan') || hasBaseFan('luckyGulu');
-      if (isMustClosed) {
-        bonusState.ding = 5;
-      } else {
-        const isClosed = hasBaseFan('closedHand') || hasBaseFan('closedSelfDraw');
-        bonusState.ding = isClosed ? 15 : 5;
-      }
-    }
-    updateBonusButtons();
-    recalcBonus();
-    return;
-  }
-
-  if (bonusState[key] !== undefined) {
-    delete bonusState[key];
-  } else {
-    bonusState[key] = fan;
-  }
+  applyToggleBonusLogic(key, baseResultDetail);
   updateBonusButtons();
   recalcBonus();
 }
@@ -2920,20 +3009,6 @@ function recalcBonus() {
     const totalEl = document.querySelector('.result-total .num');
     if (totalEl) totalEl.textContent = newTotal;
   }
-
-  let bonusInfo = document.getElementById('bonusInfo');
-  if (!bonusInfo) {
-    bonusInfo = document.createElement('div');
-    bonusInfo.id = 'bonusInfo';
-    bonusInfo.style.cssText = 'text-align:center;font-size:12px;color:#ffd200;margin-top:8px;';
-    const bonusSection = document.querySelector('.bonus-section');
-    if (bonusSection) bonusSection.appendChild(bonusInfo);
-  }
-  if (bonusTotal > 0) {
-    bonusInfo.textContent = `目前加番：+${bonusTotal}（基礎 ${baseResultTotal} + 加番 ${bonusTotal} = ${newTotal}）`;
-  } else {
-    bonusInfo.textContent = `目前加番：+0（基礎 ${baseResultTotal}）`;
-  }
 }
 
 function switchVariant(idx) {
@@ -2955,25 +3030,45 @@ function renderResult(total, detail) {
 
 function renderResultBody(total, detail, variants, activeIdx) {
   const body = document.getElementById('resultBody');
+  const container = document.getElementById('resultContainer');
+
   if (detail.length === 0) {
-    body.innerHTML = `
+    const emptyHTML = `
       <div class="result-total"><div class="num">0</div><div class="label">番</div></div>
-      <div class="result-none">未偵測到任何合法食糊牌型<br>請確認各分區配置是否正確（是否符合面子結構）</div>
+      <div class="result-none">未偵測到任何合法食胡牌型<br>請確認各分區配置是否正確（是否符合面子結構）</div>
     `;
+    body.innerHTML = emptyHTML;
+    if (container) container.innerHTML = emptyHTML;
     return;
   }
 
-  const expandedDetail = [];
-  detail.forEach(f => {
-    if (f.items && Array.isArray(f.items)) {
-      f.items.forEach(item => expandedDetail.push(item));
-    } else {
-      expandedDetail.push(f);
+  const bonusItems = [];
+  const bonusLabels = {
+    selfDraw: '自摸', ding: '叮', dingJik: '叮即', robKong: '搶槓', doubleWin: '雙響', tripleWin: '三響',
+    seaFish: '海底撈月', riverFish: '河底撈月',
+    flower1: '花摸1', flower2: '花摸2', flower3: '花摸3', flower4: '花摸4', flower5: '花摸5', flower6: '花摸6', flower7: '花摸7', flower8: '花摸8',
+    kong1: '槓摸1', kong2: '槓摸2', kong3: '槓摸3', kong4: '槓摸4', kong5: '槓摸5',
+    flowerKong1: '花槓', flowerKong3: '花槓3', flowerKong4: '花槓4', flowerKong5: '花槓5', flowerKong6: '花槓6', flowerKong7: '花槓7'
+  };
+
+  for (const k in bonusState) {
+    if (bonusState[k] !== undefined && bonusState[k] > 0) {
+      const cat = k.startsWith('flower') ? '花摸' : (k.startsWith('kong') ? '槓摸' : '基本');
+      bonusItems.push({
+        id: k,
+        name: bonusLabels[k] || k,
+        fan: bonusState[k],
+        cat: cat,
+        detail: '加番設定'
+      });
     }
-  });
+  }
+
+  const combinedDetail = [...detail, ...bonusItems];
+  const finalDisplayTotal = total + getBonusFanTotal();
 
   const grouped = {};
-  expandedDetail.forEach(f => {
+  combinedDetail.forEach(f => {
     const cat = f.cat || '其他';
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(f);
@@ -2986,19 +3081,20 @@ function renderResultBody(total, detail, variants, activeIdx) {
   if (variants && variants.length > 1) {
     const parts = variants.map((v, i) => {
       const activeCls = (i === activeIdx) ? 'variant-chip active' : 'variant-chip';
-      return `<span class="${activeCls}" onclick="switchVariant(${i})">${v.total}</span>`;
+      const vBonusTotal = Object.values(bonusStateByVariant[i]||{}).reduce((a,b)=>a+b,0);
+      return `<span class="${activeCls}" onclick="switchVariant(${i})">${v.total + vBonusTotal}</span>`;
     }).join('<span class="variant-plus">+</span>');
     headerHTML = `
       <div class="result-total">
         <div class="num" style="font-size:34px;">【${parts}】</div>
-        <div class="label">雙食嚦咕（點擊數字切換查看該副牌番數；花／字只計一次）</div>
+        <div class="label">雙食嚦咕（點擊切換查看；花／字只計一次）</div>
       </div>
     `;
   } else {
     headerHTML = `
       <div class="result-total">
-        <div class="num">${total}</div>
-        <div class="label">總番數（各分區檢測 + 最高番數優先）</div>
+        <div class="num">${finalDisplayTotal}</div>
+        <div class="label">總番數（基礎番數 + 加番）</div>
       </div>
     `;
   }
@@ -3013,7 +3109,7 @@ function renderResultBody(total, detail, variants, activeIdx) {
     winTileHTML = `<div style="text-align:center;margin-bottom:10px;font-size:12px;color:#aaa;">食胡牌：<span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:46px;background:#f5f5f0;border-radius:5px;border:2px solid #ffd200;vertical-align:middle;">${inner}</span></div>`;
   }
 
-  body.innerHTML = `
+  const resultItemsHTML = `
     ${headerHTML}
     ${winTileHTML}
     ${sortedCats.map(cat => `
@@ -3027,17 +3123,22 @@ function renderResultBody(total, detail, variants, activeIdx) {
         </div>
       `).join('')}
     `).join('')}
+  `;
+
+  body.innerHTML = `
+    ${resultItemsHTML}
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button onclick="saveResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">💾 儲存本局</button>
       <button onclick="closeResult()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#16213e;color:#ffd200;font-size:14px;font-weight:700;cursor:pointer;border:1px solid #f7971e55;">返回</button>
     </div>
   `;
 
-  // 套用確認畫面的加番
-  if (cfBonusState && Object.keys(cfBonusState).length > 0) {
-    bonusState = { ...cfBonusState };
-    recalcBonus();
-    updateBonusButtons();
+  if (container) {
+    container.innerHTML = `
+      <div style="padding:10px;">
+        ${resultItemsHTML}
+      </div>
+    `;
   }
 }
 
